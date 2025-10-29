@@ -1,0 +1,13 @@
+# Theological Text Processing Pipeline Dependencies
+
+# Core dependencies
+PyYAML>=6.0
+requests>=2.28.0
+
+# Optional dependencies for future features
+# PyPDF2>=3.0.0          # For PDF processing
+# python-docx>=0.8.11     # For DOCX processing
+# openai>=1.0.0           # For AI annotation and embeddings
+# cohere>=4.0.0           # Alternative AI service
+# numpy>=1.24.0           # For vector operations
+# pandas>=2.0.0           # For data processing

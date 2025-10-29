@@ -1,11 +1,38 @@
-- ## Theological Text Metadata Annotation Prompt
+## Setup Instructions
+
+### Quick Setup
+```bash
+# Run the setup script
+./setup.sh
+
+# Activate virtual environment
+source venv/bin/activate
+
+# Check pipeline status
+python pipeline_manager.py --stage status
+```
+
+### Manual Setup
+```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create processing directories
+mkdir -p theological_processing/{01_sources,02_chunked,03_annotated,04_complete,05_deployed,metadata,logs,templates,rejected}
+```
+
+## Theological Text Metadata Annotation Prompt
     - You are helping to create high-quality metadata for theological text chunks to improve RAG (Retrieval Augmented Generation) performance. Your task is to analyze text chunks and provide structured metadata following specific guidelines.
-- ## Text Chunking Context
+## Text Chunking Context
     - Chunks are approximately 1000-1500 characters
     - Generally follow paragraph boundaries unless paragraphs exceed 1500 characters
     - **Identify chunks for annotation by locating the `Chunk::` label in the markdown file**
     - Each `Chunk::` entry represents one text segment that requires complete metadata annotation
-- ## Metadata Structure
+## Metadata Structure
     - For each chunk, provide metadata in this exact format:
     - ```plain text
       * concepts:: [[Concept1]], [[Concept2]]
@@ -18,7 +45,7 @@
       * structure-path:: Breadcrumb format (e.g. [[Section > Subsection 1 > Subsection 2]])
       * named-entities:: [[Person/Entity]], [[Place/Entity]], [[Event/Entity]], [[Ideology/Entity]], [[Period/Entity]], [[Work/Entity]], [[Group/Entity]]
       ```
-- ## Critical Constraints
+## Critical Constraints
     - ### Concepts Index (Fixed)
         - Use ONLY concepts from the provided Concepts Index (inspired by Adler's Syntopicon)
         - **NO additions allowed** - this is a closed list of perennial, fundamental concepts
@@ -92,11 +119,7 @@
     - ### Structure-Path (Flexible)
         - Capture the hierarchical location of the chunk within the source document
           
-        - Use breadcrumb format: `[[Section > Subsection 1 > Subsection 2]]`- Based on markdown heading structure:
-            - `#` = First level section
-            - `##` = Second level section  
-            - `###` = Third level section
-        - Examples:
+        - Use breadcrumb format: `[[Section > Subsection 1 > Subsection 2]]`- Based on chapter headings, section headings, subheadings, etc.
             - `[[Articles of Affirmation and Denial > Article I]]`
             - `[[Chapter 3 > Abolition of Man]]`
         - Do NOT include source title in the structure-path. All chunks will inherit this from the source metadata.
@@ -111,7 +134,7 @@
             - Work - Authored or canonical texts (e.g. Confessions, Institutes of the Christian Religion). Period - Temporal spans or eras (e.g. Patristic Era, Reformation).
             - Ideology / Doctrine - Systems of belief (e.g. Arminianism, Predestination).
         - Use namespaced format: `[[Class/Entity]]` (e.g. `[[Person/Augustine of Hippo]]`)
-- ## Sample Chunk and Metadata
+## Sample Chunk and Metadata
     - Chunk: A new book is still on its trial and the amateur is not in a position to judge it. It has to be tested against the great body of Christian thought down the ages, and all its hidden implications (often unsuspected by the author himself have to be brought to light. Often it cannot be fully understood without the knowledge of a good many other modern books. If you join at eleven o'clock a conversation which began at eight you will often not see the real bearing of what is said. Remarks which seem to you very ordinary will produce laughter or irritation and you will not see why the reason, of course, being that the earlier stages of the conversation have given them a special point. In the same way sentences in a modern book which look quite ordinary may be directed af some other book; in this way you may be led to accept what you would have indignantly rejected if you knew its real significance. The only safety is to have a standard of plain, central Christianity ("mere Christianity" as Baxter called it) which puts the controversies of the moment in their proper perspective. Such a standard can be acquired only from the old books. It is a good rule, after reading a new book, never to allow yourself another new one till vou have read an old one in between. If that is too much for you, you should at east read one old one to every three new ones.
         - concepts:: [[Authority]], [[Tradition]], [[Scripture]]
         - topics:: [[Authority/On testing new ideas against established Christian tradition]], [[Tradition/On the role of ancient sources in evaluating contemporary theology]], [[Scripture/On using historical Christianity as interpretive standard]]
@@ -125,13 +148,13 @@
         - scripture-references::
         - structure-path::
         - named-entities:: [[Person/Richard Baxter]], [[Ideology/Mere Christianity]]
-- ## Quality Guidelines
+## Quality Guidelines
     1. **Accuracy**: Only use items from the provided indexes unless they are "Flexible"
     2. **Relevance**: Choose the most fitting tags, don't force inappropriate fits. When in doubt about tags, choose the closest available option or leave blank rather than creating new tags for fixed lists.
     3. **Completeness**: Every chunk should have concept, topic, term, and discourse-element. Most will have named-entities. Some will have scripture-reference and structure-path.
     4. **Precision**: Be specific in element descriptions for the discourse-element tags
     5. **Consistency**: Use the same approach across similar content types
-- ## Provided Indexes
+## Provided Indexes
     'Index: Concepts.md'
     'Index: Function.md'
     'Index: Topics.md'
