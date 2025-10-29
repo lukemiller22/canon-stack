@@ -529,6 +529,44 @@ class TheologicalProcessingPipeline:
                 elements = [f'[[{category}/{e}]]' for e in discourse_elements_by_category[category]]
                 discourse_elements_list += f"\n{category}: {', '.join(elements)}"
         
+        # Extract existing topics from the index file content
+        existing_topics_list = ""
+        if indexes.get('topics') and len(indexes['topics']) > 10:
+            # Parse topics from markdown list format
+            topics_lines = indexes['topics'].strip().split('\n')
+            existing_topics = []
+            for line in topics_lines:
+                line = line.strip()
+                if line.startswith('- ') and not line.startswith('- -'):
+                    topic = line[2:].strip()
+                    if topic and not topic.startswith('#'):
+                        existing_topics.append(topic)
+            if existing_topics:
+                # Limit to first 200 topics to avoid prompt bloat, but indicate there are more
+                topics_preview = existing_topics[:200]
+                existing_topics_list = '\n'.join([f"  - {t}" for t in topics_preview])
+                if len(existing_topics) > 200:
+                    existing_topics_list += f"\n  ... (and {len(existing_topics) - 200} more topics in the index)"
+        
+        # Extract existing terms from the index file content
+        existing_terms_list = ""
+        if indexes.get('terms') and len(indexes['terms']) > 10:
+            # Parse terms from markdown list format
+            terms_lines = indexes['terms'].strip().split('\n')
+            existing_terms = []
+            for line in terms_lines:
+                line = line.strip()
+                if line.startswith('- ') and not line.startswith('- -'):
+                    term = line[2:].strip()
+                    if term and not term.startswith('#'):
+                        existing_terms.append(term)
+            if existing_terms:
+                # Limit to first 200 terms to avoid prompt bloat, but indicate there are more
+                terms_preview = existing_terms[:200]
+                existing_terms_list = '\n'.join([f"  - {t}" for t in terms_preview])
+                if len(existing_terms) > 200:
+                    existing_terms_list += f"\n  ... (and {len(existing_terms) - 200} more terms in the index)"
+        
         prompt = f"""You are helping to create high-quality metadata for theological text chunks to improve RAG (Retrieval Augmented Generation) performance. Your task is to analyze a text chunk and provide structured metadata following specific guidelines.
 
 ## Text Chunk
@@ -559,20 +597,30 @@ Use ONLY concepts from this EXACT list (NO additions allowed, NO substitutions):
 
 Usually 1-3 concepts per chunk.
 
-### Topics Index (Flexible)
+### Topics Index (Flexible - Prefer Existing)
 When assigning topics under selected concepts, focus on **questions, issues, aspects, or debates** rather than simple subtopics. Topics must use namespaced format: `[[Concept/Topic]]`
 
-Examples:
+**IMPORTANT**: Check the existing topics list below. **STRONGLY PREFER** reusing existing topics from this index rather than creating new ones. Only create a new topic if no suitable existing topic matches the content.
+
+Existing Topics Index:
+{existing_topics_list if existing_topics_list else "(No existing topics index available - you may create new topics)"}
+
+Examples of topic format:
 - Under "Authority": `[[Authority/Scripture vs Tradition]]`, `[[Authority/Papal Infallibility]]`
 - Under "Salvation": `[[Salvation/Faith vs Works]]`, `[[Salvation/Universal vs Particular]]`
 
-### Term Index (Flexible)
+### Term Index (Flexible - Prefer Existing)
 Select 3-5 terms that represent how readers would search for this content. Include:
 - Synonyms and variant expressions
 - Familiar and colloquial expressions
 - Poetic and literary language
 - Technical and scholarly terms
 - Memorable phrases
+
+**IMPORTANT**: Check the existing terms list below. **STRONGLY PREFER** reusing existing terms from this index rather than creating new ones. Only create a new term if no suitable existing term matches the content.
+
+Existing Terms Index:
+{existing_terms_list if existing_terms_list else "(No existing terms index available - you may create new terms)"}
 
 ### Discourse Elements (Fixed)
 Use ONLY elements from this EXACT list (NO additions allowed, NO substitutions):

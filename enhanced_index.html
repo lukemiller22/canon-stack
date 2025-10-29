@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Theological Research Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #2d2d2d;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 12px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #3a3a3a;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .toolbar {
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-section {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
+        }
+
+        .search-btn {
+            padding: 6px 12px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .search-btn:hover:not(:disabled) {
+            background: #357abd;
+        }
+
+        .search-btn:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .source-selector {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .source-selector label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .source-dropdown {
+            padding: 4px 8px;
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            font-size: 13px;
+            background: white;
+            min-width: 150px;
+        }
+
+        .history-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .history-btn {
+            padding: 4px 8px;
+            background: #f8f8f8;
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .history-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .history-btn.active {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            color: #666;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            border-top-color: #4a90e2;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 200px;
+            gap: 8px;
+            flex: 1 1 0;
+            min-height: 0;
+            align-items: stretch;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: #f0f0f0;
+            border-bottom: 1px solid #d0d0d0;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .panel-content {
+            padding: 10px;
+            flex: 1 1 auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            overscroll-behavior: contain;
+        }
+
+        .reasoning-section {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+
+        .reasoning-title {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .reasoning-text {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .summary {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #2d2d2d;
+        }
+
+        .summary p {
+            margin-bottom: 10px;
+        }
+
+        .summary h1, .summary h2, .summary h3, .summary h4 {
+            margin-top: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #1a1a1a;
+            line-height: 1.3;
+        }
+
+        .summary h1 {
+            font-size: 22px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .summary h2 {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        .summary h3 {
+            font-size: 18px;
+            margin-top: 16px;
+        }
+
+        .summary h4 {
+            font-size: 16px;
+            margin-top: 14px;
+        }
+
+        .summary strong, .summary b {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .summary ol, .summary ul {
+            margin: 12px 0;
+            padding-left: 24px;
+        }
+
+        .summary li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .summary ol {
+            list-style-type: decimal;
+        }
+
+        .summary ul {
+            list-style-type: disc;
+        }
+
+        .citation {
+            background: #e6f3ff;
+            color: #0066cc;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .citation:hover {
+            background: #cce7ff;
+        }
+
+        .source-item {
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 3px;
+            padding: 8px;
+            margin-bottom: 6px;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .source-item:hover {
+            border-color: #4a90e2;
+            box-shadow: 0 1px 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .source-item.highlighted {
+            border-color: #4a90e2;
+            background: #f0f7ff;
+            box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
+        }
+
+        .source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .source-number {
+            background: #4a90e2;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .source-title {
+            font-weight: 600;
+            color: #2d2d2d;
+            font-size: 13px;
+        }
+
+        .source-meta {
+            color: #666;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .source-text {
+            color: #555;
+            line-height: 1.4;
+            font-size: 12px;
+        }
+
+        .source-relevance {
+            background: #f0f8ff;
+            border-left: 2px solid #4a90e2;
+            padding: 6px;
+            margin-top: 6px;
+            font-size: 11px;
+            color: #2d5aa0;
+        }
+
+        .metadata-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .metadata-tooltip .tooltip-content {
+            visibility: hidden;
+            width: 280px;
+            background-color: #2d2d2d;
+            color: #f0f0f0;
+            text-align: left;
+            border-radius: 4px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            right: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 11px;
+            line-height: 1.3;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .metadata-tooltip .tooltip-content::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            right: 15px;
+            border-width: 4px;
+            border-style: solid;
+            border-color: #2d2d2d transparent transparent transparent;
+        }
+
+        .metadata-tooltip:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .metadata-section {
+            margin-bottom: 6px;
+        }
+
+        .metadata-label {
+            font-weight: 600;
+            color: #aaa;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metadata-values {
+            color: #ddd;
+            margin-top: 2px;
+        }
+
+        .history-panel {
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+        }
+
+        .history-item {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .history-item:hover {
+            background: #f5f5f5;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-query {
+            font-weight: 500;
+            color: #2d2d2d;
+            margin-bottom: 2px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-meta {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .error {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            color: #c53030;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .source-checkbox {
+            margin-right: 6px;
+            transform: scale(0.9);
+        }
+
+        .source-list-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .source-list-item label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .source-count {
+            color: #666;
+            font-size: 11px;
+            margin-left: auto;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            
+            .history-panel {
+                max-height: 200px;
+            }
+        }
+
+        .search-history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .clear-history-btn {
+            padding: 4px 8px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        .clear-history-btn:hover {
+            background: #ff5252;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>AI Theological Research Assistant</h1>
+                <p>Intelligent search and synthesis of theological texts</p>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-section">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="queryInput" 
+                    placeholder="Enter your theological question or research topic..."
+                />
+                <button class="search-btn" id="searchBtn" onclick="performSearch()">Research</button>
+            </div>
+            
+            <div class="source-selector">
+                <label>Sources:</label>
+                <select class="source-dropdown" id="sourceStack">
+                    <option value="all">All Sources</option>
+                    <option value="custom">Custom Selection</option>
+                </select>
+            </div>
+            
+            <div class="history-controls">
+                <button class="history-btn" id="showHistoryBtn" onclick="toggleHistoryPanel()">History</button>
+                <button class="history-btn" id="saveSearchBtn" onclick="saveCurrentSearch()" disabled>Save</button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <span style="margin-left: 8px;">Analyzing query and searching sources...</span>
+        </div>
+
+        <div class="main-content" id="mainContent" style="display: none;">
+            <div class="panel">
+                <div class="panel-header">Research Summary</div>
+                <div class="panel-content" id="researchContent"></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">Sources & Citations</div>
+                <div class="panel-content" id="sourcesContent"></div>
+            </div>
+
+            <div class="panel history-panel" id="historyPanel" style="display: none;">
+                <div class="panel-header">
+                    Search History
+                    <button class="clear-history-btn" onclick="clearSearchHistory()">Clear All</button>
+                </div>
+                <div class="panel-content">
+                    <div id="sourceSelectionSection" style="display: none;">
+                        <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px;">Select Sources:</div>
+                        <div id="sourcesList"></div>
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+                            <button class="history-btn" onclick="selectAllSources()">All</button>
+                            <button class="history-btn" onclick="selectNoSources()">None</button>
+                            <button class="history-btn" onclick="applySourceSelection()">Apply</button>
+                        </div>
+                    </div>
+                    <div id="searchHistorySection">
+                        <div class="search-history-list" id="searchHistoryList">
+                            <div class="no-results">No saved searches yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSources = [];
+        let availableSources = [];
+        let selectedSources = new Set();
+        let searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        let currentSearchResult = null;
+
+        // Initialize the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAvailableSources();
+            displaySearchHistory();
+            
+            // Handle Enter key in search input
+            document.getElementById('queryInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Handle source stack selection
+            document.getElementById('sourceStack').addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    showSourceSelection();
+                } else {
+                    hideSourceSelection();
+                    selectedSources.clear();
+                    availableSources.forEach(source => selectedSources.add(source.id));
+                }
+            });
+        });
+
+        function loadAvailableSources() {
+            // Fetch available sources from API
+            fetch('/api/sources')
+                .then(response => response.json())
+                .then(sources => {
+                    availableSources = sources;
+                    
+                    // Initialize with all sources selected
+                    selectedSources.clear();
+                    availableSources.forEach(source => selectedSources.add(source.id));
+                    
+                    updateSourcesList();
+                })
+                .catch(error => {
+                    console.error('Error loading sources:', error);
+                    // Fallback: show error message
+                    availableSources = [];
+                    selectedSources.clear();
+                    updateSourcesList();
+                });
+        }
+
+        function updateSourcesList() {
+            const sourcesList = document.getElementById('sourcesList');
+            sourcesList.innerHTML = '';
+            
+            availableSources.forEach(source => {
+                const item = document.createElement('div');
+                item.className = 'source-list-item';
+                item.innerHTML = `
+                    <label>
+                        <input type="checkbox" class="source-checkbox" 
+                               ${selectedSources.has(source.id) ? 'checked' : ''} 
+                               onchange="toggleSourceSelection('${source.id}')">
+                        <span>${source.name}</span>
+                        <span class="source-count">(${source.chunkCount})</span>
+                    </label>
+                `;
+                sourcesList.appendChild(item);
+            });
+        }
+
+        function showSourceSelection() {
+            document.getElementById('sourceSelectionSection').style.display = 'block';
+            document.getElementById('searchHistorySection').style.display = 'none';
+            document.getElementById('historyPanel').style.display = 'block';
+        }
+
+        function hideSourceSelection() {
+            document.getElementById('sourceSelectionSection').style.display = 'none';
+            document.getElementById('searchHistorySection').style.display = 'block';
+        }
+
+        function toggleSourceSelection(sourceId) {
+            if (selectedSources.has(sourceId)) {
+                selectedSources.delete(sourceId);
+            } else {
+                selectedSources.add(sourceId);
+            }
+        }
+
+        function selectAllSources() {
+            selectedSources.clear();
+            availableSources.forEach(source => selectedSources.add(source.id));
+            updateSourcesList();
+        }
+
+        function selectNoSources() {
+            selectedSources.clear();
+            updateSourcesList();
+        }
+
+        function applySourceSelection() {
+            document.getElementById('sourceStack').value = selectedSources.size === availableSources.length ? 'all' : 'custom';
+            hideSourceSelection();
+        }
+
+        function toggleHistoryPanel() {
+            const panel = document.getElementById('historyPanel');
+            const btn = document.getElementById('showHistoryBtn');
+            const mainContent = document.getElementById('mainContent');
+            const researchPanel = mainContent.children[0];
+            const sourcesPanel = mainContent.children[1];
+            
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                // Show history panel
+                panel.style.display = 'block';
+                btn.classList.add('active');
+                hideSourceSelection();
+                
+                // Always ensure main content is visible and use normal grid layout
+                mainContent.style.display = 'grid';
+                mainContent.style.gridTemplateColumns = '2fr 1fr 200px';
+                
+                // Always show research and sources panels (even if empty) to maintain layout
+                researchPanel.style.display = 'block';
+                sourcesPanel.style.display = 'block';
+                
+                // Refresh history display
+                displaySearchHistory();
+            } else {
+                // Hide history panel
+                panel.style.display = 'none';
+                btn.classList.remove('active');
+                
+                // If no content in main panels, hide mainContent entirely
+                const researchContent = document.getElementById('researchContent');
+                const sourcesContent = document.getElementById('sourcesContent');
+                if (!researchContent.innerHTML.trim() && !sourcesContent.innerHTML.trim()) {
+                    mainContent.style.display = 'none';
+                }
+            }
+        }
+
+        function saveCurrentSearch() {
+            if (!currentSearchResult) return;
+            
+            const searchEntry = {
+                id: Date.now(),
+                query: document.getElementById('queryInput').value.trim(),
+                timestamp: new Date().toISOString(),
+                summary: currentSearchResult.summary,
+                sources: currentSearchResult.sources_used,
+                reasoning: currentSearchResult.reasoning_transparency,
+                sourceSelection: Array.from(selectedSources),
+                chunks: currentSearchResult.chunks || [] // Save chunks so text is available when loading
+            };
+            
+            searchHistory.unshift(searchEntry);
+            
+            // Keep only last 50 searches
+            if (searchHistory.length > 50) {
+                searchHistory = searchHistory.slice(0, 50);
+            }
+            
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            displaySearchHistory();
+            document.getElementById('saveSearchBtn').disabled = true;
+        }
+
+        function displaySearchHistory() {
+            const historyList = document.getElementById('searchHistoryList');
+            
+            if (searchHistory.length === 0) {
+                historyList.innerHTML = '<div class="no-results">No saved searches yet</div>';
+                return;
+            }
+            
+            historyList.innerHTML = searchHistory.map(entry => `
+                <div class="history-item" onclick="loadSearchFromHistory(${entry.id})">
+                    <div class="history-query">${entry.query}</div>
+                    <div class="history-meta">
+                        ${new Date(entry.timestamp).toLocaleDateString()} • ${entry.sources.length} sources
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadSearchFromHistory(searchId) {
+            const entry = searchHistory.find(s => s.id === searchId);
+            if (!entry) return;
+            
+            // Restore the search
+            document.getElementById('queryInput').value = entry.query;
+            
+            // Restore source selection
+            selectedSources.clear();
+            entry.sourceSelection.forEach(sourceId => selectedSources.add(sourceId));
+            document.getElementById('sourceStack').value = selectedSources.size === availableSources.length ? 'all' : 'custom';
+            
+            // Display the saved results
+            displaySearchResults({
+                summary: entry.summary,
+                sources_used: entry.sources,
+                reasoning_transparency: entry.reasoning,
+                chunks: entry.chunks || [] // Use saved chunks, or empty array if not available (for backwards compatibility)
+            });
+            
+            document.getElementById('mainContent').style.display = 'grid';
+            // Restore normal grid layout
+            document.getElementById('mainContent').style.gridTemplateColumns = '2fr 1fr 200px';
+            const mainContent = document.getElementById('mainContent');
+            mainContent.children[0].style.display = 'block';
+            mainContent.children[1].style.display = 'block';
+            
+            document.getElementById('saveSearchBtn').disabled = true;
+            currentSearchResult = entry;
+        }
+
+        function clearSearchHistory() {
+            if (confirm('Are you sure you want to clear all search history?')) {
+                searchHistory = [];
+                localStorage.removeItem('searchHistory');
+                displaySearchHistory();
+            }
+        }
+
+        function performSearch() {
+            const query = document.getElementById('queryInput').value.trim();
+            if (!query) {
+                alert('Please enter a research question');
+                return;
+            }
+
+            if (selectedSources.size === 0) {
+                alert('Please select at least one source');
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            const loading = document.getElementById('loading');
+            const mainContent = document.getElementById('mainContent');
+
+            // Show loading state
+            searchBtn.disabled = true;
+            loading.style.display = 'block';
+            mainContent.style.display = 'none';
+
+            // Prepare request data
+            const requestData = {
+                query: query,
+                sources: Array.from(selectedSources)
+            };
+
+            // Make API request
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                currentSearchResult = data;
+                displaySearchResults(data);
+                document.getElementById('saveSearchBtn').disabled = false;
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                document.getElementById('researchContent').innerHTML = `
+                    <div class="error">Error: ${error.message}</div>
+                `;
+                mainContent.style.display = 'grid';
+            })
+            .finally(() => {
+                searchBtn.disabled = false;
+                loading.style.display = 'none';
+            });
+        }
+
+        function displaySearchResults(data) {
+            const researchContent = document.getElementById('researchContent');
+            const sourcesContent = document.getElementById('sourcesContent');
+            const mainContent = document.getElementById('mainContent');
+
+            // Display reasoning section
+            let reasoningHtml = '';
+            if (data.reasoning_transparency) {
+                reasoningHtml = `
+                    <div class="reasoning-section">
+                        <div class="reasoning-title">Search Strategy</div>
+                        <div class="reasoning-text">${data.reasoning_transparency}</div>
+                    </div>
+                `;
+            }
+
+            // Parse markdown and add clickable citations
+            const parsedMarkdown = parseMarkdown(data.summary);
+            const summaryWithCitations = addCitationClickHandlers(parsedMarkdown);
+            researchContent.innerHTML = reasoningHtml + `
+                <div class="summary">${summaryWithCitations}</div>
+            `;
+
+            // Store sources for citation handling
+            currentSources = data.sources_used || [];
+
+            // Display sources
+            let sourcesHtml = '';
+            if (currentSources.length > 0) {
+                sourcesHtml = currentSources.map((source, index) => {
+                    const sourceNumber = index + 1;
+                    const chunkText = findSourceText(sourceNumber, data.chunks);
+                    
+                    // Build metadata tooltip
+                    const metadata = source.metadata || {};
+                    let tooltipContent = '';
+                    
+                    if (metadata.topics && metadata.topics.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Topics</div><div class="metadata-values">${metadata.topics.join(', ')}</div></div>`;
+                    }
+                    if (metadata.concepts && metadata.concepts.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Concepts</div><div class="metadata-values">${metadata.concepts.join(', ')}</div></div>`;
+                    }
+                    if (metadata.terms && metadata.terms.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Terms</div><div class="metadata-values">${metadata.terms.join(', ')}</div></div>`;
+                    }
+                    if (metadata.discourse_elements && metadata.discourse_elements.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Discourse Elements</div><div class="metadata-values">${metadata.discourse_elements.join(', ')}</div></div>`;
+                    }
+                    if (metadata.scripture_references && metadata.scripture_references.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Scripture References</div><div class="metadata-values">${metadata.scripture_references.join(', ')}</div></div>`;
+                    }
+                    if (metadata.named_entities && metadata.named_entities.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Named Entities</div><div class="metadata-values">${metadata.named_entities.join(', ')}</div></div>`;
+                    }
+                    if (metadata.structure_path) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Location</div><div class="metadata-values">${metadata.structure_path}</div></div>`;
+                    }
+
+                    return `
+                        <div class="source-item" id="source-${sourceNumber}">
+                            <div class="source-header">
+                                <div class="source-number">${sourceNumber}</div>
+                                <div class="source-title">${source.source || 'Unknown Source'}</div>
+                                ${tooltipContent ? `
+                                <div class="metadata-tooltip">
+                                    <span style="cursor: help; color: #666;">ⓘ</span>
+                                    <div class="tooltip-content">${tooltipContent}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                            <div class="source-meta">
+                                ${source.author ? `Author: ${source.author}` : ''}
+                                ${source.location && source.location !== 'Unknown' ? ` • Location: ${source.location}` : ''}
+                            </div>
+                            <div class="source-text">${chunkText}</div>
+                            ${source.relevance_explanation ? `
+                                <div class="source-relevance">
+                                    <strong>Why this source:</strong> ${source.relevance_explanation}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                sourcesHtml = '<div class="no-results">No sources found</div>';
+            }
+
+            sourcesContent.innerHTML = sourcesHtml;
+            mainContent.style.display = 'grid';
+            // Ensure normal grid layout when displaying results
+            mainContent.style.gridTemplateColumns = '2fr 1fr 200px';
+            const researchPanel = mainContent.children[0];
+            const sourcesPanel = mainContent.children[1];
+            researchPanel.style.display = 'block';
+            sourcesPanel.style.display = 'block';
+        }
+
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            let html = text;
+            
+            // First, protect citations from being processed
+            // Use a unique placeholder pattern that won't conflict with markdown syntax
+            const citationPlaceholders = [];
+            html = html.replace(/\[(\d+)\]/g, (match, num) => {
+                const placeholder = `{{CITATION_${citationPlaceholders.length}}}`;
+                citationPlaceholders.push(match);
+                return placeholder;
+            });
+            
+            // Convert bold first (**text** or __text__) - but not in list contexts
+            // We'll do this after lists to avoid interfering
+            
+            // Convert headers (###, ##, #) - but skip if inside a list context
+            // Process h3 first, then h2, then h1
+            // Headers on their own lines won't interfere with lists
+            
+            // Convert numbered lists (1. item)
+            // First, find all lines that start with number patterns
+            const lines = html.split('\n');
+            let inNumberedList = false;
+            let numberedListItems = [];
+            let processedLines = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const numberedMatch = line.match(/^(\d+)\.\s+(.+)$/);
+                
+                if (numberedMatch) {
+                    if (!inNumberedList) {
+                        // Start new list
+                        inNumberedList = true;
+                        numberedListItems = [];
+                    }
+                    numberedListItems.push(numberedMatch[2]);
+                } else {
+                    // Check if this is a continuation of previous list item
+                    if (inNumberedList && line.trim() && !line.match(/^(<|#|-|\*|\d+\.)/)) {
+                        // Append to last list item
+                        if (numberedListItems.length > 0) {
+                            numberedListItems[numberedListItems.length - 1] += ' ' + line.trim();
+                        }
+                    } else {
+                        // End current list if any
+                        if (inNumberedList) {
+                            const listHtml = '<ol>' + numberedListItems.map(item => `<li>${item}</li>`).join('') + '</ol>';
+                            processedLines.push(listHtml);
+                            numberedListItems = [];
+                            inNumberedList = false;
+                        }
+                        processedLines.push(line);
+                    }
+                }
+            }
+            
+            // Close any open list at the end
+            if (inNumberedList && numberedListItems.length > 0) {
+                const listHtml = '<ol>' + numberedListItems.map(item => `<li>${item}</li>`).join('') + '</ol>';
+                processedLines.push(listHtml);
+            }
+            
+            html = processedLines.join('\n');
+            
+            // Convert bullet lists (- item or * item) - similar approach
+            const bulletLines = html.split('\n');
+            let inBulletList = false;
+            let bulletListItems = [];
+            let processedBulletLines = [];
+            
+            for (let i = 0; i < bulletLines.length; i++) {
+                const line = bulletLines[i];
+                const bulletMatch = line.match(/^[-*]\s+(.+)$/);
+                
+                if (bulletMatch) {
+                    if (!inBulletList) {
+                        inBulletList = true;
+                        bulletListItems = [];
+                    }
+                    bulletListItems.push(bulletMatch[1]);
+                } else {
+                    if (inBulletList && line.trim() && !line.match(/^(<|#|-|\*|\d+\.)/)) {
+                        if (bulletListItems.length > 0) {
+                            bulletListItems[bulletListItems.length - 1] += ' ' + line.trim();
+                        }
+                    } else {
+                        if (inBulletList) {
+                            const listHtml = '<ul>' + bulletListItems.map(item => `<li>${item}</li>`).join('') + '</ul>';
+                            processedBulletLines.push(listHtml);
+                            bulletListItems = [];
+                            inBulletList = false;
+                        }
+                        processedBulletLines.push(line);
+                    }
+                }
+            }
+            
+            if (inBulletList && bulletListItems.length > 0) {
+                const listHtml = '<ul>' + bulletListItems.map(item => `<li>${item}</li>`).join('') + '</ul>';
+                processedBulletLines.push(listHtml);
+            }
+            
+            html = processedBulletLines.join('\n');
+            
+            // Now convert headers (###, ##, #) - but skip headers that are part of numbered lists
+            // Handle numbered list items that start with headers like "#### 6. Text" first
+            html = html.replace(/^####\s+(\d+)\.\s+(.+)$/gm, '<li><strong>$2</strong></li>');
+            html = html.replace(/^###\s+(\d+)\.\s+(.+)$/gm, '<li><strong>$2</strong></li>');
+            html = html.replace(/^##\s+(\d+)\.\s+(.+)$/gm, '<li><strong>$2</strong></li>');
+            html = html.replace(/^#\s+(\d+)\.\s+(.+)$/gm, '<li><strong>$2</strong></li>');
+            
+            // Now convert regular headers (that don't start with numbers)
+            html = html.replace(/^####\s+(?!\d+\.\s)(.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^###\s+(?!\d+\.\s)(.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^##\s+(?!\d+\.\s)(.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^#\s+(?!\d+\.\s)(.+)$/gm, '<h1>$1</h1>');
+            
+            // Convert bold (**text** or __text__) - can appear anywhere now
+            // But make sure we don't match citation placeholders
+            html = html.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+            // Only match __text__ if it's not part of a citation placeholder
+            html = html.replace(/__([^_\n{]+)__/g, '<strong>$1</strong>');
+            
+            // Split into paragraphs (double newlines or single newline after block elements)
+            // First, replace double newlines with paragraph markers
+            html = html.replace(/\n\n+/g, '\n\nPARAGRAPH_BREAK\n\n');
+            
+            // Split and process
+            const parts = html.split(/\n\nPARAGRAPH_BREAK\n\n/);
+            html = parts.map(p => {
+                p = p.trim();
+                // Don't wrap if it's already a tag (heading, list) or starts with HTML
+                if (p.match(/^<(h[1-6]|ol|ul|li|p)/)) {
+                    return p;
+                }
+                // If it contains block-level HTML tags, don't wrap
+                if (p.includes('<ol>') || p.includes('<ul>') || p.includes('<h')) {
+                    return p;
+                }
+                if (p) {
+                    return `<p>${p}</p>`;
+                }
+                return '';
+            }).join('\n\n');
+            
+            // Restore citations from placeholders and make them clickable
+            citationPlaceholders.forEach((citation, index) => {
+                // Replace placeholder with clickable citation
+                const citationNum = citation.match(/\[(\d+)\]/);
+                if (citationNum) {
+                    const num = citationNum[1];
+                    // Escape curly braces in regex
+                    const placeholderPattern = `\\{\\{CITATION_${index}\\}\\}`;
+                    html = html.replace(new RegExp(placeholderPattern, 'g'), 
+                        `<span class="citation" onclick="scrollToSource(${num})">[${num}]</span>`);
+                } else {
+                    // Fallback: just restore the original citation
+                    const placeholderPattern = `\\{\\{CITATION_${index}\\}\\}`;
+                    html = html.replace(new RegExp(placeholderPattern, 'g'), citation);
+                }
+            });
+            
+            return html;
+        }
+
+        function addCitationClickHandlers(summary) {
+            // This function is now mostly redundant since citations are handled in parseMarkdown
+            // But keep it for any citations that weren't protected as placeholders
+            return summary.replace(/\[(\d+)\]/g, '<span class="citation" onclick="scrollToSource($1)">[$1]</span>');
+        }
+
+        function scrollToSource(sourceNumber) {
+            const sourceElement = document.getElementById(`source-${sourceNumber}`);
+            if (sourceElement) {
+                // Remove previous highlights
+                document.querySelectorAll('.source-item').forEach(item => {
+                    item.classList.remove('highlighted');
+                });
+                
+                // Highlight and scroll to source
+                sourceElement.classList.add('highlighted');
+                sourceElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Remove highlight after 3 seconds
+                setTimeout(() => {
+                    sourceElement.classList.remove('highlighted');
+                }, 3000);
+            }
+        }
+
+        function findSourceText(sourceNumber, chunks) {
+            // Find the chunk text for this source number
+            if (!chunks || chunks.length === 0) {
+                return 'Text not available';
+            }
+            
+            // Get the source info for this number
+            const sourceInfo = currentSources[sourceNumber - 1];
+            if (!sourceInfo) {
+                return 'Text not available';
+            }
+            
+            // Try to find chunk by matching _chunk_index value (not using it as array index)
+            // This works for both fresh searches and loaded history
+            if (sourceInfo._chunk_index !== undefined && sourceInfo._chunk_index >= 0) {
+                const chunk = chunks.find(c => c._chunk_index === sourceInfo._chunk_index);
+                if (chunk && chunk.text) {
+                    return chunk.text;
+                }
+            }
+            
+            // Fallback 1: Match by chunk_id if available
+            if (sourceInfo.chunk_id) {
+                const chunk = chunks.find(c => c.id === sourceInfo.chunk_id);
+                if (chunk && chunk.text) {
+                    return chunk.text;
+                }
+            }
+            
+            // Fallback 2: If sources have the same order as chunks, try array index
+            // This is a last resort for backwards compatibility
+            if (sourceInfo._chunk_index !== undefined && 
+                sourceInfo._chunk_index >= 0 && 
+                sourceInfo._chunk_index < chunks.length) {
+                const chunk = chunks[sourceInfo._chunk_index];
+                if (chunk && chunk.text) {
+                    return chunk.text;
+                }
+            }
+            
+            // Fallback 3: Return a placeholder
+            return 'Source text unavailable';
+        }
+    </script>
+</body>
+</html>
