@@ -1,0 +1,171 @@
+- # Source Metadata
+    - **Core-Identification**
+        - Source-ID:: 12
+        - Title:: [[The Treasury of David]]
+        - Subtitle:: Psalm 1
+        - Author-Primary:: [[Charles Spurgeon]]
+        - Author-Additional::
+        - Editor::
+        - Translator::
+        - Publication-Year:: [[1870]]
+    - **Source-Classification**
+        - Genre-Primary:: [[Commentary]]
+        - Genre-Secondary:: [[Devotional]]
+    - **Content-Characteristics**
+        - Length-Words:: ~2500
+        - Length-Chunks:: 9
+        - Chapters:: false
+        - Sections:: true
+    - **Theological-Coverage**
+        - Topics:: [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Personal Holiness]], [[Topic/Nature of Sin]], [[Topic/Sanctification and Growth]], [[Topic/Bible Reading]], [[Topic/Biblical Authority]], [[Topic/Fruit of the Spirit]], [[Topic/Providence of God]], [[Topic/Assurance of Salvation]], [[Topic/Suffering]], [[Topic/Wrath of God]], [[Topic/Heaven and Hell]], [[Topic/End Times]], [[Topic/Foreknowledge of God]], [[Topic/Perseverance of the Saints]]
+- # Chunks
+    - ## Psalm 1
+        - ### Exposition 
+            - Chunk:: Verse 1. __"BLESSED"__—see how this Book of Psalms opens with a benediction, even as did the famous Sermon of our Lord upon the Mount! The word translated "blessed" is a very expressive one. The original word is plural, and it is a controverted matter whether it is an adjective or a substantive. Hence we may learn the multiplicity of the blessings which shall rest upon the man whom God hath justified, and the perfection and greatness of the blessedness he shall enjoy. We might read it, "Oh, the blessednesses!" and we may well regard it (as Ainsworth does) as a joyful acclamation of the gracious man's felicity. May the like benediction rest on us!
+                - **Topics:** [[Topic/Commentary]], [[Topic/Bible]], [[Topic/Old Testament Studies]]
+                - **Concepts:** [[Concept/Happiness]], [[Concept/Good and Evil]], [[Concept/Language]]
+                - **Themes:** [[Divine Benediction]], [[Multiplicity of Blessings]], [[Textual Analysis]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon provides exegetical analysis of the Hebrew word "blessed" in Psalm 1:1
+                    - [[Semantic/Definition]] The original Hebrew word is plural and may be either adjective or substantive
+                    - [[Logical/Claim]] The plural form indicates both the multiplicity and perfection of blessedness for the justified man
+                    - [[Reference/Cross-Reference]] Comparison to Jesus' Sermon on the Mount which also opens with benedictions
+                    - [[Symbolic/Metaphor]] "Oh, the blessednesses!" as a joyful acclamation
+                    - [[Personal/Desire]] "May the like benediction rest on us!"
+                - **Scripture-References:** Psalm 1:1, Sermon on the Mount
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Treasury of David]], [[Henry Ainsworth]], [[Sermon on the Mount]]
+            - Chunk:: Here the gracious man is described both negatively (verse 1) and positively (verse 2). He is a man __who does not walk in the counsel of the ungodly.__ He takes wiser counsel, and walks in the commandments of the Lord his God. To him the ways of piety are paths of peace and pleasantness. His footsteps are ordered by the Word of God, and not by the cunning and wicked devices of carnal men. It is a rich sign of inward grace when the outward walk is changed, and when ungodliness is put far from our actions. Note next, __he standeth not in the way of sinners.__ His company is of a choicer sort than it was. Although a sinner himself, he is now a blood-washed sinner, quickened by the Holy Spirit, and renewed in heart. Standing by the rich grace of God in the congregation of the righteous, he dares not herd with the multitude that do evil. Again it is said, __"nor sitteth in the seat of the scornful."__ He finds no rest in the atheist's scoffings. Let others make a mock of sin, of eternity, of hell and heaven, and of the Eternal God; this man has learned better philosophy than that of the infidel, and has too much sense of God's presence to endure to hear His name blasphemed. The seat of the scorner may be very lofty, but it is very near to the gate of hell; let us flee from it, for it shall soon be empty, and destruction shall swallow up the man who sits therein. Mark the gradation in the first verse:
+              
+              He walketh not in the counsel of the ungodly,
+              Nor standeth in the way of sinners,
+              Nor SITTETH in the SEAT of SCORNFUL.
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Personal Holiness]], [[Topic/Sanctification and Growth]]
+                - **Concepts:** [[Concept/Good and Evil]], [[Concept/Sin]], [[Concept/Virtue and Vice]], [[Concept/Wisdom]]
+                - **Themes:** [[Negative and Positive Righteousness]], [[Progressive Separation from Evil]], [[Divine Grace and Transformation]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon expounds on the threefold description of the blessed man's separation from evil
+                    - [[Logical/Claim]] The gracious man is described both negatively (what he avoids) and positively (what he does)
+                    - [[Semantic/Category]] Three levels of ungodliness: counsel of ungodly, way of sinners, seat of scornful
+                    - [[Narrative/Action]] Walking, standing, and sitting represent increasing degrees of involvement with evil
+                    - [[Personal/Identity]] "Although a sinner himself, he is now a blood-washed sinner, quickened by the Holy Spirit"
+                    - [[Structural/List]] Progressive gradation shown in the three parallel phrases
+                    - [[Logical/Claim]] "It is a rich sign of inward grace when the outward walk is changed"
+                    - [[Symbolic/Metaphor]] "The seat of the scorner may be very lofty, but it is very near to the gate of hell"
+                - **Scripture-References:** Psalm 1:1, Psalm 1:2
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Holy Spirit]]
+            - Chunk:: When men are living in sin they go from bad to worse. At first they merely __walk__ in the counsel of the careless and __ungodly,__ who forget God—the evil is rather practical than habitual—but after that, they become habituated to evil, and they __stand__ in the way of open __sinners__ who wilfully violate God's commandments; and if let alone, they go one step further, and become themselves pestilent teachers and tempters of others, and thus they __sit in the seat of the scornful.__ They have taken their degree in vice, and as true Doctors of Damnation they are installed, and are looked up to by others as Masters in Belial. But the blessed man, the man to whom all the blessings of God belong, can hold no communion with such characters as these. He keeps himself pure from these lepers; he puts away evil things from him as garments spotted by the flesh; he comes out from among the wicked, and goes without the camp, bearing the reproach of Christ. O for grace to be thus separate from sinners.
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Nature of Sin]], [[Topic/Personal Holiness]]
+                - **Concepts:** [[Concept/Sin]], [[Concept/Good and Evil]], [[Concept/Virtue and Vice]], [[Concept/Habit]]
+                - **Themes:** [[Progressive Degradation]], [[Separation from Evil]], [[Academic Imagery of Vice]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon explains the progressive nature of sin through the walking-standing-sitting sequence
+                    - [[Logical/Claim]] "When men are living in sin they go from bad to worse"
+                    - [[Narrative/Action]] Three stages: walking (practical evil), standing (habitual evil), sitting (teaching evil)
+                    - [[Semantic/Category]] Classification of sinners: ungodly (careless), sinners (willful), scornful (tempters)
+                    - [[Symbolic/Metaphor]] "They have taken their degree in vice, and as true Doctors of Damnation they are installed"
+                    - [[Symbolic/Metaphor]] Keeping pure "from these lepers" and avoiding "garments spotted by the flesh"
+                    - [[Personal/Request]] "O for grace to be thus separate from sinners"
+                    - [[Logical/Claim]] The blessed man "can hold no communion with such characters as these"
+                - **Scripture-References:** Psalm 1:1
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Belial]], [[Christ]]
+            - Chunk:: And now mark his positive character. __"His delight is in the law of the Lord."__ He is not __under__ the law as a curse and condemnation, but he is __in__ it, and he delights to be in it as his rule of life; he delights, moreover, to __meditate__ in it, to read it __by day,__ and think upon it __by night.__ He takes a text and carries it with him all day long; and in the night-watches, when sleep forsakes his eyelids, he museth upon the Word of God. In the __day__ of his prosperity he sings __psalms__ out of the Word of God, and in the __night__ of his affliction he comforts himself with __promises__ out of the same book. "The law of the Lord" is the daily bread of the true believer. And yet, in David's day, how small was the volume of inspiration, for they had scarcely anything save the first five books of Moses! How much more, then, should we prize the whole written Word which it is our privilege to have in all our houses! But, alas, what ill-treatment is given to this angel from heaven! We are not all Berean searchers of the Scriptures. How few among us can lay claim to the benediction of the text! Perhaps some of you can claim a sort of negative purity, because you do not walk in the way of the ungodly; but let me ask you—Is your delight in the law of God? Do you study God's Word? Do you make it the man of your right hand—your best companion and hourly guide? If not, this blessing belongeth not to you.
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Bible Reading]], [[Topic/Bible Study]], [[Topic/Biblical Authority]]
+                - **Concepts:** [[Concept/Law]], [[Concept/Happiness]], [[Concept/Knowledge]], [[Concept/Good and Evil]]
+                - **Themes:** [[Positive Righteousness]], [[Day and Night Meditation]], [[Scripture as Daily Bread]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon expounds on the positive character of the blessed man's relationship to God's law
+                    - [[Logical/Claim]] The blessed man is not under the law as curse but in it as rule of life
+                    - [[Semantic/Quality]] Delight, meditation, day and night engagement with Scripture
+                    - [[Narrative/Time]] Day (prosperity/psalms) and night (affliction/promises) applications
+                    - [[Symbolic/Metaphor]] "The law of the Lord is the daily bread of the true believer"
+                    - [[Symbolic/Metaphor]] Scripture as "angel from heaven" and "man of your right hand"
+                    - [[Reference/Cross-Reference]] Comparison to Berean searchers of the Scriptures
+                    - [[Semantic/Question]] Series of self-examining questions about Scripture engagement
+                    - [[Logical/Conditional]] "If not, this blessing belongeth not to you"
+                    - [[Narrative/Person]] David's limited access to Scripture compared to modern believers
+                - **Scripture-References:** Psalm 1:2, Acts 17:11
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[David]], [[Moses]], [[Bereans]]
+            - Chunk:: Verse 3. "__And he shall be like a tree planted__"—not a wild tree, but "a tree __planted,"__ chosen, considered as property, cultivated and secured from the last terrible uprooting, for "every plant which my heavenly Father hath not planted, shall be rooted up:" Matthew 15:13. __"By the rivers of water;"__ so that even if one river should fail, he hath another. The rivers of pardon and the rivers of grace, the rivers of the promise and the rivers of communion with Christ, are never-failing sources of supply. He is "like a tree planted by the rivers of water, __that bringeth forth his fruit in his season;"__ not unseasonable graces, like untimely figs, which are never full-flavored. But the man who delights in God's Word, being taught by it, bringeth forth patience in the time of suffering, faith in the day of trial, and holy joy in the hour of prosperity. Fruitfulness is an essential quality of a gracious man, and that fruitfulness should be seasonable. __"His leaf also shall not wither;"__ his faintest word shall be everlasting; his little deeds of love shall be had in remembrance. Not simply shall his fruit be preserved, but __his leaf__ also. He shall neither lose his beauty nor his fruitfulness. __"And whatsoever he doeth shall prosper."__ 
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Fruit of the Spirit]], [[Topic/Sanctification and Growth]]
+                - **Concepts:** [[Concept/Nature]], [[Concept/Good and Evil]], [[Concept/Time]], [[Concept/Progress]]
+                - **Themes:** [[Divine Cultivation]], [[Seasonal Fruitfulness]], [[Enduring Prosperity]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon expounds on the tree metaphor in Psalm 1:3
+                    - [[Symbolic/Metaphor]] Righteous man as cultivated tree versus wild tree
+                    - [[Semantic/Quality]] Planted, chosen, considered as property, cultivated, secured
+                    - [[Symbolic/Metaphor]] Multiple rivers representing different sources of divine supply
+                    - [[Semantic/Example]] "Rivers of pardon and grace, promises and communion with Christ"
+                    - [[Reference/Cross-Reference]] Citation of Matthew 15:13 about divine planting
+                    - [[Logical/Claim]] Fruitfulness is an essential quality of a gracious man
+                    - [[Semantic/Quality]] Seasonable graces versus untimely figs
+                    - [[Narrative/Time]] Different virtues for different seasons: patience in suffering, faith in trial, joy in prosperity
+                    - [[Logical/Claim]] Even his faintest words and smallest deeds will have lasting significance
+                    - [[Practical/Principle]] True prosperity comes from delight in God's Word
+                - **Scripture-References:** Psalm 1:3, Matthew 15:13
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Christ]]
+            - Chunk:: Blessed is the man who hath such a promise as this. But we must not always estimate the fulfillment of a promise by our own eye-sight. How often, my brethren, if we judge by feeble sense, may we come to the mournful conclusion of Jacob, "All these things are against me!" For though we know our interest in the promise, yet we are so tried and troubled, that sight sees the very reverse of what that promise foretells. But to the eye of faith this word is sure, and by it we perceive that our works are prospered, even when everything seems to go against us. It is not outward prosperity which the Christian most desires and values; it is soul prosperity which he longs for. We often, like Jehoshaphat, make ships to go to Tarshish for gold, but they are broken at Ezion-geber; but even here there is a true prospering, for it is often for the soul's health that we would be poor, bereaved, and persecuted. Our worst things are often our best things. As there is a curse wrapped up in the wicked man's mercies, so there is a blessing concealed in the righteous man's crosses, losses, and sorrows. The trials of the saint are a divine husbandry, by which he grows and brings forth abundant fruit.
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Assurance of Salvation]], [[Topic/Suffering]], [[Topic/Providence of God]]
+                - **Concepts:** [[Concept/Faith]], [[Concept/Good and Evil]], [[Concept/Happiness]], [[Concept/Necessity and Contingency]]
+                - **Themes:** [[Faith versus Sight]], [[Soul Prosperity over Material Prosperity]], [[Divine Blessing in Trials]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon applies the prosperity promise to believers' actual experience
+                    - [[Logical/Claim]] "We must not always estimate the fulfillment of a promise by our own eye-sight"
+                    - [[Reference/Citation]] Jacob's lament "All these things are against me!"
+                    - [[Logical/Claim]] "It is not outward prosperity which the Christian most desires and values; it is soul prosperity"
+                    - [[Reference/Cross-Reference]] Jehoshaphat's ships broken at Ezion-geber as example of apparent failure
+                    - [[Logical/Paradox]] "Our worst things are often our best things"
+                    - [[Logical/Claim]] "There is a curse wrapped up in the wicked man's mercies" and "blessing concealed in the righteous man's crosses"
+                    - [[Symbolic/Metaphor]] "The trials of the saint are a divine husbandry"
+                    - [[Personal/Belief]] Faith perceives prosperity even when everything seems against us
+                - **Scripture-References:** Psalm 1:3, Genesis 42:36, 1 Kings 22:48
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Jacob]], [[Jehoshaphat]], [[Tarshish]], [[Ezion-geber]]
+            - Chunk:: Verse 4. We have now come to the second head of the Psalm. In this verse the contrast of the ill estate of the wicked is employed to heighten the coloring of that fair and pleasant picture which precedes it. The more forcible translation of the Vulgate and of the Septuagint version is— __"Not so the ungodly, not so."__ And we are hereby to understand that whatever good thing is said of the righteous is not true in the case of the ungodly. Oh! how terrible is it to have a double negative put upon the promises! and yet this is just the condition of the ungodly. Mark the use of the term __"ungodly,"__ for, as we have seen in the opening of the Psalm, these are the beginners in evil, and are the least offensive of sinners. Oh! if such is the sad state of those who quietly continue in their morality, and neglect their God, what must be the condition of open sinners and shameless infidels? The first sentence is a negative description of the ungodly, and the second is the positive picture. Here is their __character__ — __"they are like chaff,"__ intrinsically worthless, dead, unserviceable, without substance, and easily carried away. Here, also, mark their __doom,__ — __"the wind driveth away;"__ death shall hurry them with its terrible blast into the fire in which they shall be utterly consumed.
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Nature of Sin]], [[Topic/Wrath of God]]
+                - **Concepts:** [[Concept/Good and Evil]], [[Concept/Sin]], [[Concept/Judgment]], [[Concept/Universal and Particular]]
+                - **Themes:** [[Contrast of Righteous and Wicked]], [[Double Negative on Promises]], [[Worthlessness of the Ungodly]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon expounds on the contrast between righteous and wicked in Psalm 1:4
+                    - [[Structural/Diagram]] Second head of the Psalm introducing the wicked's condition
+                    - [[Reference/Cross-Reference]] Citations of Vulgate and Septuagint translations: "Not so the ungodly, not so"
+                    - [[Logical/Claim]] "Whatever good thing is said of the righteous is not true in the case of the ungodly"
+                    - [[Logical/Conditional]] If the quietly moral ungodly are in sad state, how much worse are open sinners and infidels
+                    - [[Symbolic/Metaphor]] The ungodly "are like chaff"—worthless, dead, unserviceable, without substance
+                    - [[Semantic/Quality]] Chaff described as intrinsically worthless, dead, unserviceable, without substance, easily carried away
+                    - [[Narrative/Telos]] Their doom: "the wind driveth away" and death's blast into consuming fire
+                    - [[Personal/Emotion]] "Oh! how terrible is it to have a double negative put upon the promises!"
+                - **Scripture-References:** Psalm 1:4, Psalm 1:1
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Vulgate]], [[Septuagint]]
+            - Chunk:: Verse 5. They shall stand there to be judged, but not to be acquitted. Fear shall lay hold upon them there; they shall not stand their ground; they shall flee away; they shall not stand in their own defence; for they shall blush and be covered with eternal contempt. Well may the saints long for heaven, for no evil men shall dwell there, __"nor sinners in the congregation of the righteous."__ All our congregations upon earth are mixed. Every Church hath one devil in it. The tares grow in the same furrows as the wheat. There is no floor which is as yet thoroughly purged from chaff. Sinners mix with saints, as dross mingles with gold. God's precious diamonds still lie in the same field with pebbles. Righteous Lots are this side heaven continually vexed by the men of Sodom. Let us rejoice then, that in "the general assembly and church of the firstborn" above, there shall by no means be admitted a single unrenewed soul. Sinners cannot live in heaven. They would be out of their element. Sooner could a fish live upon a tree than the wicked in Paradise. Heaven would be an intolerable hell to an impenitent man, even if he could be allowed to enter; but such a privilege shall never be granted to the man who perseveres in his iniquities. May God grant that we may have a name and a place in his courts above!
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Heaven and Hell]], [[Topic/Church Unity]], [[Topic/End Times]]
+                - **Concepts:** [[Concept/Judgment]], [[Concept/Good and Evil]], [[Concept/Punishment]], [[Concept/Universal and Particular]]
+                - **Themes:** [[Separation at Judgment]], [[Mixed Congregations on Earth]], [[Pure Assembly in Heaven]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon expounds on the final separation of wicked and righteous
+                    - [[Logical/Claim]] The wicked "shall stand there to be judged, but not to be acquitted"
+                    - [[Semantic/Quality]] Fear, shame, and eternal contempt characterize the wicked's judgment
+                    - [[Logical/Claim]] "All our congregations upon earth are mixed" but heaven will be pure
+                    - [[Symbolic/Metaphor]] Series of mixed metaphors: devils in churches, tares with wheat, chaff on floor, dross with gold, diamonds with pebbles
+                    - [[Reference/Cross-Reference]] "Righteous Lots...continually vexed by the men of Sodom"
+                    - [[Reference/Cross-Reference]] "The general assembly and church of the firstborn" above
+                    - [[Logical/Claim]] "Sinners cannot live in heaven. They would be out of their element"
+                    - [[Symbolic/Metaphor]] "Sooner could a fish live upon a tree than the wicked in Paradise"
+                    - [[Logical/Paradox]] "Heaven would be an intolerable hell to an impenitent man"
+                    - [[Personal/Request]] "May God grant that we may have a name and a place in his courts above!"
+                - **Scripture-References:** Psalm 1:5, Hebrews 12:23
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Lot]], [[Sodom]], [[Paradise]]
+            - Chunk:: Verse 6. Or, as the Hebrew hath it yet more fully, "The Lord is __knowing__ the way of the righteous." He is constantly looking on their way, and though it may be often in mist and darkness, yet the Lord knoweth it. If it be in the clouds and tempest of affliction, he understandeth it. He numbereth the hairs of our head; he will not suffer any evil to befall us. "He knoweth the way that I take: when He hath tried me, I shall come forth as gold." (Job 23:10.) __"But the way of the ungodly shall perish."__ Not only shall __they__ perish themselves, but __their way__ shall perish too. The righteous carves his name upon the rock, but the wicked writes his remembrance in the sand. The righteous man ploughs the furrows of earth, and sows a harvest here, which shall never be fully reaped till he enters the enjoyments of eternity; but as for the wicked, he ploughs the sea, and though there may seem to be a shining trail behind his keel, yet the waves shall pass over it, and the place that knew him shall know him no more for ever. The very "way" of the ungodly shall perish. If it exist in remembrance, it shall be in the remembrance of the bad; for the Lord will cause the name of the wicked to rot, to become a stench in the nostrils of the good, and to be only known to the wicked themselves by its putridity. May the Lord cleanse our hearts and our ways, that we may escape the doom of the ungodly, and enjoy the blessedness of the righteous!
+                - **Topics:** [[Topic/Commentary]], [[Topic/Old Testament Studies]], [[Topic/Providence of God]], [[Topic/Foreknowledge of God]], [[Topic/Perseverance of the Saints]]
+                - **Concepts:** [[Concept/Knowledge]], [[Concept/Good and Evil]], [[Concept/Memory and Imagination]], [[Concept/Eternity]]
+                - **Themes:** [[Divine Knowledge of the Righteous]], [[Eternal Remembrance versus Oblivion]], [[Contrasting Legacies]]
+                - **Function:**
+                    - [[Reference/Commentary]] Spurgeon expounds on God's intimate knowledge of the righteous versus the perishing of the wicked
+                    - [[Semantic/Definition]] Hebrew emphasizes "The Lord is knowing the way of the righteous" (continuous action)
+                    - [[Logical/Claim]] God constantly watches the righteous path even in mist, darkness, clouds, and tempest
+                    - [[Reference/Cross-Reference]] Citation of Job 23:10: "He knoweth the way that I take: when He hath tried me, I shall come forth as gold"
+                    - [[Symbolic/Metaphor]] "The righteous carves his name upon the rock, but the wicked writes his remembrance in the sand"
+                    - [[Symbolic/Metaphor]] Righteous plows earth for eternal harvest, wicked "ploughs the sea" leaving only temporary trail
+                    - [[Logical/Claim]] Not only do the ungodly perish, but their very way perishes too
+                    - [[Symbolic/Metaphor]] The wicked's name becomes "a stench in the nostrils of the good" and is known "by its putridity"
+                    - [[Personal/Request]] "May the Lord cleanse our hearts and our ways, that we may escape the doom of the ungodly"
+                - **Scripture-References:** Psalm 1:6, Job 23:10
+                - **Proper-Nouns:** [[Charles Spurgeon]], [[Job]]

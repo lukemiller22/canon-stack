@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Quality Tester - Theological Datasets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #6b7280;
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: #374151;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-btn:hover {
+            background: #1f2937;
+        }
+
+        .search-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .control-group input, .control-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .data-status {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .results-column {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .column-header {
+            padding: 20px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+        }
+
+        .pure-vector {
+            background: #374151;
+        }
+
+        .enhanced-search {
+            background: #4b5563;
+        }
+
+        .results-content {
+            padding: 25px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-source {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .result-score {
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .score-high { background: #10b981; }
+        .score-medium { background: #f59e0b; }
+        .score-low { background: #ef4444; }
+
+        .result-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .metadata-matches {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .metadata-matches h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .metadata-tag {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin: 2px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .file-upload {
+            margin-bottom: 15px;
+        }
+
+        .file-upload input {
+            margin-right: 10px;
+        }
+
+        .upload-btn {
+            padding: 8px 16px;
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .upload-btn:hover {
+            background: #4b5563;
+        }
+
+        @media (max-width: 768px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* Filter Styles */
+        .filters-section {
+            background: #f8f9fa;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .filters-section h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-container input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .autocomplete-container input:focus {
+            outline: none;
+            border-color: #6b7280;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:hover {
+            background: #f8f9fa;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .function-filter, .structure-filter {
+            display: flex;
+            gap: 8px;
+        }
+
+        .function-filter select, .structure-filter select {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .function-filter select:disabled, .structure-filter select:disabled {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .selected-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .filter-tag {
+            background: #6b7280;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filter-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .filter-tag .remove:hover {
+            color: #ff6b6b;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .filter-actions button {
+            padding: 8px 16px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .filter-actions button:hover {
+            background: #dc2626;
+        }
+
+        #filterCount {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RAG Quality Tester</h1>
+            <p>Compare Pure Vector Search vs Enhanced Metadata Search</p>
+        </div>
+
+        <div class="search-section">
+            <div class="file-upload">
+                <input type="file" id="dataFile" accept=".jsonl,.json" />
+                <button class="upload-btn" onclick="loadData()">Load Dataset</button>
+                <button class="upload-btn" onclick="loadDefaultDatasetFromFile()" style="background: #6b7280; margin-left: 10px;">Load Default Dataset</button>
+                <span id="loadStatus" style="margin-left: 10px; color: #666;"></span>
+            </div>
+
+
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="searchQuery" 
+                    placeholder="Enter your theological query..." 
+                    onkeypress="if(event.key==='Enter') performSearch()"
+                />
+                <button class="search-btn" id="searchBtn" onclick="performSearch()">Search</button>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filters-section">
+                <h3>Filters</h3>
+                <div class="filters-grid">
+                    <!-- Topics Filter -->
+                    <div class="filter-group">
+                        <label for="topicFilter">Topics:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="topicFilter" placeholder="Type to search topics..." />
+                            <div class="autocomplete-dropdown" id="topicDropdown"></div>
+                        </div>
+                        <div class="selected-filters" id="selectedTopics"></div>
+                    </div>
+
+                    <!-- Concepts Filter -->
+                    <div class="filter-group">
+                        <label for="conceptFilter">Concepts:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="conceptFilter" placeholder="Type to search concepts..." />
+                            <div class="autocomplete-dropdown" id="conceptDropdown"></div>
+                        </div>
+                        <div class="selected-filters" id="selectedConcepts"></div>
+                    </div>
+
+                    <!-- Themes Filter -->
+                    <div class="filter-group">
+                        <label for="themeFilter">Themes:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="themeFilter" placeholder="Type to search themes..." />
+                            <div class="autocomplete-dropdown" id="themeDropdown"></div>
+                        </div>
+                        <div class="selected-filters" id="selectedThemes"></div>
+                    </div>
+
+                    <!-- Function Filter -->
+                    <div class="filter-group">
+                        <label for="functionFilter">Function:</label>
+                        <div class="function-filter">
+                            <select id="functionCategory">
+                                <option value="">Select category...</option>
+                                <option value="Semantic">Semantic</option>
+                                <option value="Logical">Logical</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Narrative">Narrative</option>
+                                <option value="Symbolic">Symbolic</option>
+                                <option value="Practical">Practical</option>
+                                <option value="Reference">Reference</option>
+                                <option value="Structural">Structural</option>
+                            </select>
+                            <select id="functionElement" disabled>
+                                <option value="">Select element...</option>
+                            </select>
+                        </div>
+                        <div class="selected-filters" id="selectedFunctions"></div>
+                    </div>
+
+                    <!-- Scripture References Filter -->
+                    <div class="filter-group">
+                        <label for="scriptureFilter">Scripture References:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="scriptureFilter" placeholder="Type to search scripture..." />
+                            <div class="autocomplete-dropdown" id="scriptureDropdown"></div>
+                        </div>
+                        <div class="selected-filters" id="selectedScriptures"></div>
+                    </div>
+
+                    <!-- Proper Nouns Filter -->
+                    <div class="filter-group">
+                        <label for="properNounsFilter">Proper Nouns:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="properNounsFilter" placeholder="Type to search proper nouns..." />
+                            <div class="autocomplete-dropdown" id="properNounsDropdown"></div>
+                        </div>
+                        <div class="selected-filters" id="selectedProperNouns"></div>
+                    </div>
+
+                    <!-- Structure Path Filter -->
+                    <div class="filter-group">
+                        <label for="structureFilter">Structure Path:</label>
+                        <div class="structure-filter">
+                            <select id="structureSource">
+                                <option value="">Select source...</option>
+                            </select>
+                            <select id="structureSection" disabled>
+                                <option value="">Select section...</option>
+                            </select>
+                        </div>
+                        <div class="selected-filters" id="selectedStructures"></div>
+                    </div>
+
+                    <!-- Author Filter -->
+                    <div class="filter-group">
+                        <label for="authorFilter">Author:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="authorFilter" placeholder="Type to search authors..." />
+                            <div class="autocomplete-dropdown" id="authorDropdown"></div>
+                        </div>
+                        <div class="selected-filters" id="selectedAuthors"></div>
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button id="clearFilters" onclick="clearAllFilters()">Clear All Filters</button>
+                    <button id="debugFilters" onclick="debugFilters()" style="background: #f59e0b; margin-left: 10px;">Debug Filters</button>
+                    <span id="filterCount">0 filters active</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Results per side:</label>
+                    <select id="resultCount">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Topic Boost:</label>
+                    <input type="number" id="topicBoost" value="1.3" min="1" max="2" step="0.1" />
+                </div>
+                <div class="control-group">
+                    <label>Concept Boost:</label>
+                    <input type="number" id="conceptBoost" value="1.2" min="1" max="2" step="0.1" />
+                </div>
+                <div class="control-group">
+                    <label>Function Boost:</label>
+                    <input type="number" id="functionBoost" value="1.05" min="1" max="2" step="0.05" />
+                </div>
+                <div class="control-group">
+                    <label>Theme Boost:</label>
+                    <input type="number" id="themeBoost" value="1.1" min="1" max="2" step="0.1" />
+                </div>
+                <div class="control-group">
+                    <label>Author Boost:</label>
+                    <input type="number" id="authorBoost" value="1.3" min="1" max="2" step="0.1" />
+                </div>
+                <div class="control-group">
+                    <label>Scripture Boost:</label>
+                    <input type="number" id="scriptureBoost" value="1.2" min="1" max="2" step="0.1" />
+                </div>
+                <div class="control-group">
+                    <label>Proper Nouns Boost:</label>
+                    <input type="number" id="properNounsBoost" value="1.15" min="1" max="2" step="0.05" />
+                </div>
+                <div class="control-group">
+                    <label>Structure Path Boost:</label>
+                    <input type="number" id="structurePathBoost" value="1.1" min="1" max="2" step="0.1" />
+                </div>
+            </div>
+
+            <div class="data-status" id="dataStatus">
+                <strong>Status:</strong> No data loaded. Please upload a JSONL file with your embedded chunks.
+            </div>
+        </div>
+
+        <div class="results-container">
+            <div class="results-column">
+                <div class="column-header pure-vector">
+                    Pure Vector Search
+                </div>
+                <div class="results-content" id="pureResults">
+                    <div class="no-results">Enter a query to see results</div>
+                </div>
+            </div>
+
+            <div class="results-column">
+                <div class="column-header enhanced-search">
+                    Enhanced Search (Vector + Metadata)
+                </div>
+                <div class="results-content" id="enhancedResults">
+                    <div class="no-results">Enter a query to see results</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dataset = [];
+        let searchInProgress = false;
+        
+        // API key from environment variable
+        const API_KEY = process.env.OPENAI_API_KEY || "YOUR_OPENAI_API_KEY_HERE";
+        
+        // Filter state
+        let activeFilters = {
+            topics: new Set(),
+            concepts: new Set(),
+            themes: new Set(),
+            functions: new Set(),
+            scripture_references: new Set(),
+            proper_nouns: new Set(),
+            structure_paths: new Set(),
+            authors: new Set()
+        };
+        
+        // Available filter options (populated from dataset)
+        let filterOptions = {
+            topics: new Set(),
+            concepts: new Set(),
+            themes: new Set(),
+            functions: new Set(),
+            scripture_references: new Set(),
+            proper_nouns: new Set(),
+            structure_paths: new Set(),
+            authors: new Set()
+        };
+        
+        // Load dataset from localStorage on page load
+        function loadFromStorage() {
+            const stored = localStorage.getItem('ragDataset');
+            if (stored) {
+                try {
+                    dataset = JSON.parse(stored);
+                    if (dataset.length > 0) {
+                        document.getElementById('loadStatus').textContent = `✓ Loaded ${dataset.length} chunks from storage`;
+                        document.getElementById('dataStatus').innerHTML = 
+                            `<strong>Status:</strong> ✓ ${dataset.length} chunks loaded with embeddings. Ready to search!`;
+                        
+                        // Populate filter options
+                        populateFilterOptions();
+                        
+                        // Re-setup filters after data is loaded
+                        setupAllFilters();
+                    }
+                } catch (error) {
+                    console.error('Error loading from storage:', error);
+                }
+            }
+        }
+        
+        // Auto-load default dataset on page load
+        async function loadDefaultDataset() {
+            // Try loading from storage first
+            loadFromStorage();
+        }
+        
+        // Load default dataset from file
+        async function loadDefaultDatasetFromFile() {
+            try {
+                const response = await fetch('theological_chunks_with_embeddings.jsonl');
+                if (response.ok) {
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
+                    dataset = lines.map(line => JSON.parse(line));
+                    
+                    if (dataset.length > 0) {
+                        document.getElementById('loadStatus').textContent = `✓ Loaded ${dataset.length} chunks`;
+                        document.getElementById('dataStatus').innerHTML = 
+                            `<strong>Status:</strong> ✓ ${dataset.length} chunks loaded with embeddings. Ready to search!`;
+                        
+                        // Try to save to localStorage for persistence (skip if too large)
+                        try {
+                            localStorage.setItem('ragDataset', JSON.stringify(dataset));
+                        } catch (error) {
+                            console.log('Dataset too large for localStorage, skipping save:', error.message);
+                        }
+                        
+                        // Populate filter options
+                        populateFilterOptions();
+                        
+                        // Re-setup filters after data is loaded
+                        setupAllFilters();
+                    }
+                } else {
+                    document.getElementById('loadStatus').textContent = `✗ Error: Could not load file (${response.status})`;
+                }
+            } catch (error) {
+                document.getElementById('loadStatus').textContent = `✗ Error: ${error.message}`;
+                console.error('Load error:', error);
+            }
+        }
+
+        // Load dataset from JSONL file
+        async function loadData() {
+            const fileInput = document.getElementById('dataFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+
+            const loadStatus = document.getElementById('loadStatus');
+            loadStatus.textContent = 'Loading...';
+
+            try {
+                const text = await file.text();
+                const lines = text.trim().split('\n').filter(line => line.trim());
+                
+                dataset = lines.map(line => {
+                    try {
+                        return JSON.parse(line);
+                    } catch (e) {
+                        console.warn('Failed to parse line:', line);
+                        return null;
+                    }
+                }).filter(item => item !== null);
+
+                // Validate data structure
+                if (dataset.length === 0) {
+                    throw new Error('No valid JSON objects found');
+                }
+
+                // Check if embeddings exist
+                const hasEmbeddings = dataset.every(item => 
+                    item.embedding && Array.isArray(item.embedding) && item.embedding.length > 0
+                );
+
+                if (!hasEmbeddings) {
+                    throw new Error('Dataset missing embeddings. Each item needs an "embedding" array.');
+                }
+
+                loadStatus.textContent = `✓ Loaded ${dataset.length} chunks`;
+                document.getElementById('dataStatus').innerHTML = 
+                    `<strong>Status:</strong> ✓ ${dataset.length} chunks loaded with embeddings. Ready to search!`;
+                
+                // Try to save to localStorage for persistence (skip if too large)
+                try {
+                    localStorage.setItem('ragDataset', JSON.stringify(dataset));
+                } catch (error) {
+                    console.log('Dataset too large for localStorage, skipping save:', error.message);
+                }
+                
+                // Populate filter options
+                populateFilterOptions();
+                
+                // Re-setup filters after data is loaded
+                setupAllFilters();
+
+            } catch (error) {
+                loadStatus.textContent = `✗ Error: ${error.message}`;
+                console.error('Load error:', error);
+            }
+        }
+
+        // Get real OpenAI embeddings for query
+        async function getQueryEmbedding(text) {
+            const response = await fetch('https://api.openai.com/v1/embeddings', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    input: text,
+                    model: 'text-embedding-3-small'
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+            }
+
+            const data = await response.json();
+            return data.data[0].embedding;
+        }
+
+        // Cosine similarity calculation
+        function cosineSimilarity(a, b) {
+            if (a.length !== b.length) return 0;
+            
+            let dotProduct = 0;
+            let normA = 0;
+            let normB = 0;
+            
+            for (let i = 0; i < a.length; i++) {
+                dotProduct += a[i] * b[i];
+                normA += a[i] * a[i];
+                normB += b[i] * b[i];
+            }
+            
+            if (normA === 0 || normB === 0) return 0;
+            
+            return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        }
+
+        // Extract keywords from query for metadata matching
+        function extractKeywords(query) {
+            return query.toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .split(/\s+/)
+                .filter(word => word.length > 2);
+        }
+
+        // Check if metadata contains any of the keywords
+        function checkMetadataMatch(metadata, keywords, fieldName) {
+            if (!metadata || !metadata[fieldName]) return false;
+            
+            const metadataText = Array.isArray(metadata[fieldName]) 
+                ? metadata[fieldName].join(' ').toLowerCase()
+                : String(metadata[fieldName]).toLowerCase();
+            
+            // For function field, only match on the category part (before the colon)
+            if (fieldName === 'function') {
+                const functionCategories = metadata[fieldName]
+                    .map(func => func.split(':')[0].toLowerCase())
+                    .join(' ');
+                return keywords.some(keyword => functionCategories.includes(keyword));
+            }
+            
+            return keywords.some(keyword => metadataText.includes(keyword));
+        }
+        
+        // Check if author field contains any of the keywords
+        function checkAuthorMatch(author, keywords) {
+            if (!author) return false;
+            const authorText = String(author).toLowerCase();
+            return keywords.some(keyword => authorText.includes(keyword));
+        }
+
+        // Perform search
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            
+            // Check if we have any active filters
+            const hasActiveFilters = Object.values(activeFilters).some(filterSet => filterSet.size > 0);
+            
+            if (!query && !hasActiveFilters) {
+                alert('Please enter a search query or select some filters');
+                return;
+            }
+
+            if (dataset.length === 0) {
+                alert('Please load a dataset first');
+                return;
+            }
+
+            // Validate dataset structure
+            if (!dataset[0].embedding || !Array.isArray(dataset[0].embedding)) {
+                alert('Dataset appears to be corrupted. Please reload the file.');
+                return;
+            }
+
+            if (searchInProgress) return;
+            searchInProgress = true;
+
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.disabled = true;
+            searchBtn.textContent = query ? 'Searching...' : 'Filtering...';
+
+            // Show loading states
+            const loadingText = query ? 'Searching...' : 'Filtering...';
+            document.getElementById('pureResults').innerHTML = `<div class="loading"><div class="spinner"></div>${loadingText}</div>`;
+            document.getElementById('enhancedResults').innerHTML = `<div class="loading"><div class="spinner"></div>${loadingText}</div>`;
+
+            try {
+                console.log('Starting search with query:', query);
+                console.log('Dataset length:', dataset.length);
+                
+                const keywords = query ? extractKeywords(query) : [];
+                const resultCount = parseInt(document.getElementById('resultCount').value);
+
+                // Get boost values
+                const topicBoost = parseFloat(document.getElementById('topicBoost').value);
+                const conceptBoost = parseFloat(document.getElementById('conceptBoost').value);
+                const functionBoost = parseFloat(document.getElementById('functionBoost').value);
+                const themeBoost = parseFloat(document.getElementById('themeBoost').value);
+                const authorBoost = parseFloat(document.getElementById('authorBoost').value);
+                const scriptureBoost = parseFloat(document.getElementById('scriptureBoost').value);
+                const properNounsBoost = parseFloat(document.getElementById('properNounsBoost').value);
+                const structurePathBoost = parseFloat(document.getElementById('structurePathBoost').value);
+
+                // Apply filters to dataset
+                console.log('Active filters before filtering:', {
+                    authors: Array.from(activeFilters.authors),
+                    structure_paths: Array.from(activeFilters.structure_paths),
+                    functions: Array.from(activeFilters.functions),
+                    topics: Array.from(activeFilters.topics),
+                    concepts: Array.from(activeFilters.concepts),
+                    themes: Array.from(activeFilters.themes),
+                    scripture_references: Array.from(activeFilters.scripture_references),
+                    proper_nouns: Array.from(activeFilters.proper_nouns)
+                });
+                const filteredDataset = filterDataset();
+                console.log(`Filtered dataset: ${filteredDataset.length} chunks (from ${dataset.length} total)`);
+                
+                let results;
+                
+                if (query) {
+                    // Normal search with vector similarity
+                    const queryEmbedding = await getQueryEmbedding(query);
+                    console.log('Query embedding created, length:', queryEmbedding.length);
+                    
+                    // Calculate similarities and scores
+                    results = filteredDataset.map((item, index) => {
+                        const similarity = cosineSimilarity(queryEmbedding, item.embedding);
+                        
+                        // Debug: log first few similarities
+                        if (index < 3) {
+                            console.log('Query embedding length:', queryEmbedding.length);
+                            console.log('Item embedding length:', item.embedding.length);
+                            console.log('Similarity:', similarity);
+                        }
+                    
+                        // Enhanced search: apply metadata boosts
+                        let enhancedScore = similarity;
+                        const matches = {};
+
+                        // Check author field (top level)
+                        if (checkAuthorMatch(item.author, keywords)) {
+                            enhancedScore *= authorBoost;
+                            matches.author = true;
+                        }
+
+                        if (item.metadata) {
+                            if (checkMetadataMatch(item.metadata, keywords, 'topics')) {
+                                enhancedScore *= topicBoost;
+                                matches.topics = true;
+                            }
+                            if (checkMetadataMatch(item.metadata, keywords, 'concepts')) {
+                                enhancedScore *= conceptBoost;
+                                matches.concepts = true;
+                            }
+                            if (checkMetadataMatch(item.metadata, keywords, 'function')) {
+                                enhancedScore *= functionBoost;
+                                matches.function = true;
+                            }
+                            if (checkMetadataMatch(item.metadata, keywords, 'themes')) {
+                                enhancedScore *= themeBoost;
+                                matches.themes = true;
+                            }
+                            if (checkMetadataMatch(item.metadata, keywords, 'scripture_references')) {
+                                enhancedScore *= scriptureBoost;
+                                matches.scripture_references = true;
+                            }
+                            if (checkMetadataMatch(item.metadata, keywords, 'proper_nouns')) {
+                                enhancedScore *= properNounsBoost;
+                                matches.proper_nouns = true;
+                            }
+                            if (checkMetadataMatch(item.metadata, keywords, 'structure_path')) {
+                                enhancedScore *= structurePathBoost;
+                                matches.structure_path = true;
+                            }
+                        }
+
+                        return {
+                            ...item,
+                            pureScore: similarity,
+                            enhancedScore,
+                            matches
+                        };
+                    });
+                } else {
+                    // Filter-only search - no vector similarity, just return filtered results
+                    results = filteredDataset.map((item, index) => {
+                        return {
+                            ...item,
+                            pureScore: 1.0, // All items get same score since no query
+                            enhancedScore: 1.0,
+                            matches: {} // No metadata matches since no query
+                        };
+                    });
+                }
+
+                // Sort and take top results
+                const pureResults = [...results]
+                    .sort((a, b) => b.pureScore - a.pureScore)
+                    .slice(0, resultCount);
+
+                const enhancedResults = [...results]
+                    .sort((a, b) => b.enhancedScore - a.enhancedScore)
+                    .slice(0, resultCount);
+
+                // Display results
+                displayResults('pureResults', pureResults, 'pureScore');
+                displayResults('enhancedResults', enhancedResults, 'enhancedScore', true);
+
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('pureResults').innerHTML = `<div class="no-results">Search error: ${error.message}</div>`;
+                document.getElementById('enhancedResults').innerHTML = `<div class="no-results">Search error: ${error.message}</div>`;
+            } finally {
+                searchInProgress = false;
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search';
+            }
+        }
+
+        // Display search results
+        function displayResults(containerId, results, scoreField, showMatches = false) {
+            const container = document.getElementById(containerId);
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="no-results">No results found</div>';
+                return;
+            }
+
+            const html = results.map(result => {
+                const score = result[scoreField];
+                const scoreClass = score > 0.7 ? 'score-high' : score > 0.4 ? 'score-medium' : 'score-low';
+                
+                let metadataHtml = '';
+                if (showMatches && result.matches && Object.keys(result.matches).length > 0) {
+                    const fieldLabels = {
+                        'author': 'Author',
+                        'topics': 'Topics',
+                        'concepts': 'Concepts',
+                        'function': 'Function',
+                        'themes': 'Themes',
+                        'scripture_references': 'Scripture',
+                        'proper_nouns': 'Proper Nouns',
+                        'structure_path': 'Structure'
+                    };
+                    
+                    const matchedFields = Object.keys(result.matches);
+                    metadataHtml = `
+                        <div class="metadata-matches">
+                            <h4>Metadata Matches:</h4>
+                            ${matchedFields.map(field => 
+                                `<span class="metadata-tag">${fieldLabels[field] || field}</span>`
+                            ).join('')}
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="result-item">
+                        <div class="result-header">
+                            <div class="result-source">${result.source || 'Unknown Source'}</div>
+                            <div class="result-score ${scoreClass}">${score.toFixed(3)}</div>
+                        </div>
+                        <div class="result-text">${result.text || result.chunk || 'No text available'}</div>
+                        ${metadataHtml}
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        // Sample queries for testing
+        function loadSampleQuery(query) {
+            document.getElementById('searchQuery').value = query;
+        }
+        
+        // Populate filter options from dataset
+        function populateFilterOptions() {
+            console.log('=== POPULATING FILTER OPTIONS ===');
+            console.log('Dataset length:', dataset.length);
+            
+            filterOptions = {
+                topics: new Set(),
+                concepts: new Set(),
+                themes: new Set(),
+                functions: new Set(),
+                scripture_references: new Set(),
+                proper_nouns: new Set(),
+                structure_paths: new Set(),
+                authors: new Set()
+            };
+            
+            console.log('Populating filter options from dataset of', dataset.length, 'items');
+            
+            dataset.forEach((item, index) => {
+                // Debug first few items
+                if (index < 3) {
+                    console.log(`Item ${index}:`, {
+                        id: item.id,
+                        author: item.author,
+                        hasMetadata: !!item.metadata,
+                        metadataKeys: item.metadata ? Object.keys(item.metadata) : 'none'
+                    });
+                }
+                
+                // Authors
+                if (item.author) {
+                    filterOptions.authors.add(item.author);
+                }
+                
+                // Metadata fields
+                if (item.metadata) {
+                    // Topics
+                    if (item.metadata.topics && Array.isArray(item.metadata.topics)) {
+                        if (index < 3) console.log(`Item ${index} topics:`, item.metadata.topics);
+                        item.metadata.topics.forEach(topic => filterOptions.topics.add(topic));
+                    }
+                    
+                    // Concepts
+                    if (item.metadata.concepts && Array.isArray(item.metadata.concepts)) {
+                        item.metadata.concepts.forEach(concept => filterOptions.concepts.add(concept));
+                    }
+                    
+                    // Themes
+                    if (item.metadata.themes && Array.isArray(item.metadata.themes)) {
+                        item.metadata.themes.forEach(theme => filterOptions.themes.add(theme));
+                    }
+                    
+                    // Functions - extract both categories and full function strings
+                    if (item.metadata.function && Array.isArray(item.metadata.function)) {
+                        item.metadata.function.forEach(func => {
+                            // Add the full function string
+                            filterOptions.functions.add(func);
+                            
+                            // Also extract just the category part for the dropdown
+                            const category = func.split('/')[0];
+                            if (category) {
+                                filterOptions.functions.add(category);
+                            }
+                        });
+                    }
+                    
+                    // Scripture References
+                    if (item.metadata.scripture_references && Array.isArray(item.metadata.scripture_references)) {
+                        item.metadata.scripture_references.forEach(ref => filterOptions.scripture_references.add(ref));
+                    }
+                    
+                    // Proper Nouns
+                    if (item.metadata.proper_nouns && Array.isArray(item.metadata.proper_nouns)) {
+                        item.metadata.proper_nouns.forEach(noun => filterOptions.proper_nouns.add(noun));
+                    }
+                    
+                    // Structure Path
+                    if (item.metadata.structure_path && Array.isArray(item.metadata.structure_path)) {
+                        item.metadata.structure_path.forEach(path => {
+                            const parts = path.split(' > ');
+                            if (parts[0]) filterOptions.structure_paths.add(parts[0]); // Source
+                            if (parts[1]) filterOptions.structure_paths.add(parts[1]); // Section
+                            if (parts[2]) filterOptions.structure_paths.add(parts[2]); // Subsection
+                        });
+                    }
+                }
+            });
+            
+            console.log('Filter options populated:', {
+                topics: filterOptions.topics.size,
+                concepts: filterOptions.concepts.size,
+                themes: filterOptions.themes.size,
+                functions: filterOptions.functions.size,
+                scripture_references: filterOptions.scripture_references.size,
+                proper_nouns: filterOptions.proper_nouns.size,
+                structure_paths: filterOptions.structure_paths.size,
+                authors: filterOptions.authors.size
+            });
+            
+            // Populate structure source dropdown
+            populateStructureSourceDropdown();
+        }
+        
+        // Populate structure source dropdown
+        function populateStructureSourceDropdown() {
+            const sourceSelect = document.getElementById('structureSource');
+            sourceSelect.innerHTML = '<option value="">Select source...</option>';
+            
+            // Extract unique sources from the dataset
+            const sources = new Set();
+            dataset.forEach(item => {
+                if (item.metadata && item.metadata.structure_path) {
+                    item.metadata.structure_path.forEach(path => {
+                        const parts = path.split(' > ');
+                        if (parts[0]) {
+                            sources.add(parts[0]);
+                        }
+                    });
+                }
+            });
+            
+            Array.from(sources).sort().forEach(source => {
+                const option = document.createElement('option');
+                option.value = source;
+                option.textContent = source;
+                sourceSelect.appendChild(option);
+            });
+            
+            console.log('Structure sources populated:', Array.from(sources));
+        }
+        
+        // Populate structure section dropdown based on selected source
+        function populateStructureSectionDropdown(source) {
+            const sectionSelect = document.getElementById('structureSection');
+            sectionSelect.innerHTML = '<option value="">Select section...</option>';
+            
+            if (!source) {
+                sectionSelect.disabled = true;
+                return;
+            }
+            
+            // Extract unique sections for this source from the dataset
+            const sections = new Set();
+            dataset.forEach(item => {
+                if (item.metadata && item.metadata.structure_path) {
+                    item.metadata.structure_path.forEach(path => {
+                        const parts = path.split(' > ');
+                        if (parts[0] === source && parts[1]) {
+                            sections.add(parts[1]);
+                        }
+                    });
+                }
+            });
+            
+            Array.from(sections).sort().forEach(section => {
+                const option = document.createElement('option');
+                option.value = section;
+                option.textContent = section;
+                sectionSelect.appendChild(option);
+            });
+            
+            sectionSelect.disabled = false;
+            console.log('Structure sections for', source, ':', Array.from(sections));
+        }
+        
+        // Filter dataset based on active filters
+        function filterDataset() {
+            if (dataset.length === 0) return dataset;
+            
+            console.log('Active filters:', {
+                authors: Array.from(activeFilters.authors),
+                structure_paths: Array.from(activeFilters.structure_paths),
+                functions: Array.from(activeFilters.functions)
+            });
+            
+            return dataset.filter(item => {
+                // Check author filter
+                if (activeFilters.authors.size > 0 && !activeFilters.authors.has(item.author)) {
+                    return false;
+                }
+                
+                // Check metadata filters
+                if (item.metadata) {
+                    for (const [field, filterSet] of Object.entries(activeFilters)) {
+                        if (field === 'authors' || filterSet.size === 0) continue;
+                        
+                        // Map field names to actual metadata field names
+                        const fieldMapping = {
+                            'structure_paths': 'structure_path',
+                            'scripture_references': 'scripture_references',
+                            'proper_nouns': 'proper_nouns'
+                        };
+                        
+                        const actualField = fieldMapping[field] || field;
+                        const itemValues = item.metadata[actualField];
+                        if (!itemValues || !Array.isArray(itemValues)) continue;
+                        
+                        let hasMatch = false;
+                        for (const value of itemValues) {
+                            if (field === 'functions') {
+                                // For functions, check if any category matches
+                                const category = value.split('/')[0];
+                                if (filterSet.has(category)) {
+                                    hasMatch = true;
+                                    break;
+                                }
+                            } else if (field === 'structure_paths') {
+                                // For structure paths, check if any path starts with the filter (for source) or contains it (for sections)
+                                console.log(`Checking structure_paths for item ${item.id}:`, itemValues, 'against filters:', Array.from(filterSet));
+                                for (const path of itemValues) {
+                                    for (const filter of filterSet) {
+                                        console.log(`Checking path "${path}" against filter "${filter}"`);
+                                        if (path === filter || path.startsWith(filter + ' > ')) {
+                                            hasMatch = true;
+                                            console.log(`✓ Structure path match: "${path}" matches filter "${filter}"`);
+                                            break;
+                                        } else {
+                                            console.log(`✗ No match: "${path}" does not match "${filter}"`);
+                                        }
+                                    }
+                                    if (hasMatch) break;
+                                }
+                                if (!hasMatch && filterSet.size > 0) {
+                                    console.log(`✗ Structure path no match for item ${item.id}: ${itemValues} doesn't match any of ${Array.from(filterSet)}`);
+                                }
+                            } else {
+                                if (filterSet.has(value)) {
+                                    hasMatch = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!hasMatch) return false;
+                    }
+                }
+                
+                return true;
+            });
+        }
+        
+        // Autocomplete functionality
+        function setupAutocomplete(inputId, dropdownId, filterType) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            
+            input.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                console.log(`Autocomplete for ${filterType}: query="${query}", available options:`, Array.from(filterOptions[filterType]));
+                
+                if (query.length < 2) {
+                    dropdown.classList.remove('show');
+                    return;
+                }
+                
+                const options = Array.from(filterOptions[filterType])
+                    .filter(option => option.toLowerCase().includes(query))
+                    .slice(0, 10); // Limit to 10 results
+                
+                console.log(`Filtered options for ${filterType}:`, options);
+                
+                dropdown.innerHTML = options.map(option => 
+                    `<div class="autocomplete-item" data-value="${option}">${option}</div>`
+                ).join('');
+                
+                dropdown.classList.toggle('show', options.length > 0);
+            });
+            
+            // Handle selection
+            dropdown.addEventListener('click', function(e) {
+                if (e.target.classList.contains('autocomplete-item')) {
+                    const value = e.target.dataset.value;
+                    addFilter(filterType, value);
+                    input.value = '';
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+        
+        // Add filter
+        function addFilter(type, value) {
+            activeFilters[type].add(value);
+            console.log(`Added filter: ${type} = ${value}`);
+            console.log('Active filters after add:', {
+                authors: Array.from(activeFilters.authors),
+                structure_paths: Array.from(activeFilters.structure_paths),
+                functions: Array.from(activeFilters.functions),
+                topics: Array.from(activeFilters.topics),
+                concepts: Array.from(activeFilters.concepts),
+                themes: Array.from(activeFilters.themes),
+                scripture_references: Array.from(activeFilters.scripture_references),
+                proper_nouns: Array.from(activeFilters.proper_nouns)
+            });
+            updateFilterDisplay();
+            updateFilterCount();
+        }
+        
+        // Remove filter
+        function removeFilter(type, value) {
+            activeFilters[type].delete(value);
+            console.log(`Removed filter: ${type} = ${value}`);
+            console.log('Active filters after remove:', {
+                authors: Array.from(activeFilters.authors),
+                structure_paths: Array.from(activeFilters.structure_paths),
+                functions: Array.from(activeFilters.functions),
+                topics: Array.from(activeFilters.topics),
+                concepts: Array.from(activeFilters.concepts),
+                themes: Array.from(activeFilters.themes),
+                scripture_references: Array.from(activeFilters.scripture_references),
+                proper_nouns: Array.from(activeFilters.proper_nouns)
+            });
+            updateFilterDisplay();
+            updateFilterCount();
+        }
+        
+        // Update filter display
+        function updateFilterDisplay() {
+            const filterTypeMapping = {
+                'topics': 'selectedTopics',
+                'concepts': 'selectedConcepts', 
+                'themes': 'selectedThemes',
+                'functions': 'selectedFunctions',
+                'scripture_references': 'selectedScriptures',
+                'proper_nouns': 'selectedProperNouns',
+                'structure_paths': 'selectedStructures',
+                'authors': 'selectedAuthors'
+            };
+            
+            Object.entries(filterTypeMapping).forEach(([type, containerId]) => {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                container.innerHTML = Array.from(activeFilters[type]).map(value => 
+                    `<div class="filter-tag">
+                        ${value}
+                        <span class="remove" onclick="removeFilter('${type}', '${value}')">×</span>
+                    </div>`
+                ).join('');
+            });
+        }
+        
+        // Update filter count
+        function updateFilterCount() {
+            const totalFilters = Object.values(activeFilters).reduce((sum, set) => sum + set.size, 0);
+            document.getElementById('filterCount').textContent = `${totalFilters} filters active`;
+        }
+        
+        // Clear all filters
+        function clearAllFilters() {
+            Object.keys(activeFilters).forEach(key => {
+                activeFilters[key].clear();
+            });
+            updateFilterDisplay();
+            updateFilterCount();
+            
+            // Clear input fields
+            document.querySelectorAll('.autocomplete-container input').forEach(input => {
+                input.value = '';
+            });
+            
+            // Reset dropdowns
+            document.getElementById('functionCategory').value = '';
+            document.getElementById('functionElement').disabled = true;
+            document.getElementById('structureSource').value = '';
+            document.getElementById('structureSection').disabled = true;
+        }
+        
+        // Debug filters
+        function debugFilters() {
+            console.log('=== DEBUG FILTERS ===');
+            console.log('Dataset length:', dataset.length);
+            console.log('Filter options:', filterOptions);
+            console.log('Topics:', Array.from(filterOptions.topics));
+            console.log('Concepts:', Array.from(filterOptions.concepts));
+            console.log('Themes:', Array.from(filterOptions.themes));
+            console.log('Authors:', Array.from(filterOptions.authors));
+            console.log('Structure paths:', Array.from(filterOptions.structure_paths));
+            console.log('Proper nouns:', Array.from(filterOptions.proper_nouns));
+            console.log('Scripture references:', Array.from(filterOptions.scripture_references));
+            
+            // Test autocomplete
+            console.log('Testing autocomplete for topics...');
+            const topicInput = document.getElementById('topicFilter');
+            if (topicInput) {
+                topicInput.value = 'Topic';
+                topicInput.dispatchEvent(new Event('input'));
+            }
+        }
+        
+        // Setup function filter
+        function setupFunctionFilter() {
+            const categorySelect = document.getElementById('functionCategory');
+            const elementSelect = document.getElementById('functionElement');
+            
+            categorySelect.addEventListener('change', function() {
+                const category = this.value;
+                elementSelect.innerHTML = '<option value="">Select element...</option>';
+                
+                if (!category) {
+                    elementSelect.disabled = true;
+                    return;
+                }
+                
+                // Get all function elements for this category from the dataset
+                const elements = new Set();
+                dataset.forEach(item => {
+                    if (item.metadata && item.metadata.function) {
+                        item.metadata.function.forEach(func => {
+                            if (func.startsWith(category + '/')) {
+                                const element = func.split(':')[0].replace(category + '/', '');
+                                elements.add(element);
+                            }
+                        });
+                    }
+                });
+                
+                Array.from(elements).sort().forEach(element => {
+                    const option = document.createElement('option');
+                    option.value = element;
+                    option.textContent = element;
+                    elementSelect.appendChild(option);
+                });
+                
+                elementSelect.disabled = false;
+            });
+            
+            elementSelect.addEventListener('change', function() {
+                const category = categorySelect.value;
+                const element = this.value;
+                
+                if (category && element) {
+                    addFilter('functions', category + '/' + element);
+                    categorySelect.value = '';
+                    elementSelect.value = '';
+                    elementSelect.disabled = true;
+                }
+            });
+        }
+        
+        // Setup structure filter
+        function setupStructureFilter() {
+            const sourceSelect = document.getElementById('structureSource');
+            const sectionSelect = document.getElementById('structureSection');
+            
+            sourceSelect.addEventListener('change', function() {
+                const source = this.value;
+                populateStructureSectionDropdown(source);
+                
+                // Clear existing structure path filters and add the new source
+                if (source) {
+                    // Clear all existing structure path filters
+                    activeFilters.structure_paths.clear();
+                    addFilter('structure_paths', source);
+                    console.log('Added structure path filter:', source);
+                } else {
+                    // Clear structure path filters if no source selected
+                    activeFilters.structure_paths.clear();
+                    updateFilterDisplay();
+                    updateFilterCount();
+                }
+            });
+            
+            sectionSelect.addEventListener('change', function() {
+                const source = sourceSelect.value;
+                const section = this.value;
+                
+                if (source && section) {
+                    // Remove the source-only filter and add the full path filter
+                    removeFilter('structure_paths', source);
+                    addFilter('structure_paths', source + ' > ' + section);
+                    sourceSelect.value = '';
+                    sectionSelect.value = '';
+                    sectionSelect.disabled = true;
+                }
+            });
+        }
+        
+        // Setup all filters (called after dataset is loaded)
+        function setupAllFilters() {
+            console.log('Setting up all filters with dataset length:', dataset.length);
+            
+            // Re-populate structure dropdowns
+            populateStructureSourceDropdown();
+            
+            // Re-setup function filter
+            setupFunctionFilter();
+            setupStructureFilter();
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-load default dataset
+            loadDefaultDataset();
+            
+            // Setup autocomplete for all filter types
+            setupAutocomplete('topicFilter', 'topicDropdown', 'topics');
+            setupAutocomplete('conceptFilter', 'conceptDropdown', 'concepts');
+            setupAutocomplete('themeFilter', 'themeDropdown', 'themes');
+            setupAutocomplete('scriptureFilter', 'scriptureDropdown', 'scripture_references');
+            setupAutocomplete('properNounsFilter', 'properNounsDropdown', 'proper_nouns');
+            setupAutocomplete('authorFilter', 'authorDropdown', 'authors');
+            
+            // Setup special filters
+            setupFunctionFilter();
+            setupStructureFilter();
+            
+            // Debug: Check if everything is working
+            setTimeout(() => {
+                console.log('Dataset loaded:', dataset.length);
+                console.log('Filter options:', filterOptions);
+                console.log('Structure sources:', Array.from(filterOptions.structure_paths));
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

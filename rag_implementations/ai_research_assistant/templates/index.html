@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Theological Research Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-btn:hover {
+            background: #2563eb;
+        }
+
+        .search-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e2e8f0;
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .research-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .sources-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .reasoning-section {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .reasoning-title {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .reasoning-text {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .summary {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #1e293b;
+        }
+
+        .summary p {
+            margin-bottom: 15px;
+        }
+
+        .citation {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .citation:hover {
+            background: #bfdbfe;
+        }
+
+        .source-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+
+        .source-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .source-item.highlighted {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+
+        .source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .source-number {
+            background: #3b82f6;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .source-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .source-meta {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .source-text {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .source-relevance {
+            background: #f0f9ff;
+            border-left: 3px solid #0ea5e9;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #0369a1;
+        }
+
+        .metadata-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .metadata-tooltip .tooltip-content {
+            visibility: hidden;
+            width: 320px;
+            background-color: #1e293b;
+            color: #f8fafc;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            right: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .metadata-tooltip .tooltip-content::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .metadata-tooltip:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .metadata-section {
+            margin-bottom: 8px;
+        }
+
+        .metadata-label {
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metadata-values {
+            color: #e2e8f0;
+            margin-top: 2px;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Theological Research Assistant</h1>
+            <p>Intelligent search and synthesis of theological texts</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="queryInput" 
+                    placeholder="Enter your theological question or research topic..."
+                />
+                <button class="search-btn" id="searchBtn" onclick="performSearch()">Research</button>
+            </div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <span style="margin-left: 10px;">Analyzing query and searching sources...</span>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent" style="display: none;">
+            <div class="research-panel">
+                <h2 class="panel-title">Research Summary</h2>
+                <div id="researchContent"></div>
+            </div>
+
+            <div class="sources-panel">
+                <h2 class="panel-title">Sources & Citations</h2>
+                <div id="sourcesContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSources = [];
+
+        function performSearch() {
+            const query = document.getElementById('queryInput').value.trim();
+            if (!query) {
+                alert('Please enter a research question');
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            const loading = document.getElementById('loading');
+            const mainContent = document.getElementById('mainContent');
+
+            // Show loading state
+            searchBtn.disabled = true;
+            loading.style.display = 'block';
+            mainContent.style.display = 'none';
+
+            // Make API request
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    displayResults(data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred while searching');
+            })
+            .finally(() => {
+                searchBtn.disabled = false;
+                loading.style.display = 'none';
+            });
+        }
+
+        function displayResults(data) {
+            const mainContent = document.getElementById('mainContent');
+            const researchContent = document.getElementById('researchContent');
+            const sourcesContent = document.getElementById('sourcesContent');
+
+            // Store sources for citation clicking
+            currentSources = data.sources_used || [];
+
+            // Display research summary
+            let summaryHtml = '';
+            
+            if (data.reasoning_transparency) {
+                summaryHtml += `
+                    <div class="reasoning-section">
+                        <div class="reasoning-title">Search Strategy & Reasoning</div>
+                        <div class="reasoning-text">${data.reasoning_transparency}</div>
+                    </div>
+                `;
+            }
+
+            if (data.summary) {
+                summaryHtml += `<div class="summary">${formatSummaryWithCitations(data.summary)}</div>`;
+            }
+
+            researchContent.innerHTML = summaryHtml;
+
+            // Display sources
+            let sourcesHtml = '';
+            if (currentSources.length > 0) {
+                currentSources.forEach((source, index) => {
+                    const chunk = findChunkForSource(source.number, data.chunks);
+                    const metadataHtml = chunk ? generateMetadataTooltip(chunk.metadata) : '';
+                    
+                    sourcesHtml += `
+                        <div class="source-item" id="source-${source.number}">
+                            <div class="source-header">
+                                <div class="source-number">${source.number}</div>
+                                <div class="source-title">${source.source}</div>
+                                ${metadataHtml}
+                            </div>
+                            <div class="source-meta">
+                                <strong>Author:</strong> ${source.author}<br>
+                                <strong>Location:</strong> ${source.location}
+                            </div>
+                            <div class="source-text">
+                                ${findSourceText(source.number, data.chunks)}
+                            </div>
+                            ${source.relevance ? `<div class="source-relevance"><strong>Relevance:</strong> ${source.relevance}</div>` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                sourcesHtml = '<div class="no-results">No sources found</div>';
+            }
+
+            sourcesContent.innerHTML = sourcesHtml;
+
+            // Show main content
+            mainContent.style.display = 'grid';
+
+            // Add click handlers for citations
+            addCitationClickHandlers();
+        }
+
+        function formatSummaryWithCitations(summary) {
+            // Convert [1], [2] etc. to clickable citations
+            return summary.replace(/\[(\d+)\]/g, '<span class="citation" onclick="scrollToSource($1)">[$1]</span>');
+        }
+
+        function addCitationClickHandlers() {
+            // This is handled by the onclick in the HTML
+        }
+
+        function scrollToSource(sourceNumber) {
+            const sourceElement = document.getElementById(`source-${sourceNumber}`);
+            if (sourceElement) {
+                // Remove previous highlights
+                document.querySelectorAll('.source-item').forEach(item => {
+                    item.classList.remove('highlighted');
+                });
+                
+                // Highlight and scroll to source
+                sourceElement.classList.add('highlighted');
+                sourceElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function findSourceText(sourceNumber, chunks) {
+            // Find the chunk text for this source number
+            if (!chunks || chunks.length === 0) {
+                return 'Text not available';
+            }
+            
+            // Get the source info for this number
+            const sourceInfo = currentSources[sourceNumber - 1];
+            if (!sourceInfo) {
+                return 'Text not available';
+            }
+            
+            // Find matching chunk by source name and author
+            const chunk = chunks.find(c => 
+                c.source === sourceInfo.source && 
+                c.author === sourceInfo.author
+            );
+            
+            return chunk ? chunk.text : 'Text not available';
+        }
+
+        function findChunkForSource(sourceNumber, chunks) {
+            // Find the chunk for this source number
+            if (!chunks || chunks.length === 0) {
+                return null;
+            }
+            
+            // Get the source info for this number
+            const sourceInfo = currentSources[sourceNumber - 1];
+            if (!sourceInfo) {
+                return null;
+            }
+            
+            // Find matching chunk by source name and author
+            return chunks.find(c => 
+                c.source === sourceInfo.source && 
+                c.author === sourceInfo.author
+            );
+        }
+
+        function generateMetadataTooltip(metadata) {
+            if (!metadata) return '';
+            
+            let tooltipContent = '';
+            
+            // Function metadata
+            if (metadata.function && metadata.function.length > 0) {
+                tooltipContent += `
+                    <div class="metadata-section">
+                        <div class="metadata-label">Function</div>
+                        <div class="metadata-values">${metadata.function.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            // Topics metadata
+            if (metadata.topics && metadata.topics.length > 0) {
+                tooltipContent += `
+                    <div class="metadata-section">
+                        <div class="metadata-label">Topics</div>
+                        <div class="metadata-values">${metadata.topics.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            // Concepts metadata
+            if (metadata.concepts && metadata.concepts.length > 0) {
+                tooltipContent += `
+                    <div class="metadata-section">
+                        <div class="metadata-label">Concepts</div>
+                        <div class="metadata-values">${metadata.concepts.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            // Themes metadata
+            if (metadata.themes && metadata.themes.length > 0) {
+                tooltipContent += `
+                    <div class="metadata-section">
+                        <div class="metadata-label">Themes</div>
+                        <div class="metadata-values">${metadata.themes.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            // Scripture references
+            if (metadata.scripture_references && metadata.scripture_references.length > 0) {
+                tooltipContent += `
+                    <div class="metadata-section">
+                        <div class="metadata-label">Scripture References</div>
+                        <div class="metadata-values">${metadata.scripture_references.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            // Proper nouns
+            if (metadata.proper_nouns && metadata.proper_nouns.length > 0) {
+                tooltipContent += `
+                    <div class="metadata-section">
+                        <div class="metadata-label">Proper Nouns</div>
+                        <div class="metadata-values">${metadata.proper_nouns.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            if (tooltipContent === '') {
+                return '';
+            }
+            
+            return `
+                <div class="metadata-tooltip">
+                    <span style="color: #64748b; font-size: 0.8rem;">📊</span>
+                    <div class="tooltip-content">
+                        ${tooltipContent}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `<div class="error">${message}</div>`;
+            mainContent.style.display = 'block';
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('queryInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>

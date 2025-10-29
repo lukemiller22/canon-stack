@@ -1,0 +1,465 @@
+- Semantic (Language/Meaning)
+    - [[Semantic/Concept]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : an abstract, fundamental, and transcendental idea
+        - // Plato's forms, Adler's great ideas, Alexander's fundamental design properties
+    - [[Semantic/Term]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a word or phrase used unambiguously
+        - // concept handles (Alexander), dictionary/lexicon entries, inventory of terms (Syntopicon)
+    - [[Semantic/Category]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a class or division used to group people, things, or concepts according to shared characteristics
+        - // library classification systems, scientific taxonomies, Aristotle's categories, entertainment genres
+    - [[Semantic/Domain]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a distinct sphere of activity, knowledge, or experience
+        - // field, expertise, context, environment, role, responsibility
+    - [[Semantic/Subject]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a branch of knowledge to be studied or taught; the content of a particular domain or field of knowledge
+        - // academic disciplines, university course list, advanced level subjects
+    - [[Semantic/Topic]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a discrete area of focus or inquiry within a broader subject or field of knowledge, serving as an organizational unit for structuring information, guiding discussions, or framing research
+        - // Adler's topic outlines in the Syntopicon, Wikipedia index, "questions" in Aquinas' summary of theology
+    - [[Semantic/Question]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : an interrogative sentence used to review, challenge, uncover, or extend knowledge
+        - // research, discussions, study, interview, open, application, topic, binary
+    - [[Semantic/Description]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a detailed account or representation of someone or something, capturing its characteristics, qualities, or features
+        - // physical attributes, sensory details, functional characteristics, temporal/spatial aspects
+    - [[Semantic/Example]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a specific instance used to illustrate a general idea or concept
+        - // demonstration, model, case study, anecdote
+    - [[Semantic/Context]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : the parts of a discourse that surround a word, passage, idea, or source and can throw light on its meaning and application
+        - // logical, historical, practical (role or responsibility), cultural, authorial (intent)
+    - [[Semantic/Quality]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : the characteristics, properties, or degrees of excellence that define something
+        - // attributes, standards, norms, values, reality (positive), negation, limitation, virtues/vices
+    - [[Semantic/Quantity]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : the extent, amount, number, or magnitude of something
+        - // countable and measurable; unity, plurality, and totality
+    - [[Semantic/Definition]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : a precise statement that explains the meaning, nature, or essential characteristics of a word, concept, or thing
+        - // dictionary entries, technical specifications, operational definitions
+    - [[Semantic/Relationship]]
+        - ꜱᴇᴍᴀɴᴛɪᴄ
+        - : the way in which two or more words, statements, sources, or ideas are connected
+        - // priors, similarities, differences, dependencies, constraints, contradictions, examples, supports, comparisons, progression, alternative, series
+- Logical (Reason/Truth)
+    - [[Logical/Assumption]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a basic or foundational belief that is the basis for other beliefs
+        - // presuppositions, properly basic beliefs, ultimate authorities
+    - [[Logical/Axiom]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a self-evident proposition which cannot reasonably be denied
+        - // tautologies, common notions (Euclid), common-sense statements, first principles
+    - [[Logical/Bias]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a predisposition or preconceived notion that influences a person's perspective, judgment, or behavior, often in a way that is considered to be unfair or unbalanced
+        - // editorial slants, preferential language, selective recounting, selective facts, inherent favoritism or aversion
+    - [[Logical/Claim]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : an assertion that expresses a judgment or opinion; a statement that promises to be either true or false
+        - // thesis, fact, premise, conclusion, affirmation, denial
+    - [[Logical/Error]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : mistaken belief, judgment, or action that arises from faulty reasoning, incomplete information, or a deviation from truth or accuracy
+        - // misinterpretations in data analysis, errors in calculation, misunderstandings in communication, logical inconsistencies, errors in legal reasoning
+    - [[Logical/Conditional]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a warning or proviso of specific stipulations, conditions, or limitations to be considered when understanding a claim or argument
+        - // caveat, temporal, locative, hypothetical
+    - [[Logical/Evidence]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : information indicating whether a belief or proposition is true or valid
+        - // statistical, testimonial, anecdotal, analogical, textual
+    - [[Logical/Warrant]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a logical connection between evidence and a claim that explains how the evidence supports the claim
+        - // inferential bridges, reasoning steps, justification principles, logical links
+    - [[Logical/Qualifier]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a statement that limits the strength or applicability of a claim, indicating the conditions under which the claim holds true
+        - // probability indicators, scope limitations, contextual boundaries, degree of certainty
+    - [[Logical/Objection]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a reason or argument presented in opposition to a belief or proposition
+        - // rebuttal, counterargument, refutation, critique, defeater
+    - [[Logical/Fallacy]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : an error in reasoning or a mistaken belief based on invalid arguments or misleading evidence.
+        - // formal fallacies, informal fallacies
+    - [[Logical/Paradox]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a statement or situation that seems contradictory or absurd, but which may reveal a deeper truth or insight; a statement, proposition, or situation that seems contradictory, but upon closer examination, reveals a deeper truth or understanding.
+        - // in decision theory, in perception, in logic, in philosophy
+- Narrative (Memory/Story)
+    - [[Narrative/Origin]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : the point or source from which something begins, arises, or is derived; the story or myth of how something came to be
+        - // beginning, source, birth
+    - [[Narrative/Time]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : a period during which an action takes place or an event occurs
+        - // date, era, period, season
+    - [[Narrative/Place]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : a particular position or point in space, a location.
+        - // geography, coordinates, directions (North, East, South, West), landscape, city, country, building, landmark
+    - [[Narrative/Situation]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : the set of circumstances or context in which a particular event, situation, or experience occurs; the specific conditions or factors that give rise to a particular situation
+        - // social environments, geopolitical contexts, scene settings
+    - [[Narrative/Person]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : an individual or character involved in the events or discourse of a narrative
+        - // historical figure, public personality, celebrity, protagonist, antagonist, personal acquaintance, family member
+    - [[Narrative/Group]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : A collection of individuals who share a common identity, purpose, or interest, and who interact with one another on a regular basis.
+        - // community, society, subculture, tribe, cult, club, mob, crowd
+    - [[Narrative/Custom]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : a traditional and widely accepted way of behaving, doing something, or practicing something within a particular society or culture
+        - // folkways, mores, traditions, rituals, etiquette, ceremonies, social norms, conventions
+    - [[Narrative/Culture]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : the customs, beliefs, arts, social institutions, and achievements of a particular nation, people, or other social group
+        - // national identities, organizational cultures, artistic movements, anthropological descriptions
+    - [[Narrative/Event]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : a happening or occurrence, especially one that is noteworthy or significant in some way
+        - // historical milestone, turning point, battle, election, scientific discovery, plot point
+    - [[Narrative/Conflict]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : the struggle between opposing forces, ideas, or interests that creates dramatic tension within a narrative
+        - // political debates, military confrontations, legal battles, competing theories, personal vendettas, family feuds
+    - [[Narrative/Action]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : a thing done; an act or deed
+        - // behavior, performance, decision, intervention, movement
+    - [[Narrative/Quotation]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : the exact words or phrases spoken or written by person that are repeated by someone else
+        - // speech, conversation, correspondence, interview, dialogue, monologue
+    - [[Narrative/Ritual]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : a series of actions or words performed according to a prescribed sequence, often associated with religious or cultural practices, that may have symbolic meaning or significance
+        - // ceremonial practices, traditional rites, daily routines, cultural customs
+    - [[Narrative/Artifact]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : an object made by a human being, typically one of cultural or historical interest
+        - // tools, ornaments, weapons, work of art, manuscripts, currency, relics
+    - [[Narrative/Ideology]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : a set of beliefs, values, and ideas that shape a portion of an individual's or group's worldview and understanding of society and the world
+        - // political philosophy (e.g. liberalism, conservatism, socialism), economic theory (e.g. capitalism, communism, mixed economy), social doctrine (e.g., feminism, environmentalism, multiculturalism), ethical framework (e.g. utilitarianism, deontology, virtue ethics), cultural paradigm (e.g. individualism, collectivism), religious system (e.g., monotheism, polytheism, secular humanism)
+    - [[Narrative/Telos]]
+        - ɴᴀʀʀᴀᴛɪᴠᴇ
+        - : the ultimate end or purpose of a person, action, or narrative arc, particularly in relation to human life and society
+        - // purpose, meaning, destiny, ultimate end
+- Personal (Nature)
+    - [[Personal/Identity]] (I am)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the sense of self that an individual constructs, encompassing personal history, characteristics, social roles, and values
+        - // “I am” statements, personal branding, group affiliations
+    - [[Personal/Thought]] (I think)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the intellectual processes of contemplation, reflection, or consideration regarding information or experiences; it involves the formulation of ideas, reasoning, problem-solving, and the expression of one's mental state
+        - // concrete, abstract, critical, creative, reflective, analytical, synthetic, logical, strategic, systemic
+    - [[Personal/Emotion]] (I feel, I love, I hate, I fear, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : a complex psychological state that arises spontaneously rather than through conscious effort and is often accompanied by physiological changes; a key driver of human behavior and expression
+        - // expressions of grief, passionate pleas, celebratory speeches, emotional outbursts, affections (love/hate)
+    - [[Personal/Perception]] (I see)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the cognitive process by which an individual interprets and organizes sensory information to understand their environment and experiences
+        - // visual or auditory accounts, social cues, travel writing descriptions, artistic interpretations
+    - [[Personal/Desire]] (I want, I seek, I wish, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the principles, beliefs, or standards that an individual holds in high regard and uses to guide their actions, decisions, and evaluations, affecting the way they create, share, and apply knowledge
+        - // ethical stances, cultural ideals, educational reforms, basic needs, motives
+    - [[Personal/Intention]] (I will, I intend to, I plan to, I mean to, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the conscious mental state of having a deliberate purpose or plan for future action; involves commitment to specific courses of action beyond mere desires or wishes
+        - // strategic planning, methodical preparation, declared purposes, stated objectives
+    - [[Personal/Need]] (I need)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : a fundamental requirement or necessity essential for the well-being, functioning, or survival of an individual or group
+        - // basic needs like food, water, shelter, safety, love, and belonging
+    - [[Personal/Belief]] (I believe, I expect, I await, I hope, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : an acceptance that a statement is true or that something exists; intellectual assent; inferred from evidence (reason or experience); willingness to act on a given hypothesis
+        - // moral conviction, value judgment, statement of faith
+    - [[Personal/Knowledge]] (I know, I understood/understand, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : awareness or familiarity gained by experience or education; the theoretical or practical understanding of a subject
+        - // know how, know that, know him/her, expertise in a specific field, factual information, learned skills
+    - [[Personal/Act]] (I {present tense verb})
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : specialized knowledge and skill in a particular area or field; the ability to perform a task or activity with expertise; a learned ability or competence to perform specific tasks or activities effectively and efficiently
+        - // expertise, competencies, talents, professional qualifications
+    - [[Personal/Speech]] (I say/said, I cry, I reply, I declare, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the expression of thoughts, feelings, or information through spoken or written words
+        - // dialogues, speeches, written communication, prayers
+    - [[Personal/Ability]] (I can/cannot)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the recognition or assessment of one's capacity, skill, or potential to perform certain actions or achieve specific outcomes; it encompasses both the acknowledgment of personal capabilities and the awareness of limitations
+        - // self-efficacy statements, skill assessments, confidence expressions, limitation acknowledgments
+    - [[Personal/Possession]] (I have , I own, I hold)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the state of having, owning, or controlling something, whether tangible or intangible; expresses relationship to property, attributes, or qualities claimed as one's own
+        - // material ownership, personal qualities, relationships, inherited traits, earned status
+    - [[Personal/Obligation]] (I must, I should)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the sense of duty, responsibility, or moral imperative that an individual feels compelled to fulfill, often shaped by personal values, societal expectations, or ethical considerations
+        - // moral imperatives, societal expectations, personal responsibilities, ethical duties
+    - [[Personal/Gratitude]] (I think, I rejoice, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the expression of appreciation, thankfulness, or joy for something received or experienced
+        - // expressions of thanks, celebrations, acknowledgments
+    - [[Personal/Worship]] (I praise, I adore, I magnify, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the expression of reverence, adoration, or devotion, typically towards a deity or something held in high esteem
+        - // religious or spiritual practices, expressions of adoration, singing hymns
+    - [[Personal/Taste]] (I like, I value, I judge, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the ability to discern what is of good quality or of a high aesthetic standard
+        - // judgment, preference, likes & dislikes
+    - [[Personal/Imagination]] (I imagine, I dream, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the cognitive ability to generate, visualize, and explore novel ideas, concepts, or scenarios that go beyond existing knowledge or reality
+        - // inventive solutions, hypothetical situations, fictional world-building, lateral thinking, thought experiments
+    - [[Personal/Decision]] (I choose, I promise, I decide, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : a conclusion or resolution reached after consideration; a choice made after evaluating all available information, personal preferences, and various factors that influence the outcome
+        - // treatment selections, policy determinations, legal verdicts, life choices
+    - [[Personal/Confession]] (I regret, I repent, I confess, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the acknowledgment or admission of faults, wrongdoings, or sins, often accompanied by expressions of remorse and the desire for forgiveness or change
+        - // admitting mistakes, expressing regret or repentance
+    - [[Personal/Request]] (I ask, I beg, I plead, I petition, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the act of asking for something earnestly or formally, often seeking assistance, permission, or information
+        - // seeking help, making pleas, asking for information or action
+    - [[Personal/Lament]] (I grieve, I mourn, I weep, I sorrow, I regret, etc.)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : an expression of deep sorrow, grief, or regret, often connected to personal loss, failure, or a sense of injustice
+        - // mourning for a lost loved one, regret over a missed opportunity, sorrow expressed in elegies or confessions, communal grieving in public tragedies
+    - [[Personal/Experience]] (I {past tense verb})
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the direct observation of or participation in events as a basis of knowledge; the lived encounters that shape an individual's understanding and skills
+        - // anecdotes, dreams, adversity, achievements, creative accomplishments, awakenings, promotions, service opportunities, life transitions
+    - [[Personal/Memory]] (I remember)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : the faculty by which the mind stores and remembers information; it encompasses personal recollections, learned knowledge, and lived experiences
+        - // reflection, reminisces, eyewitness testimony
+    - [[Personal/Promise]] (I promise, I swear, I vow)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : a declaration or commitment to do or refrain from doing something, creating a binding obligation or expectation between oneself and others; involves pledging one's word or honor to fulfill a stated intention
+        - // vows of commitment, oaths of office, pledges of loyalty, contractual agreements, personal commitments to others
+    - [[Personal/Doubt]] (I doubt)
+        - ᴘᴇʀꜱᴏɴᴀʟ
+        - : a feeling of uncertainty or lack of conviction about something
+        - // questioning beliefs, skepticism, uncertainty
+- Practical (Experience/Goodness)
+    - [[Practical/Objective]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a specific and measurable goal or aim that an individual or organization intends to achieve
+        - // business targets, learning outcomes, performance benchmarks, new year’s resolutions, key results
+    - [[Practical/Strategy]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a plan or approach used to achieve a particular goal or objective
+        - // business planning, military tactics, game plans, instructional pedagogy
+    - [[Practical/Problem]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : an issue or situation that presents difficulty or hindrance, requiring critical thinking and action for resolution
+        - // troubleshooting topics, conflict scenarios, diagnostic challenges, ethical dilemmas, puzzles
+    - [[Practical/Mental Model]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a simplified representation of a complex system or process that helps people understand, predict, and navigate the world around them; a representation of how something works
+        - // conceptual frameworks, mental schemas, cognitive maps, biases, copes, rationalizations
+    - [[Practical/Principle]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : fundamental truth, proposition, or rule of conduct that serves as a guide to action or decision-making in a particular domain
+        - // workers standards, design principles, educational tenets, legal maxims, proverbial wisdom
+    - [[Practical/Solution]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : the application or use of an idea, belief, or method, as opposed to theories relating to it; a means of resolving a problem or difficulty
+        - // policy proposal, process, sequence, checklist
+    - [[Practical/Constraint]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a limitation or restriction that affects person's ability to act or think in a certain way
+        - // resource limitations, legal restrictions, physical barriers, time constraints, cultural norms
+    - [[Practical/Hypothesis]]
+        - ʟᴏɢɪᴄᴀʟ
+        - : a proposed explanation for a phenomenon, made as a starting point for further investigation; a statement that posits a relationship between variables and is testable through experimentation or observation
+        - // scientific research questions, theoretical propositions, investigative assumptions, speculative ideas
+    - [[Practical/Experiment]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a methodical trial and error process undertaken to discover something unknown, test a hypothesis, or validate an approach in various aspects of life
+        - // do it 100 times, trial and error, iterative design, split tests
+    - [[Practical/Task]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a piece of work to be done or undertaken, typically requiring a specific action to complete
+        - // step-by-step procedures, lesson assignments, job description responsibilities, daily chores
+    - [[Practical/Project]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a collaborative and planned undertaking designed to achieve a particular aim or objective within a defined timeframe; a project is anything that requires collaboration, even it's "only" between you-today and you-tomorrow (@visakanv)
+        - // community development initiatives, personal improvement plans, home renovations plans
+    - [[Practical/Habit]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a solution-response to a problem; a mental shortcut acquired from repeated experience; "a routine or practice performed regularly; an automatic response to a specific situation" (James Clear)
+        - // daily routines, spiritual disciplines, keystone habits
+    - [[Practical/Exercise]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : structured and focused activity or task aimed at developing or improving cognitive or creative skills, such as problem-solving, critical thinking, memory, or artistic expression
+        - // practice problems, writing prompts, physical drills, simulation activities, musical scales, brainstorming activities
+    - [[Practical/Metric]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a standard of measurement that quantifies performance, progress, or quality
+        - // KPIs, benchmarks, lag measures
+    - [[Practical/Imperative]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a command or urgent instruction that directs action, decision, or policy; a necessary or pressing demand that requires immediate attention or obedience
+        - // procedural steps, policy directives, call-to-action statements, emergency guidelines, prescriptive advice, mandatory regulations, negative-positive
+    - [[Practical/Tool]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a device or implement used to carry out a particular function, typically to facilitate manual or mechanical work; any instrument employed to achieve a specific end or to enhance efficiency
+        - // software programs, scientific instruments, tech gadgets
+    - [[Practical/Medium]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a set of presentation elements arranged and used by a person to create an object, environment, or experience for someone else
+        - // visual arts (paintings, sculptures), written works (books, articles), digital formats (websites, apps), performances (theater, music), environments (interior design, exhibitions), multimedia presentations (videos, podcasts)
+    - [[Practical/Resource]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : source of help or aid that can be used to accomplish a task or solve a problem
+        - // financial budgets, reference materials, research databases, instructional videos, how-to guides, community forums, software documentation
+    - [[Practical/Process]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a set of steps or actions that are followed in to order to accomplish a specific task or goal
+        - // recipes, workflow steps, emergency response plans
+    - [[Practical/Theory]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a potential explanation of some fact we already believe; something we infer, rather than observe; answers the questions Why? or How?, not What?
+        - // scientific models, conceptual models, interpretive lenses
+    - [[Practical/System]]
+        - ᴘʀᴀᴄᴛɪᴄᴀʟ
+        - : a complex whole formed by interconnecting parts that work together cohesively to function or achieve a common purpose
+        - // environmental ecosystems, organizational structures, anatomical systems, mechanical operations, economic systems (capitalism, socialism, etc.)
+- Symbolic (Imagination/Beauty)
+    - [[Symbolic/Archetype]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : a universally recognized symbol or term that recurs across cultures and literature, embodying a particular set of characteristics or experiences
+        - // the 'hero' in mythological studies, the 'mother figure' in psychological texts, the 'trickster' in folklore narratives
+    - [[Symbolic/Theme]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : the underlying message or central idea that recurs throughout a work of art, literature, or discourse, giving it unity and purpose
+        - // explicit or implicit, love and loss, good and evil, technology and nature
+    - [[Symbolic/Story]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : a narrative account used to convey meaning, teach lessons, or explore ideas through symbolism and metaphor
+        - // myths (e.g., Icarus), parables (e.g., The Good Samaritan), fables (e.g., The Tortoise and the Hare), allegories (e.g., Animal Farm), religious narratives (e.g., The Exodus)
+    - [[Symbolic/Image]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : a digital capture or photographic representation that reflects the appearance of an object, scene, or person
+        - // photographs, user-generated content on social media, product photography, visual aids
+    - [[Symbolic/Illustration]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : a visual explanation of a text, concept, or process, often created through graphic design, drawing, or non-photographic media
+        - // logo, icon, infographic
+    - [[Symbolic/Drawing]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : a hand-created visual representation made through marks, lines, and shapes to depict, express, or communicate ideas, objects, or experiences
+        - // sketches, technical diagrams, artistic studies, architectural plans, conceptual doodles, anatomical illustrations
+    - [[Symbolic/Metaphor]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : a figure of speech in which a word or phrase is applied to an object or action to which it is not literally applicable, used to suggest a resemblance or analogy between the two; a way of understanding and experiencing one thing in terms of another.
+        - // analogy, simile, symbolism, allegory, personfication
+    - [[Symbolic/Idiom]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : a phrase or expression that has a figurative meaning different from its literal meaning, often culturally specific and offering insight into common beliefs and shared understandings within a community; unique in that their meaning cannot be deduced by considering the individual words but must be understood as a whole
+        - // compound, phrasal, play-on-words, cliche
+    - [[Symbolic/Symbol]]
+        - ꜱʏᴍʙᴏʟɪᴄ
+        - : an object, character, or figure that is used to represent an abstract idea or concept, often conveying deeper meanings and associations within a narrative or discourse
+          
+        - // dove representing peace, heart symbolizing love, cross signifying faith, scales of justice, national flags
+- Reference (Testimony/Authority)
+    - [[Reference/Source]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : origin or provider of information, which can be a document, individual, or organization from which knowledge is obtained; often cited to give credit, provide context, or substantiate claims
+        - // bibliography entries, website URLs, film/documentary titles, news agencies
+    - [[Reference/Reference]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : an external pointer to a specific place within a source where detailed information can be found, allowing readers to locate the original context of the content being discussed
+        - // footnotes, endnotes, sidenotes, timestamps, hyperlinks
+    - [[Reference/Cross-Reference]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : an internal pointer within a document or publication that directs the reader to another section of the same work or to a related document for additional information and context
+        - // chapter-and-verse notations, index entries, related chapters
+    - [[Reference/Citation]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : a direct reproduction of text or spoken words from a source, used to substantiate, illustrate, or elaborate on points made in the current text or discourse
+        - // quoted passages, excerpted data, transcribed interviews
+    - [[Reference/Annotation]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : a note of explanation or comment added to a text or diagram, providing further context, interpretation, or critical analysis
+        - // explanatory footnotes, document comments, editorial remarks, reader marginalia, online comments, community notes
+    - [[Reference/Allusion]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : an indirect reference to a person, place, thing, or idea of historical, cultural, literary, or political significance; an expression designed to call something to mind without mentioning it explicitly; an indirect or passing reference
+        - // mere connection of language, thematic pattern, implied analogy, typological pattern, prophetic fulfillment, borrowed language
+    - [[Reference/Commentary]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : a set of remarks that provides additional layers of understanding or perspective to the primary source of information
+        - // interpretation, analysis, critique, opinion, exploration, elaboration
+    - [[Reference/Summary]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : a concise and objective representation of the main ideas and key points of a longer text or speech
+        - // reduction, abstraction, generalization, focus
+    - [[Reference/Paraphrase]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : a restatement of a text or passage in different words, often to clarify meaning or to suit a different context
+        - // rewording of a complex sentence, simplification of technical jargon, translation of idiomatic expressions, adaptation of content for different audiences
+    - [[Reference/Synthesis]]
+        - ʀᴇꜰᴇʀᴇɴᴄᴇ
+        - : the combination of separate ideas, concepts, or elements to form a coherent whole or new understanding
+        - // literature review conclusions, interdisciplinary research findings, fusion of multiple theories, integration of diverse data sources
+- Structural (Order)
+    - [[Structural/List]]
+        - sᴛʀᴜᴄᴛᴜʀᴀʟ
+        - : a sequence of items, often presented in a specific order, used to organize information or ideas clearly and concisely
+        - // series, progression, alternatives
+    - [[Structural/Diagram]]
+        - sᴛʀᴜᴄᴛᴜʀᴀʟ
+        - : a simplified drawing or plan that outlines and explains the parts, operation, or meaning of something, typically used for instructional purposes
+        - // venn diagram, 2 x 2, anatomical charts, circuit diagrams, site plans, phase diagrams
+    - [[Structural/Map]]
+        - sᴛʀᴜᴄᴛᴜʀᴀʟ
+        - : a visual depiction of geographical areas, locations, or spatial relationships, often used to provide context or illustrate distribution
+        - // geographical maps, historical maps, conceptual maps, floor plans, topographic maps
+    - [[Structural/Table]]
+        - sᴛʀᴜᴄᴛᴜʀᴀʟ
+        - : a structured arrangement of data or information in rows and columns, used to organize and present complex information clearly
+        - // data tables, comparison tables, schedules, matrices, spreadsheets
+    - [[Structural/Chart]]
+        - sᴛʀᴜᴄᴛᴜʀᴀʟ
+        - : a visual representation of numerical data, used to illustrate relationships, patterns, or trends over time or between variables
+        - // line graphs, scatter plots, histograms, bar graphs, area graphs
+    - [[Structural/Timeline]]
+        - sᴛʀᴜᴄᴛᴜʀᴀʟ
+        - : a graphical representation of a chronological sequence of events, used to visualize the progression or history of a particular subject, project, or phenomenon
+        - // historical timelines, project timelines

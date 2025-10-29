@@ -1,0 +1,224 @@
+- # Source Metadata
+    - Core Identification
+        - Source ID:: 8
+        - Title:: [[On Reading Old Books]]
+        - Subtitle
+        - Author-Primary:: [[C.S. Lewis]]
+        - Author-Additional
+        - Editor
+        - Translator
+        - Publication Year:: [[1944]]
+    - Source Classification
+        - Genre-Primary:: [[Preface]] to [[Paradise Lost]] by [[Athanasius]]
+        - Genre-Secondary
+    - Content Characteristics
+        - Length Words:: 2,484
+        - Length-Chunks:: 13
+        - Chapters:: false
+        - Sections:: false
+    - Theological Coverage
+        - Topics:: [[Topic/Books & Reading]], [[Topic/Education]], [[Topic/Life of the Mind]], [[Topic/Church History]], [[Topic/Literature]], [[Topic/Biblical Authority]]
+- # Chunks
+    - Chunk:: There is a strange idea abroad that in every subject the ancient books should be read only by the professionals, and that the amateur should content himself with the modern books. Thus I have found as a tutor in English Literature that if the average student wants to find out something about Platonism, the very last thing he thinks of doing is to take a translation of Plato off the library shelf and read the Symposium. He would rather read some dreary modern book ten times as long, all about "isms" and influences and only once in twelve pages telling him what Plato actually said. The error is rather an amiable one, for it springs from humility. The student is half afraid to meet one of the great philosophers face to face. He feels himself inadequate and thinks he will not understand him. But if he only knew, the great man, just because of his greatness, is much more intelligible than his modern commentator. The simplest student will be able to understand, if not all, yet a very great deal of what Plato said; but hardly anyone can understand some modern books on Platonism. It has always therefore been one of my main endeavours as a teacher to persuade the young that firsthand knowledge is not only more worth acquiring than secondhand knowledge, but is usually much easier and more delightful to acquire.
+        - Topics:: [[Topic/Education]], [[Subject/Christian Thought]], [[Topic/Books & Reading]]
+        - Concepts:: [[Concept/Knowledge]], [[Concept/Wisdom]], [[Concept/Truth]]
+        - Themes:: [[Firsthand Knowledge]], [[Academic Humility]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] A great author (because of his greatness) is much more intelligible than his modern commentator.
+                - [[Logical/Error]] - The mistaken belief that amateurs should only read modern books about ancient authors
+            - Practical
+                - [[Practical/Principle]] - Firsthand knowledge is not only more worth acquiring than secondhand knowledge, but is usually much easier and more delightful to acquire
+                - [[Practical/Mental Model]] - Students fear meeting great thinkers "face to face" due to perceived inadequacy
+            - Semantic
+                - [[Semantic/Example]] Reading a commentary about Plato instead of reading Plato himself.
+        - Scripture-References
+        - Proper-Nouns:: [[Plato]], [[Platonism]], [[Symposium]], [[English Literature]]
+    - Chunk:: This mistaken preference for the modern books and this shyness of the old ones is nowhere more rampant than in theology. Wherever you find a little study circle of Christian laity you can be almost certain that they are studying not St. Luke or St. Paul or St. Augustine or Thomas Aquinas or Hooker or Butler, but M. Berdyaev or M. Maritain or M. Niebuhr or Miss Sayers or even myself. Now this seems to me topsy-turvy. Naturally, since I myself am a writer, I do not wish the ordinary reader to read no modern books. But if he must read only the new or only the old. I would advise him to read the old. And I would give him this advice precisely because he is an amateur and therefore much less protected than the expert against the dangers of an exclusive contemporary diet.
+        - Topics:: [[Topic/Education]], [[Subject/Christian Thought]], [[Topic/Books & Reading]]
+        - Concepts:: [[Concept/Knowledge]], [[Concept/Custom and Convention]]
+        - Themes:: [[Contemporary vs Ancient Authority]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] An amateur is much less protected than the expert against the dangers of an exclusive contemporary diet.
+            - Practical
+                - [[Practical/Principle]] If you must read only new books or only old books, read the old.
+            - Semantic
+                - [[Semantic/Example]] Modern Christians are more likely to study modern authors than the original works of Scripture or early theology.
+        - Scripture-References
+        - Proper-Nouns:: [[Luke]], [[Paul]], [[Augustine]], [[Thomas Aquinas]], [[Richard Hooker]], [[Joseph Butler]], [[Nikolai Berdyaev]], [[Jacques Maritain]], [[Reinhold Niebuhr]], [[Dorothy L. Sayers]]
+    - Chunk:: A new book is still on its trial and the amateur is not in a position to judge it. It has to be tested against the great body of Christian thought down the ages, and all its hidden implications (often unsuspected by the author himself have to be brought to light. Often it cannot be fully understood without the knowledge of a good many other modern books. If you join at eleven o'clock a conversation which began at eight you will often not see the real bearing of what is said. Remarks which seem to you very ordinary will produce laughter or irritation and you will not see why the reason, of course, being that the earlier stages of the conversation have given them a special point. In the same way sentences in a modern book which look quite ordinary may be directed af some other book; in this way you may be led to accept what you would have indignantly rejected if you knew its real significance. The only safety is to have a standard of plain, central Christianity ("mere Christianity" as Baxter called it) which puts the controversies of the moment in their proper perspective. Such a standard can be acquired only from the old books. It is a good rule, after reading a new book, never to allow yourself another new one till vou have read an old one in between. If that is too much for you, you should at east read one old one to every three new ones.
+        - Topics:: [[Topic/Education]], [[Subject/Christian Thought]], [[Topic/Books & Reading]]
+        - Concepts:: [[Concept/Knowledge]], [[Concept/Truth]], [[Concept/Judgment]]
+        - Themes:: [[Mere Christianity]] ([[Richard Baxter]])
+        - Function::
+            - Logical
+                - [[Logical/Claim]] New books often cannot be fully understood without the knowledge of many other books and amateurs are not in a position to be able to do this well.
+                - [[Logical/Claim]] A standard of plain, central Christianity can only be acquired from old books
+            - Symbolic
+                - [[Symbolic/Metaphor]] New books are on trial and need to be tested against the great body of Christian thought.
+                - [[Symbolic/Metaphor]] Reading a modern book without reading related books in that tradition is like joining a 11pm a conversation that began at 8pm.
+            - Practical
+                - [[Practical/Principle]] After reading a new book, do not read another new one until you have read an old one (or at least read one old book to every three new ones).
+                - [[Practical/Mental Model]] Modern books exist within ongoing conversations that require context to understand properly
+        - Scripture-References
+        - Proper-Nouns:: [[Richard Baxter]]
+    - Chunk:: Every age has its own outlook. It is specially good at seeing certain truths and specially liable to make certain mistakes. We all, therefore, need the books that will correct the characteristic mistakes of our own period. And that means the old books. All contemporary writers share to some extent the contemporary outlook even those, like myself, who seem most opposed to it. Nothing strikes me more when I read the controversies of past ages than the fact that both sides were usually assuming without question a good deal which we should now absolutely deny. They thought that they were as completely opposed as two sides could be, but in fact they were all the time secretly united - united with each other and against earlier and later ages by a great mass of common assumptions. We may be sure that the characteristic blindness of the twentieth century-the blindness about which posterity will ask, "But how could they have thought that?" lies where we have never suspected it, and concerns something about which there is untroubled agreement between Hitler and President Roosevelt or between Mr. H. G. Wells and Karl Barth.
+        - Topics:: [[Subject/Christian Thought]], [[Topic/Philosophy]], [[Topic/Church History]], [[Topic/Books & Reading]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Time]], [[Concept/Change]]
+        - Themes:: [[Chronological Snobbery]], [[Blindspots]], [[Historical Perspective]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] Every age has its own outlook and its own blindspots or characteristic errors that only old books can expose
+                - [[Logical/Claim]] Contemporary writers share common assumptions even when they seem completely opposed
+                - [[Logical/Claim]] The characteristic blindness of the twentieth century lies where we have never suspected it
+            - Semantic
+                - [[Semantic/Example]] Both sides in past controversies shared assumptions we would now deny
+                - [[Semantic/Example]] Unlikely agreement between Hitler and Roosevelt, or H.G. Wells and Karl Barth on certain unexamined assumptions
+            - Practical
+                - [[Practical/Mental Model]] Each era has unconscious shared assumptions that become visible only from temporal distance
+        - Scripture-References
+        - Proper-Nouns:: [[H.G. Wells]], [[Karl Barth]], [[Theodore Roosevelt]], [[Adolf Hitler]]
+    - Chunk:: None of us can fully escape this blindness, but we shall certainly increase it, and weaken our guard against it, if we read only modern books. Where they are true they will give us truths which we half knew already. Where they are false they will aggravate the error with which we are already dangerously ill. The only palliative is to keep the clean sea breeze of the centuries blowing through our minds, and this can be done only by reading old books. Not, of course, that there is any magic about the past. People were no cleverer then than they are now; they made as many mistakes as we. But not the same mistakes. They will not flatter us in the errors we are already committing, and their own errors, being now open and palpable, will not endanger us. Two heads are better than one, not because either is infallible, but because they are unlikely to go wrong in the same direction. To be sure, the books of the future would be just as good a corrective as the books of the past, but unfortunately we cannot get at them.
+        - Topics:: [[Topic/Education]], [[Subject/Christian Thought]], [[Topic/Books & Reading]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Knowledge]], [[Concept/Time]]
+        - Themes:: [[Historical Corrective]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] Reading only modern books increases our blindness and weakens our guard against error
+                - [[Logical/Claim]] It's not that people were smarter in the past or that they did not make mistakes; they just made different mistakes
+                - [[Logical/Claim]] Two heads are better than one, not because either is infallible, but because they are unlikely to go wrong in the same direction
+            - Symbolic
+                - [[Symbolic/Metaphor]] Reading old books is like keeping the "clean sea breeze of the centuries" blowing through your mind
+                - [[Symbolic/Metaphor]] Modern books will flatter us in errors we are already committing
+            - Practical
+                - [[Practical/Principle]] The only palliative is to keep reading old books to counteract contemporary errors
+                - [[Practical/Mental Model]] Past authors' errors are now "open and palpable" and won't endanger us, unlike contemporary error
+        - Scripture-References
+        - Proper-Nouns
+    - Chunk:: I myself was first led into reading the Christian classics, almost accidentally, as a result of my English studies. Some, such as Hooker, Herbert, Traherne, Taylor and Bunyan, I read because they are themselves great English writers; others, such as Boethius, St. Augustine, Thomas Aquinas and Dante, because they were "influences." George Macdonald I had found for myself at the age of sixteen and never wavered in my allegiance, though I tried for a long time to ignore his Christianity. They are, you will note, a mixed bag, representative of many Churches, climates and ages. And that brings me to yet another reason for reading them. The divisions of Christendom are undeniable and are by some of these writers most fiercely expressed. But if any man is tempted to think- as one might be tempted who read only contemporaries that "Christianity" is a word of so many meanings that it means nothing at all, he can learn beyond all doubt, by stepping out of his own century, that this is not so. Measured against the ages "mere Christianity" turns out to be no insipid interdenominational transparency, but something positive, self-consistent, and inexhaustible. I know it, indeed, to my cost. 
+        - Topics:: [[Subject/Christian Thought]], [[Topic/Literature]], [[Topic/Education]]
+        - Concepts:: [[Concept/Experience]], [[Concept/Knowledge]], [[Concept/Truth]]
+        - Themes:: [[Mere Christianity]], [[Unity Across Divisions]]
+        - Function::
+            - Personal
+                - [[Personal/Experience]] I was first introduced to Christian classics as a result of English studies.
+                - [[Personal/Experience]] I tried to ignore Christianity for a long time.
+            - Logical
+                - [[Logical/Claim]] Despite the perceived divisions within Christianity, there is still a positive, self-consistent, and inexhaustible expression of "mere Christianity" that endures.
+                - [[Logical/Claim]] By stepping out of his own century, one can learn that Christianity is not a meaningless word but something substantial
+            - Semantic
+                - [[Semantic/Example]] Writers from many Churches, climates and ages still represent a coherent Christian tradition
+        - Scripture-References
+        - Proper-Nouns:: [[Richard Hooker]], [[George Herbert]], [[George Macdonald]], [[Augustine]], [[Thomas Aquinas]], [[Thomas Traherne]], [[Jeremy Taylor]], [[John Bunyan]], [[Anicius Boëthius]], [[Dante Alighieri]]
+    - Chunk:: In the days when I still hated Christianity, I learned to recognise, like some all too familiar smell, that almost unvarying something which met me, now in Puritan Bunyan, now in Anglican Hooker, now in Thomist Dante. It was there (honeyed and floral) in Francois de Sales; it was there (grave and homely) in Spenser and Walton; it was there (grim but manful in Pascal and Johnson; there again, with a mild, frightening, Paradisial flavour, in Vaughan and Boehme and Traherne. In the urban sobriety of the eighteenth century one was not safe Law and Butler were two lions in the path. 'The supposed "Paganism" of the Elizabethans could not keep it out; it lay in wait where a man might have supposed himself safest, in the very centre of The Faerie Queene and the Arcadia. It was, of course, varied; and yet after all so unmistakably the same; recognisable, not to be evaded, the odour which is death to us until we allow it to become life: an air that kills From yon far country blows.
+        - Topics:: [[Subject/Christian Thought]], [[Topic/Literature]]
+        - Concepts:: [[Concept/Experience]], [[Concept/Truth]], [[Concept/Life and Death]]
+        - Themes:: [[Inescapable Christian Influence]], [[Conversion Through Literature]]
+        - Function::
+            - Personal
+                - [[Personal/Experience]] I learned to recognize the influence of Christianity in many of the books I loved most, so that I could not escape it.
+                - [[Personal/Memory]] I could recognize Christianity's presence across diverse authors and genres
+            - Semantic
+                - [[Semantic/Example]] Christianity appeared in Puritan Bunyan, Anglican Hooker, Thomist Dante, et
+            - Symbolic
+                - [[Symbolic/Metaphor]] Christian influence is like a scent from a far country that permeates the written word, no matter what genre or era, and is death to us until we allow it to become life.
+            - Logical
+                - [[Logical/Claim]] Christianity was varied across authors yet unmistakably the same and recognizable
+        - Scripture-References
+        - Proper-Nouns:: [[Christianity]], [[John Bunyan]], [[Richard Hooker]], [[Dante Alighieri]], [[Francois de Sales]], [[Edmund Spenser]], [[Izaak Walton]], [[Blaise Pascal]], [[Samuel Johnson]], [[Henry Vaughan]], [[Jakob Boehme]], [[Thomas Traherne]], [[William Law]], [[Joseph Butler]], [[The Faerie Queene]], [[Arcadia]]
+    - Chunk:: We are all rightly distressed, and ashamed also, at the divisions of Christendom. But those who have always lived within the Christian fold may be too easily dispirited by them. They are bad, but such people do not know what it looks like from without. Seen from there, what is left intact despite all the divisions, still appears (as it truly is an immensely formidable unity). I know, for I saw it; and well our enemies know it. That unity any of us can find by going out of his own age. It is not enough, but it is more than you had thought till then. Once you are well soaked in it, if you then venture to speak, you will have an amusing experience. You will be thought a Papist when you are actually reproducing Bunyan, a Pantheist when you are quoting Aquinas, and so forth. For you have now got on to the great level viaduct which crosses the ages and which looks so high from the valleys, so low from the mountains, so narrow compared with the swamps, and so broad compared with the sheep-tracks.
+        - Topics:: [[Subject/Christian Thought]], [[Topic/Church Unity]], [[Subject/Apologetics]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Experience]]
+        - Themes:: [[Mere Christianity]], [[External Perspective on Unity]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] From the outside, there is much for unity than division within Christianity.
+                - [[Logical/Claim]] What remains intact despite all divisions still appears as an immensely formidable unity
+            - Symbolic
+                - [[Symbolic/Metaphor]] Viewing Christianity from another worldview is like viewing the land from great bridge that crosses the ages, looking too high for some, too low for others, too narrow for some, and too broad for others.
+            - Semantic
+                - [[Semantic/Example]] When you quote historic Christian sources, you'll be misidentified as various denominations
+            - Personal
+                - [[Personal/Experience]] I know this unity exists because I saw it from the outside
+            - Practical
+                - [[Practical/Mental Model]] Those inside Christianity may be too easily dispirited by divisions they can see up close
+        - Scripture-References
+        - Proper-Nouns:: [[John Bunyan]], [[Thomas Aquinas]]
+    - Chunk:: The present book is something of an experiment. The translation is intended for the world at large, not only for theological students. If it succeeds, other translations of other great Christian books will presumably follow. In one sense, of course, it is not the first in the field. Translations of the Theologia Germanica, the Imitation, the Scale of Perfection, and the Revelations of Lady Julian of Norwich, are already on the market, and are very valuable, though some of them are not very scholarly. But it will be noticed that these are all books of devotion rather than of doctrine. Now the layman or amateur needs to be instructed as well as to be exhorted. In this age his need for knowledge is particularly pressing. Nor would I admit any sharp division between the two kinds of book. For my own part I tend to find the doctrinal books often more helpful in devotion than the devotional books, and I rather suspect that the same experience may await many others. I believe that many who find that "nothing happens" when they sit down, or kneel down, to a book of devotion, would find that the heart sings unbidden while they are working their way through a tough bit of theology with a pipe in their teeth and a pencil in their hand.
+        - Topics:: [[Topic/Education]], [[Subject/Christian Thought]], [[Topic/Books & Reading]]
+        - Concepts:: [[Concept/Knowledge]], [[Concept/Education]]
+        - Themes:: [[Devotion & Doctrine]], [[Accessible Theology]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] Believers need to be instructed as well as exhorted; they need both doctrine and devotion.
+                - [[Logical/Claim]] In this age the layman's need for knowledge is particularly pressing
+            - Personal
+                - [[Personal/Taste]] I find doctrinal books more helpful in cultivating devotion than devotional books.
+                - [[Personal/Belief]] I believe that many who find that "nothing happens" when they sit down, or kneel down, to a book of devotion, would find that the heart sings unbidden while they are working their way through a tough bit of theology with a pipe in their teeth and a pencil in their hand.
+            - Practical
+                - [[Practical/Principle]] There should be no sharp division between devotional and doctrinal books
+                - [[Practical/Mental Model]] Doctrinal study can be more devotionally enriching than formal devotional exercises
+        - Scripture-References
+        - Proper-Nouns:: [[Theologia Germanica]], [[The Imitation]], [[The Scale of Perfection]], [[The Revelations of Lady Julian of Norwich]]
+    - Chunk:: This is a good translation of a very great book. St. Athanasius has suffered in popular estimation from a certain sentence in the "Athanasian Creed." I will not labour the point that that work is not exactly a creed and was not by St. Athanasius, for I think it is a very fine piece of writing. The words "Which Faith except every one do keep whole and undefiled, without doubt he shall perish everlastingly" are the offence. They are commonly misunderstood. The operative word is keep; not acquire, or even believe, but keep. The author, in fact, is not talking about unbelievers, but about deserters, not about those who have never heard of Christ, nor even those who have misunderstood and refused to accept Him, but of those who having really understood and really believed, then allow themselves, under the sway of sloth or of fashion or any other invited confusion to be drawn away into sub-Christian modes of thought. They are a warning against the curious modern assumption that all changes of belief, however brought about, are necessarily exempt from blame.
+        - Topics:: [[Topic/Systematic Theology]], [[Topic/Biblical Authority]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Change]], [[Concept/Judgment]]
+        - Themes:: [[Misunderstood Orthodoxy]], [[Keeping vs Acquiring Faith]]
+        - Function::
+            - [[Reference/Reference]]
+                - [[Reference/Reference]] "On the Incarnation" by Athanasius
+                - [[Reference/Commentary]] C.S. Lewis explains that the word "keep" is often misunderstood in the creed. To “keep” the faith means steadfast preservation, not mere acquisition or intellectual assent, and that changing belief through negligence or fashion can be morally culpable
+            - Logical
+                - [[Logical/Claim]] The Athanasian Creed is not talking about unbelievers, but about deserters
+                - [[Logical/Claim]] Not all changes of belief are exempt from blame
+            - Semantic
+                - [[Semantic/Definition]] The operative word is "keep"; not acquire, or even believe, but keep
+        - Scripture-References
+        - Proper-Nouns:: [[Athanasius]], [[Athanasian Creed]], [[On the Incarnation]], [[De Incarnatione]]
+    - Chunk:: But this is not my immediate concern. I mention the creed (commonly called of St. Athanasius) only to get out of the reader's way what may have been a bogey and to put the true Athanasius in its place. His epitaph is Athanasius contra mundum, "Athanasius against the world." We are proud that our own country has more than once stood against the world. Athanasius did the same. He stood for the Trinitarian doctrine, "whole and undefiled," when it looked as if all the civilised world was slipping back from Christianity into the religion of Arius into one of those "sensible" synthetic religions which are so strongly recommended today and which, then as now, included among their devotees many highly cultivated clergymen. It is his glory that he did not move with the times; it is his reward that he now remains when those times, as all times do, have moved away.
+        - Topics:: [[Topic/Church History]], [[Topic/Systematic Theology]], [[Topic/Historic Confessions]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Courage]], [[Concept/Time]]
+        - Themes:: [[Contra Mundum]], [[Standing Against Fashion]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] Athanasius stood for Trinitarian doctrine when the civilized world was slipping back into Arianism
+                - [[Logical/Claim]] It is his glory that he did not move with the times; it is his reward that he now remains when those times have moved away
+            - Semantic
+                - [[Semantic/Example]] Arianism was one of those "sensible" synthetic religions recommended in his day, like today
+            - Narrative
+                - [[Narrative/Person]] Athanasius as one who stood against the world
+                - [[Narrative/Conflict]] Athanasius versus the contemporary theological fashion of his era
+        - Scripture-References
+        - Proper-Nouns:: [[Athanasius]], [[Arius]]
+    - Chunk:: When I first opened his De Incarnatione I soon discovered be a very simple test that I was reading a masterpiece. I knew very little Christian Greek except that of the New Testament and I had expected difficulties. To my astonishment I found it almost as easy as Xenophon; and only a master mind could, in the fourth century, have written so deeply on such a subject with such classical simplicity. Every page I read confirmed this impression. His approach to the Miracles is badly needed today, for it is the final answer to those who object to them as "arbitrary and meaningless violations of the laws of Nature." They are here shown to be rather the re-telling in capital letters of the same message which Nature writes in her crabbed cursive hand; the very operations one would expect of Him who was so full of life that when He wished to die He had to "borrow death from others." The whole book, indeed, is a picture of the Tree of Life a sappy and golden book, full of buoyancy and confidence. We cannot, I admit, appropriate all its confidence today. We cannot point to the high virtue of Christian living and the gay, almost mocking courage of Christian martyrdom, as a proof of our doctrines with quite that assurance which Athanasius takes as a matter of course. But whoever may be to blame for that it is not Athanasius.
+        - Topics:: [[Topic/Systematic Theology]], [[Topic/Literature]]
+        - Concepts:: [[Concept/Nature]], [[Concept/Life and Death]], [[Concept/Truth]]
+        - Themes:: [[Classical Simplicity]], [[Miracles as Divine Language]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] Miracles are the very operations one would expect of Him who was so full of life that when He wished to die He had to "borrow death from others."
+                - [[Logical/Claim]] Only a master mind could, in the fourth century, have written so deeply on such a subject with such classical simplicity
+            - Symbolic
+                - [[Symbolic/Metaphor]] Miracles are the re-telling in capital letters of the same message which Nature writes in her crabbed cursive hand.
+                - [[Symbolic/Metaphor]] "On the Incarnation" by Athansius is like the Tree of Life a sappy and golden book, full of buoyancy and confidence.
+            - Personal
+                - [[Personal/Experience]] When I first read "De Incarnatione" I recognized it as a masterpiece through its classical simplicity
+        - Scripture-References
+        - Proper-Nouns:: [[On the Incarnation]], [[De Incarnatione]], [[Xenophon]], [[Tree of Life]]
+    - Chunk:: The translator knows so much more Christian Greek than I that it would be out of place for me to praise her version. But it seems to me to be in the right tradition of English translation. I do not think the reader will find here any of that sawdusty quality which is so common in modern renderings from the ancient languages. That is as much as the English reader will notice; those who compare the version with the original will be able to estimate how much wit and talent is presupposed in such a choice, for example, as "these wiseacres" on the very first page.
+        - Topics:: [[Topic/Language]]
+        - Concepts:: [[Concept/Language]], [[Concept/Art]]
+        - Themes:: [[Quality Translation]]
+        - Function::
+            - Logical
+                - [[Logical/Claim]] This translation is in the right tradition of English translation
+                - [[Logical/Claim]] The reader will not find the sawdusty quality common in modern renderings from ancient languages
+            - Semantic
+                - [[Semantic/Example]] The choice of "these wiseacres" demonstrates wit and talent in translation
+            - Symbolic
+                - [[Symbolic/Metaphor]] Poor translations have a "sawdusty quality"
+            - [[Reference/Reference]]
+                - [[Reference/Commentary]] Praise for the translator's skill and choice of English expressions
+        - Scripture-References
+        - Proper-Nouns
