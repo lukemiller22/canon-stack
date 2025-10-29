@@ -1,0 +1,173 @@
+- # Source Metadata
+    - Core-Identification
+        - Source-ID:: 3
+        - Title:: [[Here I Stand]]
+        - Subtitle:: Speech at the Diet of Worms
+        - Author-Primary:: [[Martin Luther]]
+        - Author-Additional::
+        - Editor::
+        - Translator::
+        - Publication-Year:: [[1521]]
+    - Source-Classification
+        - Genre-Primary:: [[Speech]]
+        - Genre-Secondary:: [[Defense]], [[Theological Declaration]]
+    - Content-Characteristics
+        - Length-Words:: 1288
+        - Length-Chunks:: 10
+        - Chapters:: false
+        - Sections:: false
+    - Theological-Coverage
+        - Topics:: [[Topic/Reformation]], [[Topic/Biblical Authority]], [[Topic/Courage]], [[Topic/Conscience]], [[Topic/Roman Catholicism]], [[Topic/False Teaching]], [[Topic/The Gospel]], [[Topic/Faith]], [[Topic/Providence of God]], [[Topic/Government & Politics]], [[Topic/Personal Holiness]], [[Topic/Humility]], [[Topic/Truth]], [[Topic/Conflict Resolution]], [[Topic/Biblical Figures]], [[Topic/Persecution]], [[Topic/Tyranny]]
+- # Chunks
+    - Chunk:: Most Serene Emperor, Illustrious Princes, Gracious Lords: I this day appear before you in all humility, according to your command, and I implore your majesty and your august highnesses, by the mercies of God, to listen with favor to the defense of a cause which I am well assured is just and right. I ask pardon, if by reason of my ignorance, I am wanting in the manners that befit a court; for I have not been brought up in king’s palaces, but in the seclusion of a cloister; and I claim no other merit than that of having spoken and written with the simplicity of mind which regards nothing but the glory of God and the pure instruction of the people of Christ.
+        - Topics:: [[Topic/Reformation]], [[Topic/Church History]], [[Topic/Courage]]
+        - Concepts:: [[Concept/Courage]], [[Concept/Duty]], [[Concept/Truth]]
+        - Themes:: [[Humble Defense of Truth]], [[Court vs Cloister]], [[Divine Authority vs Human Authority]]
+        - Function::
+            - [[Personal/Speech]] "I this day appear before you in all humility, according to your command"
+            - [[Personal/Identity]] Luther identifies himself as one brought up in monastic seclusion rather than royal courts
+            - [[Personal/Intention]] "I claim no other merit than that of having spoken and written with the simplicity of mind which regards nothing but the glory of God"
+            - [[Narrative/Person]] Most Serene Emperor, Illustrious Princes
+            - [[Narrative/Situation]] Formal court proceeding where Luther must defend his position
+            - [[Practical/Objective]] To defend a cause which he believes is just and right
+            - [[Logical/Claim]] The cause he defends is just and right
+        - Scripture-References::
+        - Proper-Nouns:: [[Martin Luther]], [[Holy Roman Emperor]], [[Diet of Worms]]
+    - Chunk:: Two questions were yesterday put to me by his imperial majesty; the first, whether I was the author of the books whose titles were read; the second, whether I wished to revoke or defend the doctrine I have taught. I answered the first directly, and I adhere to that answer: that these books are mine and published by me, except so far as they may have been altered or interpolated by the craft or officiousness of opponents. As for the second question, I am now about to reply to it; and I must first entreat your Majesty and your Highnesses to deign to consider that I have composed writings on very different subjects. In some I have discussed Faith and Good Works, in a spirit at once so pure, clear, and Christian, that even my adversaries themselves, far from finding anything to censure, confess that these writings are profitable, and deserve to be perused by devout persons. The pope’s bull, violent as it is, acknowledges this. What, then, should I be doing if I were now to retract these writings? Wretched man! I alone, of all men living, should be abandoning truths approved by the unanimous voice of friends and enemies, and should be opposing doctrines that the whole world glories in confessing!
+        - Topics:: [[Topic/Reformation]], [[Topic/Biblical Authority]], [[Topic/Faith]], [[Topic/The Gospel]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Duty]], [[Concept/Good and Evil]]
+        - Themes:: [[Defense of Written Works]], [[Universal Recognition of Truth]], [[Categorical Distinction of Writings]]
+        - Function::
+            - [[Personal/Speech]] "I answered the first directly, and I adhere to that answer"
+            - [[Personal/Decision]] Luther refuses to retract writings on faith and good works
+            - [[Logical/Claim]] These writings are profitable and deserve to be perused by devout persons
+            - [[Logical/Evidence]] Even my adversaries confess that these writings are profitable
+            - [[Logical/Evidence]] The pope's bull, violent as it is, acknowledges this
+            - [[Practical/Strategy]] Luther categorizes his writings by subject to make distinctions in his defense
+            - [[Semantic/Category]] Some writings discuss Faith and Good Works in a pure, clear, and Christian spirit
+            - [[Narrative/Event]] Two questions put to Luther by the imperial majesty yesterday
+        - Scripture-References::
+        - Proper-Nouns:: [[Martin Luther]], [[Holy Roman Emperor]], [[Pope]], [[Papal Bull]]
+    - Chunk:: I have composed, secondly, certain works against the papacy, wherein I have attacked such as by false doctrines, irregular lives, and scandalous examples, afflict the Christian world, and ruin the bodies and souls of men. And is not this confirmed by the grief of all who fear God? Is it not manifest that the laws and human doctrines of the popes entangle, vex, and distress the consciences of the faithful, while the crying and endless extortions of Rome engulf the property and wealth of Christendom, and more particularly of this illustrious nation? Yet it is a perpetual statute that the laws and doctrines of the pope be held erroneous and reprobate when they are contrary to the Gospel and the opinions of the church fathers.
+        - Topics:: [[Topic/Reformation]], [[Topic/Roman Catholicism]], [[Topic/False Teaching]], [[Topic/Biblical Authority]]
+        - Concepts:: [[Concept/Law]], [[Concept/Duty]], [[Concept/Wealth]]
+        - Themes:: [[Papal Corruption]], [[Burden on Conscience]], [[Economic Exploitation]], [[Gospel vs Human Tradition]]
+        - Function::
+            - [[Personal/Speech]] "I have composed, secondly, certain works against the papacy"
+            - [[Logical/Claim]] False doctrines, irregular lives, and scandalous examples afflict the Christian world
+            - [[Logical/Evidence]] "Is not this confirmed by the grief of all who fear God?"
+            - [[Logical/Claim]] The laws and human doctrines of the popes entangle, vex, and distress the consciences of the faithful
+            - [[Logical/Claim]] The crying and endless extortions of Rome engulf the property and wealth of Christendom
+            - [[Practical/Principle]] The laws and doctrines of the pope be held erroneous and reprobate when they are contrary to the Gospel and the opinions of the church fathers
+            - [[Semantic/Category]] Works against the papacy as distinct from works on faith and good works
+            - [[Reference/Cross-Reference]] Appeal to the Gospel and church fathers as authority
+        - Scripture-References::
+        - Proper-Nouns:: [[Martin Luther]], [[Rome]], [[Pope]], [[Papacy]], [[Gospel]], [[Church Fathers]], [[Christendom]]
+    - Chunk:: If I were to revoke what I have written on that subject, what should I do but strengthen this tyranny, and open a wider door to so many and flagrant impieties? Bearing down all resistance with fresh fury, we should behold these proud men swell, foam, and rage more than ever! And not merely would the yoke which now weighs down Christians be made more grinding by my retractation it would thereby become, so to speak, lawful, for, by my retractation, it would receive confirmation from your most serene majesty, and all the States of the Empire. Great God! I should thus be like to an infamous cloak, used to hide and cover over every kind of malice and tyranny.
+        - Topics:: [[Topic/Reformation]], [[Topic/Tyranny]], [[Topic/Courage]], [[Topic/Persecution]]
+        - Concepts:: [[Concept/Tyranny]], [[Concept/Justice]], [[Concept/God]]
+        - Themes:: [[Consequences of Compromise]], [[Tyranny Legitimized]], [[Personal Integrity vs Political Pressure]]
+        - Function::
+            - [[Logical/Conditional]] If I were to revoke what I have written, then I would strengthen this tyranny
+            - [[Logical/Claim]] Retraction would open a wider door to flagrant impieties
+            - [[Logical/Claim]] The yoke which now weighs down Christians would be made more grinding by retraction
+            - [[Symbolic/Metaphor]] Luther would become "like to an infamous cloak, used to hide and cover over every kind of malice and tyranny"
+            - [[Symbolic/Metaphor]] Proud men would "swell, foam, and rage more than ever"
+            - [[Personal/Emotion]] "Great God!" - expression of horror at the prospect
+            - [[Logical/Assumption]] Retraction would receive confirmation from the Emperor and States of the Empire
+            - [[Narrative/Conflict]] Luther's stand against tyrannical authority
+        - Scripture-References::
+        - Proper-Nouns:: [[Martin Luther]], [[Holy Roman Emperor]], [[States of the Empire]], [[God]]
+    - Chunk:: In the third and last place, I have written some books against private individuals, who had undertaken to defend the tyranny of Rome by destroying the faith. I freely confess that I may have attacked such persons with more violence than was consistent with my profession as an ecclesiastic: I do not think of myself as a saint; but neither can I retract these books. Because I should, by so doing, sanction the impieties of my opponents, and they would thence take occasion to crush God’s people with still more cruelty.
+        - Topics:: [[Topic/Reformation]], [[Topic/Roman Catholicism]], [[Topic/Personal Holiness]], [[Topic/Persecution]]
+        - Concepts:: [[Concept/Justice]], [[Concept/Virtue and Vice]], [[Concept/Truth]]
+        - Themes:: [[Admission of Personal Failure]], [[Defense of the Faithful]], [[Categorical Defense Strategy]]
+        - Function::
+            - [[Personal/Confession]] "I freely confess that I may have attacked such persons with more violence than was consistent with my profession as an ecclesiastic"
+            - [[Personal/Identity]] "I do not think of myself as a saint"
+            - [[Personal/Decision]] "but neither can I retract these books"
+            - [[Logical/Claim]] Retraction would sanction the impieties of my opponents
+            - [[Logical/Claim]] They would thence take occasion to crush God's people with still more cruelty
+            - [[Semantic/Category]] Books against private individuals who defended the tyranny of Rome
+            - [[Practical/Strategy]] Luther acknowledges fault while maintaining his position
+            - [[Narrative/Conflict]] Luther versus individual defenders of Roman tyranny
+        - Scripture-References::
+        - Proper-Nouns:: [[Martin Luther]], [[Rome]], [[God's People]]
+    - Chunk:: Yet, as I am a mere man, and not God, I will defend myself after the example of Jesus Christ, who said: “If I have spoken evil, bear witness against me; but if well, why doest thou strike me?” (John xviii:23). How much more should I, who am but dust and ashes, and so prone to error, desire that every one should bring forward what he can against my doctrine. Therefore, most serene emperor, and you illustrious princes, and all, whether high or low, who hear me, I implore you by the mercies of God to prove to me by the writings of the prophets and apostles that I am in error. As soon as I shall be convinced, I will instantly retract all my errors, and will myself be the first to seize my writings, and commit them to the flames.
+        - Topics:: [[Topic/Biblical Authority]], [[Topic/Reformation]], [[Topic/Humility]], [[Topic/Truth]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Duty]], [[Concept/Justice]]
+        - Themes:: [[Following Christ's Example]], [[Appeal to Scripture Alone]], [[Conditional Submission to Truth]]
+        - Function::
+            - [[Personal/Confession]] "as I am a mere man, and not God"
+            - [[Personal/Identity]] "I, who am but dust and ashes, and so prone to error"
+            - [[Reference/Citation]] "If I have spoken evil, bear witness against me; but if well, why doest thou strike me?" (John xviii:23)
+            - [[Logical/Conditional]] "As soon as I shall be convinced, I will instantly retract all my errors"
+            - [[Personal/Request]] "I implore you by the mercies of God to prove to me by the writings of the prophets and apostles that I am in error"
+            - [[Practical/Principle]] Defense should follow the example of Jesus Christ
+            - [[Practical/Principle]] Scripture alone as the authority for determining doctrinal error
+            - [[Symbolic/Metaphor]] Luther would "seize my writings, and commit them to the flames"
+            - [[Semantic/Example]] Christ's response when struck as model for defense
+        - Scripture-References:: John 18:23, [[Prophets]], [[Apostles]]
+        - Proper-Nouns:: [[Martin Luther]], [[Jesus Christ]], [[Holy Roman Emperor]], [[John]], [[Prophets]], [[Apostles]]
+    - Chunk:: What I have just said will, I think, clearly show that I have well considered and weighed, not only the dangers to which I am exposing myself, but also the parties and dissensions excited in the world by means of my doctrine, of which I was yesterday so gravely admonished. But far from being dismayed by them, I rejoice exceedingly to see the Gospel this day, as of old, a cause of disturbance and disagreement; for such is the character and destiny of God’s word. “I came not to send peace unto the earth, but a sword,” said Jesus Christ. “For I am come to set a man at variance against his father, and the daughter against her mother, and the daughter-in-law against her mother-in-law; and a man’s foees shall be those of his own household.” (Matthew x:34-36)
+        - Topics:: [[Topic/The Gospel]], [[Topic/Reformation]], [[Topic/Conflict Resolution]], [[Topic/Courage]]
+        - Concepts:: [[Concept/War and Peace]], [[Concept/Truth]], [[Concept/Fate]]
+        - Themes:: [[Gospel as Sword]], [[Divine Disturbance]], [[Expected Opposition to Truth]]
+        - Function::
+            - [[Personal/Thought]] "What I have just said will, I think, clearly show that I have well considered and weighed"
+            - [[Personal/Emotion]] "But far from being dismayed by them, I rejoice exceedingly"
+            - [[Logical/Claim]] The Gospel is by character and destiny a cause of disturbance and disagreement
+            - [[Reference/Citation]] "I came not to send peace unto the earth, but a sword" and following verses (Matthew x:34-36)
+            - [[Semantic/Example]] Christ's words about bringing division as explanation for current conflicts
+            - [[Practical/Mental Model]] Opposition to the Gospel follows predictable patterns established by Christ
+            - [[Narrative/Conflict]] Parties and dissensions excited in the world by Luther's doctrine
+            - [[Symbolic/Metaphor]] The Gospel as a sword that divides
+        - Scripture-References:: Matthew 10:34-36
+        - Proper-Nouns:: [[Martin Luther]], [[Jesus Christ]], [[Gospel]], [[Matthew]]
+    - Chunk:: God is wonderful and terrible in His counsels. Let us have a care, lest in our endeavors to arrest discords, we be bound to fight against the holy word of God and bring down upon our heads a frightful deluge of inextricable dangers, present disaster, and everlasting desolations. Let us have a care that the reign of the young and noble prince, the Emperor Charles, on whom, next to God, we build so many hopes, should not only commence, but continue and terminate its course, under the most favorable auspices.
+        - Topics:: [[Topic/Providence of God]], [[Topic/Government & Politics]], [[Topic/Reformation]], [[Topic/Wrath of God]]
+        - Concepts:: [[Concept/God]], [[Concept/Government]], [[Concept/Fate]]
+        - Themes:: [[Divine Warning]], [[Political Prudence]], [[God's Sovereignty over Rulers]]
+        - Function::
+            - [[Logical/Claim]] God is wonderful and terrible in His counsels
+            - [[Practical/Imperative]] Let us have a care, lest in our endeavors to arrest discords, we be bound to fight against the holy word of God
+            - [[Logical/Conditional]] If we fight against God's word, we will bring down frightful deluge of dangers and desolations
+            - [[Personal/Desire]] Luther expresses hope for Emperor Charles's favorable reign
+            - [[Practical/Imperative]] Let us have a care that the reign should commence, continue and terminate under favorable auspices
+            - [[Narrative/Person]] The young and noble prince, the Emperor Charles
+            - [[Symbolic/Metaphor]] "frightful deluge of inextricable dangers, present disaster, and everlasting desolations"
+            - [[Reference/Allusion]] Implicit reference to divine judgment on those who oppose God's word
+        - Scripture-References::
+        - Proper-Nouns:: [[Martin Luther]], [[God]], [[Emperor Charles]], [[Charles V]]
+    - Chunk:: I might cite examples drawn from the oracles of God. I might speak of Pharaohs, of kings of Babylon, or of Israel, who were never more contributing to their own ruin than when, by measures in appearances most prudent, they thought to establish their authority! God removeth the mountains and they know not (Job ix:5). In speaking thus, I do not suppose that such noble princes have need of my poor judgment; but I wish to acquit myself of a duty whose fulfillment my native Germany has a right to expect from her children. And so commending myself to your august majesty, and your most serene highnesses, I beseech you in all humility, not to permit the hatred of my enemies to rain upon me an indignation I have not deserved. I have done.
+        - Topics:: [[Topic/Providence of God]], [[Topic/Government & Politics]], [[Topic/Biblical Figures]], [[Topic/Courage]]
+        - Concepts:: [[Concept/Government]], [[Concept/Duty]], [[Concept/Fate]]
+        - Themes:: [[Historical Warnings]], [[Patriotic Duty]], [[Divine Judgment on Rulers]], [[Final Appeal]]
+        - Function::
+            - [[Semantic/Example]] Pharaohs, kings of Babylon, or Israel who contributed to their own ruin
+            - [[Reference/Citation]] "God removeth the mountains and they know not" (Job ix:5)
+            - [[Logical/Claim]] Rulers are never more contributing to their own ruin than when they think prudent measures will establish their authority
+            - [[Personal/Duty]] "I wish to acquit myself of a duty whose fulfillment my native Germany has a right to expect from her children"
+            - [[Personal/Request]] "I beseech you in all humility, not to permit the hatred of my enemies to rain upon me an indignation I have not deserved"
+            - [[Personal/Speech]] "I have done" - conclusion of his defense
+            - [[Narrative/Place]] Native Germany
+            - [[Practical/Mental Model]] Historical patterns of divine judgment provide warnings for contemporary rulers
+        - Scripture-References:: Job 9:5, [[Pharaohs]], [[Kings of Babylon]], [[Kings of Israel]]
+        - Proper-Nouns:: [[Martin Luther]], [[God]], [[Pharaohs]], [[Babylon]], [[Israel]], [[Germany]], [[Job]]
+    - Chunk:: Since your most serene majesty and your lordships require of me a simple, clear and direct answer, I will give one, and it is this: Unless I am convinced by the testimony of the Scriptures and by clear reason (for I do not trust in the pope or councils alone, since it is well known that they have often erred and contradicted themselves), I am bound by the Scriptures I have quoted. My conscience is captive to the Word of God. I cannot and I will not retract anything, since it is neither safe nor right to go against conscience. Here I stand. I cannot do otherwise. God help me. Amen.
+        - Topics:: [[Topic/Biblical Authority]], [[Topic/Reformation]], [[Topic/Conscience]], [[Topic/Courage]]
+        - Concepts:: [[Concept/Truth]], [[Concept/Duty]], [[Concept/God]]
+        - Themes:: [[Sola Scriptura]], [[Captive Conscience]], [[Final Stand]], [[Divine Authority vs Human Authority]]
+        - Function::
+            - [[Personal/Decision]] "I cannot and I will not retract anything"
+            - [[Personal/Speech]] "Here I stand. I cannot do otherwise"
+            - [[Personal/Request]] "God help me. Amen"
+            - [[Logical/Claim]] The pope and councils have often erred and contradicted themselves
+            - [[Logical/Conditional]] Unless I am convinced by Scripture and clear reason, I will not retract
+            - [[Practical/Principle]] It is neither safe nor right to go against conscience
+            - [[Practical/Principle]] My conscience is captive to the Word of God
+            - [[Reference/Cross-Reference]] "I am bound by the Scriptures I have quoted"
+            - [[Narrative/Event]] Luther's final declaration before the Diet
+            - [[Personal/Belief]] I do not trust in the pope or councils alone
+        - Scripture-References:: [[Scriptures]], [[Word of God]]
+        - Proper-Nouns:: [[Martin Luther]], [[Holy Roman Emperor]], [[Pope]], [[Councils]], [[God]], [[Scriptures]], [[Word of God]]

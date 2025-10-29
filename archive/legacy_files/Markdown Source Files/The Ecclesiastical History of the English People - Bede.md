@@ -1,0 +1,162 @@
+- # Source Metadata
+    - **Core-Identification**
+        - Source-ID:: 2
+        - Title:: [[Ecclesiastical History of the English People]]
+        - Subtitle::
+        - Author-Primary:: [[Bede]]
+        - Author-Additional::
+        - Editor::
+        - Translator::
+        - Publication-Year:: [[731]]
+    - **Source-Classification**
+        - Genre-Primary:: [[History]]
+        - Genre-Secondary:: [[Church History]]
+    - **Content-Characteristics**
+        - Length-Words::
+        - Length-Chunks:: 10
+        - Chapters:: true
+        - Sections:: true
+    - **Theological-Coverage**
+        - Topics:: [[Topic/Church History]], [[Topic/Early Church]], [[Topic/World Missions]], [[Topic/Evangelism]], [[Topic/Pastoral Ministry]], [[Topic/Church Leadership]], [[Topic/Biblical Interpretation]], [[Topic/False Teaching]], [[Topic/Resurrection and the Body]], [[Topic/Preaching and Teaching]], [[Topic/Study & Scholarship]], [[Topic/Generosity]], [[Topic/Poverty]], [[Topic/Miracles of Christ]], [[Topic/Corporate Worship]], [[Topic/Death and Dying]]
+- # Chunks
+    - ## Book 2
+        - ### Chapter 1
+            - Chunk:: At this time, that is, in the year of our Lord 605, the blessed Pope Gregory, after having most gloriously governed the Roman Apostolic see thirteen years, six months, and ten days, died, and was translated to an eternal abode in the kingdom of Heaven. Of whom, seeing that by his zeal he converted our nation, the English, from the power of Satan to the faith of Christ, it behoves us to discourse more at large in our Ecclesiastical History, for we may rightly, nay, we must, call him our apostle; because, as soon as he began to wield the pontifical power over all the world, and was placed over the Churches long before converted to the true faith, he made our nation, till then enslaved to idols, the Church of Christ, so that concerning him we may use those words of the Apostle; "if he be not an apostle to others, yet doubtless he is to us; for the seal of his apostleship are we in the Lord."
+                - **Topics:** [[Topic/Church History]], [[Topic/Early Church]], [[Subject/Church Leadership]]
+                - **Concepts:** [[Concept/Religion]], [[Concept/History]], [[Concept/Conversion]]
+                - **Themes:** [[Gregory as English Apostle]], [[Divine Authority in Mission]]
+                - **Function:**
+                    - [[Narrative/Time]] In the year of our Lord 605
+                    - [[Narrative/Person]] Pope Gregory who governed the Roman Apostolic see
+                    - [[Logical/Claim]] Gregory can rightly be called "our apostle" because he converted the English nation from idols to Christ
+                    - [[Reference/Citation]] "if he be not an apostle to others, yet doubtless he is to us; for the seal of his apostleship are we in the Lord"
+                    - [[Semantic/Context]] Gregory's role as converter of the English nation from paganism to Christianity
+                - **Scripture-References:** 1 Corinthians 9:2
+                - **Proper-Nouns:** [[Pope Gregory]], [[Roman Apostolic see]], [[English]], [[Satan]], [[Christ]], [[Church of Christ]], [[Apostle]]
+            - Chunk:: He was by nation a Roman, son of Gordianus, tracing his descent from ancestors that were not only noble, but religious. Moreover Felix, once bishop of the same Apostolic see, a man of great honour in Christ and in the Church, was his forefather, Nor did he show his nobility in religion by less strength of devotion than his parents and kindred. But that nobility of this world which was seen in him, by the help of the Divine Grace, he used only to gain the glory of eternal dignity; for soon quitting his secular habit, he entered a monastery, wherein he began to live with so much grace of perfection that (as he was wont afterwards with tears to testify) his mind was above all transitory things; that he rose superior to all that is subject to change; that he used to think of nothing but what was heavenly; that, whilst detained by the body, he broke through the bonds of the flesh by contemplation; and that he even loved death, which is a penalty to almost all men, as the entrance into life, and the reward of his labours. This he used to say of himself, not to boast of his progress in virtue, but rather to bewail the falling off which he imagined he had sustained through his pastoral charge. Indeed, once in a private conversation with his deacon, Peter, after having enumerated the former virtues of his soul, he added sorrowfully, "But now, on account of the pastoral charge, it is entangled with the affairs of laymen, and, after so fair an appearance of inward peace, is defiled with the dust of earthly action. And having wasted itself on outward things, by turning aside to the affairs of many men, even when it desires the inward things, it returns to them undoubtedly impaired. I therefore consider what I endure, I consider what I have lost, and when I behold what I have thrown away; that which I bear appears the more grievous."
+                - **Topics:** [[Topic/Church History]], [[Topic/Pastoral Ministry]], [[Subject/Spiritual Growth]]
+                - **Concepts:** [[Concept/Religion]], [[Concept/Virtue and Vice]], [[Concept/Duty]]
+                - **Themes:** [[Nobility Transformed by Grace]], [[Pastoral Burden vs Contemplative Life]], [[Sacred vs Secular Tension]]
+                - **Function:**
+                    - [[Narrative/Person]] Gregory as Roman, son of Gordianus, descendant of noble and religious ancestors
+                    - [[Narrative/Person]] Felix, former bishop and Gregory's forefather
+                    - [[Personal/Experience]] Gregory's transition from secular to monastic life
+                    - [[Personal/Lament]] Gregory's sorrow over the spiritual decline he perceives from pastoral duties
+                    - [[Reference/Citation]] "But now, on account of the pastoral charge, it is entangled with the affairs of laymen..."
+                    - [[Logical/Claim]] Pastoral responsibilities inevitably compromise contemplative spiritual life
+                    - [[Semantic/Context]] The tension between worldly duties and spiritual devotion in church leadership
+                - **Scripture-References:**
+                - **Proper-Nouns:** [[Gregory]], [[Roman]], [[Gordianus]], [[Felix]], [[Divine Grace]], [[Peter]]
+            - Chunk:: So spake the holy man constrained by his great humility. But it behoves us to believe that he lost nothing of his monastic perfection by reason of his pastoral charge, but rather that he gained greater profit through the labour of converting many, than by the former calm of his private life, and chiefly because, whilst holding the pontifical office, he set about organizing his house like a monastery. And when first drawn from the monastery, ordained to the ministry of the altar, and sent to Constantinople as representative of the Apostolic see, though he now took part in the secular affairs of the palace, yet he did not abandon the fixed course of his heavenly life; for some of the brethren of his monastery, who had followed him to the royal city in their brotherly love, he employed for the better observance of monastic rule, to the end that at all times, by their example, as he writes himself, he might be held fast to the calm shore of prayer, as it were, with the cable of an anchor, whilst he should be tossed up and down by the ceaseless waves of worldly affairs; and daily in the intercourse of studious reading with them, strengthen his mind shaken with temporal concerns. By their company he was not only guarded against the assaults of the world, but more and more roused to the exercises of a heavenly life.
+                - **Topics:** [[Topic/Pastoral Ministry]], [[Topic/Personal Holiness]], [[Topic/Spiritual Leadership]]
+                - **Concepts:** [[Concept/Virtue and Vice]], [[Concept/Duty]], [[Concept/Religion]]
+                - **Themes:** [[Monastic Discipline in Secular Office]], [[Spiritual Anchoring]], [[Community Support in Leadership]]
+                - **Function:**
+                    - [[Logical/Objection]] Bede challenges Gregory's self-assessment of spiritual decline
+                    - [[Logical/Claim]] Gregory gained greater profit through converting many than through private monastic calm
+                    - [[Practical/Strategy]] Gregory organized his pontifical house like a monastery
+                    - [[Narrative/Action]] Gregory brought monastery brethren to Constantinople for spiritual support
+                    - [[Symbolic/Metaphor]] Prayer as "calm shore" and monastic brethren as "cable of an anchor" against "ceaseless waves of worldly affairs"
+                    - [[Practical/Habit]] Daily studious reading with brethren to strengthen his mind
+                    - [[Semantic/Context]] Maintaining spiritual discipline while engaged in secular diplomatic duties
+                - **Scripture-References:**
+                - **Proper-Nouns:** [[Gregory]], [[Constantinople]], [[Apostolic see]], [[Royal City]]
+            - Chunk:: For they persuaded him to interpret by a mystical exposition the book of the blessed Job, which is involved in great obscurity; nor could he refuse to undertake that work, which brotherly affection imposed on him for the future benefit of many; but in a wonderful manner, in five and thirty books of exposition, he taught how that same book is to be understood literally; how to be referred to the mysteries of Christ and the Church; and in what sense it is to be adapted to every one of the faithful. This work he began as papal representative in the royal city, but finished it at Rome after being made pope. Whilst he was still in the royal city, by the help of the grace of Catholic truth, he crushed in its first rise a new heresy which sprang up there, concerning the state of our resurrection. For Eutychius, bishop of that city, taught, that our body, in the glory of resurrection, would be impalpable, and more subtle than wind and air. The blessed Gregory hearing this, proved by force of truth, and by the instance of the Resurrection of our Lord, that this doctrine was every way opposed to the orthodox faith. For the Catholic faith holds that our body, raised by the glory of immortality, is indeed rendered subtile by the effect of spiritual power, but is palpable by the reality of nature; according to the example of our Lord's Body, concerning which, when risen from the dead, He Himself says to His disciples, "Handle Me and see, for a spirit hath not flesh and bones, as ye see Me have. In maintaining this faith, the venerable Father Gregory so earnestly strove against the rising heresy, and with the help of the most pious emperor, Tiberius Constantine, so fully suppressed it, that none has been since found to revive it.
+                - **Topics:** [[Topic/Biblical Interpretation]], [[Topic/False Teaching]], [[Topic/Resurrection and the Body]]
+                - **Concepts:** [[Concept/Theology]], [[Concept/Truth]], [[Concept/Religion]]
+                - **Themes:** [[Mystical Biblical Exposition]], [[Orthodox Resurrection Doctrine]], [[Imperial Support for Orthodoxy]]
+                - **Function:**
+                    - [[Narrative/Action]] Gregory interpreted the book of Job in thirty-five books of exposition
+                    - [[Practical/Strategy]] Gregory taught Job on three levels: literal, mystical (Christ and Church), and personal application
+                    - [[Logical/Claim]] Catholic faith holds that resurrected bodies are both spiritually subtle and physically palpable
+                    - [[Logical/Error]] Eutychius taught that resurrection bodies would be impalpable and more subtle than wind and air
+                    - [[Reference/Citation]] "Handle Me and see, for a spirit hath not flesh and bones, as ye see Me have"
+                    - [[Narrative/Conflict]] Gregory versus the heresy of Eutychius about resurrection bodies
+                    - [[Logical/Evidence]] Christ's post-resurrection body as proof of orthodox teaching
+                - **Scripture-References:** Luke 24:39
+                - **Proper-Nouns:** [[Gregory]], [[Job]], [[Christ]], [[Church]], [[Rome]], [[Eutychius]], [[Tiberius Constantine]], [[Catholic faith]]
+            - Chunk:: He likewise composed another notable book, the "Liber Pastoralis," wherein he clearly showed what sort of persons ought to be preferred to rule the Church; how such rulers ought to live; with how much discrimination they ought to instruct the different classes of their hearers, and how seriously to reflect every day on their own frailty. He also wrote forty homilies on the Gospel, which he divided equally into two volumes; and composed four books of Dialogues, in which, at the request of his deacon, Peter, he recounted the virtues of the more renowned saints of Italy, whom he had either known or heard of, as a pattern of life for posterity; to the end that, as he taught in his books of Expositions what virtues men ought to strive after, so by describing the miracles of saints, he might make known the glory of those' virtues. Further, in twenty-two homilies, he showed how much light is latent in the first and last parts of the prophet Ezekiel, which seemed the most obscure. Besides which, he wrote the "Book of Answers," to the questions of the holy Augustine, the first bishop of the English nation, as we have shown above, inserting the same book entire in this history; and the useful little "Synodical Book," which he composed with the bishops of Italy on necessary matters of the Church; as well as private letters to certain persons. And it is the more wonderful that he could write so many lengthy works, seeing that almost all the time of his youth, to use his own words, he was frequently tormented with internal pain, constantly enfeebled by the weakness of his digestion, and oppressed by a low but persistent fever. But in all these troubles, forasmuch as he carefully reflected that, as the Scripture testifies, "He scourgeth every son whom He receiveth," the more severely he suffered under those present evils, the more he assured himself of his eternal hope.
+                - **Topics:** [[Topic/Pastoral Ministry]], [[Topic/Preaching and Teaching]], [[Topic/Study & Scholarship]]
+                - **Concepts:** [[Concept/Education]], [[Concept/Virtue and Vice]], [[Concept/Knowledge]]
+                - **Themes:** [[Pastoral Instruction Literature]], [[Saints as Moral Examples]], [[Suffering as Divine Discipline]]
+                - **Function:**
+                    - [[Structural/List]] Catalog of Gregory's major written works
+                    - [[Practical/Objective]] The "Liber Pastoralis" taught qualifications and conduct for church rulers
+                    - [[Practical/Strategy]] Using saint's lives as patterns for virtue and conduct
+                    - [[Semantic/Description]] Forty homilies on the Gospel divided into two volumes
+                    - [[Narrative/Person]] Augustine as first bishop of the English nation
+                    - [[Personal/Experience]] Gregory's frequent torment with internal pain and digestive weakness
+                    - [[Reference/Citation]] "He scourgeth every son whom He receiveth"
+                    - [[Logical/Claim]] Gregory's physical sufferings increased his assurance of eternal hope
+                - **Scripture-References:** Hebrews 12:6
+                - **Proper-Nouns:** [[Liber Pastoralis]], [[Peter]], [[Ezekiel]], [[Book of Answers]], [[Augustine]], [[English nation]], [[Synodical Book]], [[Italy]], [[Scripture]]
+            - Chunk:: Thus much may be said of his immortal genius, which could not be crushed by such severe bodily pains. Other popes applied themselves to building churches or adorning them with gold and silver, but Gregory was wholly intent upon gaining souls. Whatsoever money he had, he took care to distribute diligently and give to the poor, that his righteousness, might endure for ever, and his horn be exalted with honour; so that the words of the blessed Job might be truly said of him, "When the ear heard me, then it blessed me; and when the eye saw me, it gave witness to me: because I delivered the poor that cried, and the fatherless, and him that had none to help him. The blessing of him that was ready to perish came upon me, and I caused the widow's heart to sing for, joy. I put on righteousness, and it clothed me; my judgement was as a robe and a diadem. I was eyes to the blind, and feet was I to the lame. I was a father to the poor; and the cause which I knew not, I searched out. And I brake the jaws of the wicked, and plucked the spoil out of his teeth." And a little after: "If I have withheld," says he, "the poor from their desire; or have caused the eyes of the widow to fail; or have eaten my morsel myself alone, and the fatherless hath not eaten thereof: (for from my youth compassion grew up with me, and from my mother's womb it came forth with me.")
+                - **Topics:** [[Topic/Pastoral Ministry]], [[Topic/Generosity]], [[Topic/Poverty]]
+                - **Concepts:** [[Concept/Justice]], [[Concept/Virtue and Vice]], [[Concept/Good and Evil]]
+                - **Themes:** [[Spiritual vs Material Priorities]], [[Papal Care for the Poor]], [[Job's Righteousness as Model]]
+                - **Function:**
+                    - [[Logical/Claim]] Gregory prioritized gaining souls over building or adorning churches
+                    - [[Semantic/Context]] Contrast between Gregory's approach and other popes' material focus
+                    - [[Narrative/Action]] Gregory distributed money diligently to the poor
+                    - [[Reference/Citation]] Extensive quotation from Job 29 describing care for the poor and defenseless
+                    - [[Symbolic/Metaphor]] Righteousness as clothing: "I put on righteousness, and it clothed me"
+                    - [[Practical/Principle]] Papal duty includes active care for society's most vulnerable
+                    - [[Logical/Evidence]] Job's words used to demonstrate Gregory's character
+                - **Scripture-References:** Job 29:11-17, Job 31:16-18, Psalm 112:9
+                - **Proper-Nouns:** [[Gregory]], [[Job]]
+            - Chunk:: To his works of piety and righteousness this also may be added, that he saved our nation, by the preachers he sent hither, from the teeth of the old enemy, and made it partaker of eternal liberty. Rejoicing in the faith and salvation of our race, and worthily commending it with praise, he says, in his exposition of the blessed Job, "Behold, the tongue of Britain, which only knew how to utter barbarous cries, has long since begun to raise the Hebrew Hallelujah to the praise of God! Behold, the once swelling ocean now serves prostrate at the feet of the saints; and its wild upheavals, which earthly princes could not subdue with the sword, are now, through the fear of God, bound by the lips of priests with words alone; and the heathen that stood not in awe of troops of warriors, now believes and fears the tongues of the humble! For he has received a message from on high and mighty works are revealed; the strength of the knowledge of God is given him, and restrained by the fear of the Lord, he dreads to do evil, and with all his heart desires to attain to everlasting grace." In which words the blessed Gregory shows us this also, that St. Augustine and his companions brought the English to receive the truth, not only by the preaching of words, but also by showing forth heavenly signs.
+                - **Topics:** [[Topic/World Missions]], [[Topic/Evangelism]], [[Topic/Miracles of Christ]]
+                - **Concepts:** [[Concept/Religion]], [[Concept/Good and Evil]], [[Concept/Truth]]
+                - **Themes:** [[British Conversion from Barbarism]], [[Divine Power over Earthly Force]], [[Word and Wonder in Mission]]
+                - **Function:**
+                    - [[Logical/Claim]] Gregory saved the English nation from Satan through missionary preachers
+                    - [[Reference/Citation]] "Behold, the tongue of Britain, which only knew how to utter barbarous cries, has long since begun to raise the Hebrew Hallelujah to the praise of God!"
+                    - [[Symbolic/Metaphor]] Britain as "once swelling ocean now prostrate at the feet of the saints"
+                    - [[Logical/Claim]] Spiritual authority succeeded where military force failed
+                    - [[Semantic/Context]] Augustine's mission combined preaching with miraculous signs
+                    - [[Narrative/Event]] The conversion of the English nation from paganism
+                    - [[Logical/Evidence]] Heavenly signs accompanied the preaching of words
+                - **Scripture-References:**
+                - **Proper-Nouns:** [[Gregory]], [[Britain]], [[Hebrew]], [[Hallelujah]], [[God]], [[Augustine]], [[English]]
+            - Chunk:: The blessed Pope Gregory, among other things, caused Masses to be celebrated in the churches of the holy Apostles, Peter and Paul, over their bodies. And in the celebration of Masses, he added three petitions of the utmost perfection: "And dispose our days in thy peace, and bid us to be preserved from eternal damnation, and to be numbered in the flock of thine elect." He governed the Church in the days of the Emperors Mauritius and Phocas, and passing out of this life in the second year of the same Phocas, departed to the true life which is in Heaven. His body was buried in the church of the blessed Apostle Peter before the sacristy, on the 12th day of March, to rise one day in the same body in glory with the rest of the holy pastors of the Church. On his tomb was written this epitaph: Receive, Earth, his body taken from thine own; thou canst restore it, when God calls to life. His spirit rises to the stars; the claims of death shall not avail against him, for death itself is but the way to new life. In this tomb are laid the limbs of a great pontiff, who yet lives for ever in all places in countless deeds of mercy. Hunger and cold he overcame with food and raiment, and shielded souls from the enemy by his holy teaching. And whatsoever he taught in word, that he fulfilled in deed, that he might be a pattern, even as he spake words of mystic meaning. By his guiding love he brought the Angles to Christ, gaining armies for the Faith from a new people. This was thy toil, thy task, thy care, thy aim as shepherd, to offer to thy Lord abundant increase of the flock. So, Consul of God, rejoice in this thy triumph, for now thou hast the reward of thy works for evermore.
+                - **Topics:** [[Topic/Corporate Worship]], [[Topic/Church History]], [[Topic/Death and Dying]]
+                - **Concepts:** [[Concept/Death]], [[Concept/Religion]], [[Concept/Immortality]]
+                - **Themes:** [[Liturgical Innovation]], [[Death as Passage to Life]], [[Missionary Legacy]]
+                - **Function:**
+                    - [[Narrative/Action]] Gregory instituted Masses at Peter and Paul's tombs and added three liturgical petitions
+                    - [[Reference/Citation]] "And dispose our days in thy peace, and bid us to be preserved from eternal damnation, and to be numbered in the flock of thine elect"
+                    - [[Narrative/Time]] Gregory governed during emperors Mauritius and Phocas, died in second year of Phocas
+                    - [[Narrative/Place]] Buried in church of blessed Apostle Peter before the sacristy on March 12th
+                    - [[Reference/Citation]] Complete epitaph inscription from Gregory's tomb
+                    - [[Symbolic/Theme]] Death as "way to new life" and spiritual triumph
+                    - [[Narrative/Event]] Gregory's bringing of the Angles to Christ as lasting achievement
+                - **Scripture-References:**
+                - **Proper-Nouns:** [[Gregory]], [[Peter]], [[Paul]], [[Mauritius]], [[Phocas]], [[Heaven]], [[Earth]], [[God]], [[Christ]], [[Angles]], [[Consul of God]]
+            - Chunk:: Nor must we pass by in silence the story of the blessed Gregory, handed down to us by the tradition of our ancestors, which explains his earnest care for the salvation of our nation. It is said that one day, when some merchants had lately arrived at Rome, many things were exposed for sale in the market place, and much people resorted thither to buy: Gregory himself went with the rest, and saw among other wares some boys put up for sale, of fair complexion, with pleasing countenances, and very beautiful hair. When he beheld them, he asked, it is said, from what region or country they were brought? and was told, from the island of Britain, and that the inhabitants were like that in appearance. He again inquired whether those islanders were Christians, or still involved in the errors of paganism, and was informed that they were pagans. Then fetching a deep sigh from the bottom of his heart, "Alas! what pity," said he, "that the author of darkness should own men of such fair countenances; and that with such grace of outward form, their minds should be void of inward grace. He therefore again asked, what was the name of that nation? and was answered, that they were called Angles. "Right," said he, "for they have an angelic face, and it is meet that such should be co-heirs with the Angels in heaven. What is the name of the province from which they are brought?" It was replied, that the natives of that province were called Deiri. (Note: Southern Northumbria) "Truly are they Deira," said he, "saved from wrath, and called to the mercy of Christ. How is the king of that called?" They told him his name was Aelli;' and he, playing upon the name, said, "Allelujah, the praise of God the Creator must be sung in those parts."
+                - **Topics:** [[Topic/World Missions]], [[Topic/Evangelism]], [[Topic/Church History]]
+                - **Concepts:** [[Concept/Angel]], [[Concept/Religion]], [[Concept/Good and Evil]]
+                - **Themes:** [[Divine Providence in Mission]], [[Beauty as Evangelistic Motivation]], [[Wordplay as Prophetic Sign]]
+                - **Function:**
+                    - [[Narrative/Event]] Gregory's encounter with Anglo-Saxon slave boys in Roman marketplace
+                    - [[Personal/Emotion]] Gregory's sorrow that beautiful people lack spiritual grace
+                    - [[Reference/Citation]] "Alas! what pity, that the author of darkness should own men of such fair countenances"
+                    - [[Symbolic/Metaphor]] Physical beauty as sign of spiritual potential
+                    - [[Practical/Strategy]] Gregory's wordplay connecting names to missionary destiny
+                    - [[Semantic/Example]] Angles/Angels, Deiri/de ira (from wrath), Aelli/Allelujah
+                    - [[Narrative/Person]] The Anglo-Saxon boys as catalyst for English mission
+                - **Scripture-References:**
+                - **Proper-Nouns:** [[Gregory]], [[Rome]], [[Britain]], [[Angles]], [[Angels]], [[Deiri]], [[Christ]], [[Aelli]], [[Allelujah]], [[God]]
+            - Chunk:: Then he went to the bishop of the Roman Apostolic see (for he was not himself then made pope), and entreated him to send some ministers of the Word into Britain to the nation of the English, that it might be converted to Christ by them; declaring himself ready to carry out that work with the help of God, if the Apostolic Pope should think fit to have it done. But not being then able to perform this task, because, though the Pope was willing to grant his request, yet the citizens of Rome could not be brought to consent that he should depart so far from the city, as soon as he was himself made Pope, he carried out the long-desired work, sending, indeed, other preachers, but himself by his exhortations and prayers helping the preaching to bear fruit. This account, which we have received from a past generation, we have thought fit to insert in our Ecclesiastical History.
+                - **Topics:** [[Topic/World Missions]], [[Topic/Church Leadership]], [[Topic/Church History]]
+                - **Concepts:** [[Concept/Government]], [[Concept/Duty]], [[Concept/Religion]]
+                - **Themes:** [[Delayed Divine Calling]], [[Institutional Constraints on Mission]], [[Prayer Supporting Preaching]]
+                - **Function:**
+                    - [[Narrative/Action]] Gregory petitioned the pope to send missionaries to Britain
+                    - [[Practical/Constraint]] Roman citizens would not consent to Gregory's departure from the city
+                    - [[Logical/Claim]] Gregory fulfilled his missionary vision through others when he became pope
+                    - [[Practical/Strategy]] Gregory supported the mission through exhortations and prayers
+                    - [[Reference/Source]] Account received from past generation and inserted into ecclesiastical history
+                    - [[Narrative/Time]] Events spanning from Gregory as deacon to his papacy
+                    - [[Semantic/Context]] Institutional obstacles to personal missionary service
+                - **Scripture-References:**
+                - **Proper-Nouns:** [[Gregory]], [[Roman Apostolic see]], [[Britain]], [[English]], [[Christ]], [[Pope]], [[Rome]], [[Ecclesiastical History]]

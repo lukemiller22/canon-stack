@@ -1,0 +1,51 @@
+identification:
+  source_id: ORTHODOX_CHESTE
+  title: Orthodoxy
+  subtitle: ''
+  original_title: ''
+  author_primary: Gilbert K. Chesterton
+  author_additional: []
+  translator: ''
+  editor: ''
+publication:
+  original_publication_year: null
+  original_publisher: Christian Classics Ethereal Library, Grand Rapids, MI
+  original_place: ''
+  edition_notes: ''
+  source_format: ccel_xml
+  source_url: ''
+  public_domain_status: true
+  copyright_notes: ''
+theological_classification:
+  primary_genre: Christian Apologetics
+  secondary_genre: ''
+  theological_tradition: ''
+  denominational_affiliation: ''
+  historical_period: ''
+  century: ''
+  theological_movement: ''
+content:
+  language: English
+  original_language: English
+  length_words: null
+  length_pages: null
+  structure_type: monograph
+  chapter_count: 11
+  has_preface: true
+  has_introduction: false
+  has_appendices: false
+  has_bibliography: false
+  has_index: false
+theological_scope:
+  primary_concepts: []
+  theological_topics: []
+  target_audience: ''
+  reading_level: ''
+processing:
+  processor_version: '1.0'
+  processing_date: '2025-10-29T08:32:06.206988'
+  chunk_count: null
+  structure_confidence: 0.0
+  quality_score: 0.0
+  manual_review_required: false
+  processing_notes: Extracted from CCEL XML

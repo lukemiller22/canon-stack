@@ -7,26 +7,56 @@ from sklearn.metrics.pairwise import cosine_similarity
 import re
 from typing import List, Dict, Any
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file (look in parent directories too)
+env_path = Path(__file__).parent.parent.parent / '.env'
+load_dotenv(env_path)
 
 app = Flask(__name__)
 
 # Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("OPENAI_API_KEY not found. Please set it in your .env file.")
+client = OpenAI(api_key=api_key)
 
 # Global variable to store the dataset
 dataset = []
 
 def load_dataset():
-    """Load the theological chunks dataset."""
+    """Load the theological chunks dataset from deployed sources."""
     global dataset
+    from pathlib import Path
+    
+    dataset = []
+    
+    # Get the path to deployed sources (relative to this file)
+    script_dir = Path(__file__).parent
+    deployed_dir = script_dir.parent.parent / 'theological_processing' / '05_deployed'
+    
+    if not deployed_dir.exists():
+        print(f"Error: Deployed directory not found: {deployed_dir}")
+        return False
+    
     try:
-        with open('theological_chunks_with_embeddings.jsonl', 'r', encoding='utf-8') as f:
-            dataset = []
-            for line in f:
-                if line.strip():
-                    chunk = json.loads(line.strip())
-                    dataset.append(chunk)
-        print(f"Loaded {len(dataset)} chunks")
+        # Load all JSONL files from the deployed directory
+        jsonl_files = list(deployed_dir.glob('*.jsonl'))
+        
+        if not jsonl_files:
+            print(f"Warning: No JSONL files found in {deployed_dir}")
+            return False
+        
+        for jsonl_file in jsonl_files:
+            print(f"Loading {jsonl_file.name}...")
+            with open(jsonl_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        chunk = json.loads(line.strip())
+                        dataset.append(chunk)
+        
+        print(f"Loaded {len(dataset)} chunks from {len(jsonl_files)} file(s)")
         return True
     except Exception as e:
         print(f"Error loading dataset: {e}")
@@ -60,14 +90,14 @@ You are a research assistant. Analyze this query and determine the best search s
 Query: "{query}"
 
 Available metadata filters:
-- Topics: Various theological topics (e.g., "Topic/Jesus Christ", "Topic/Deity of Christ")
-- Concepts: Abstract concepts (e.g., "Concept/God", "Concept/Being", "Concept/Truth")
-- Themes: Thematic elements (e.g., "Divine Word", "Life and Light")
-- Function: Rhetorical functions (e.g., "Symbolic/Metaphor", "Logical/Claim", "Narrative/Origin")
-- Scripture References: Biblical references (e.g., "John 1:1", "Deuteronomy 6:4")
-- Proper Nouns: Names and proper nouns (e.g., "Jesus", "Calvin", "Luther")
-- Structure Path: Document structure (e.g., "The Scriptures > John > John 1:1-14")
-- Authors: Source authors (e.g., "John Calvin", "Charles Spurgeon")
+- Topics: Various theological topics (format: "Concept/Topic", e.g., "Apologetics/Personal vs Systematic")
+- Concepts: Abstract concepts (e.g., "Apologetics", "Faith", "Theology")
+- Terms: Key theological terms and phrases (e.g., "sanctification", "justification by faith", "divine sovereignty")
+- Discourse Elements: Rhetorical functions (format: "Category/Element", e.g., "Symbolic/Metaphor", "Logical/Claim", "Personal/Intention")
+- Scripture References: Biblical references (e.g., "John 3:16", "John 1")
+- Named Entities: Names and entities (format: "Class/Entity", e.g., "Person/Gilbert K. Chesterton", "Work/Heretics")
+- Structure Path: Document structure (e.g., "Chapter I > I. INTRODUCTION IN DEFENCE OF EVERYTHING ELSE")
+- Authors: Source authors (e.g., "Gilbert K. Chesterton", "John Calvin")
 
 Analyze the query and respond with a JSON object containing:
 1. "query_type": The type of question (definition, comparison, historical, doctrinal, exegetical, etc.)
@@ -77,12 +107,13 @@ Analyze the query and respond with a JSON object containing:
 5. "reasoning": Explanation of why these filters were chosen
 
 IMPORTANT: Be intelligent about detecting metadata matches:
-- If the query mentions function types (metaphors, claims, definitions, narratives, etc.) → filter by relevant function types
-- If the query mentions specific authors (Calvin, Luther, Lewis, etc.) → filter by those authors
+- If the query mentions discourse element types (metaphors, claims, definitions, narratives, etc.) → filter by discourse_elements (e.g., "Symbolic/Metaphor", "Logical/Claim")
+- If the query mentions specific authors (Calvin, Luther, Chesterton, etc.) → filter by authors
 - If the query mentions biblical books/passages → filter by scripture_references
-- If the query asks about specific theological topics → filter by relevant topics
-- If the query asks about concepts like "sanctification", "justification", "trinity" → filter by concepts
-- If the query asks about themes like "divine love", "spiritual growth" → filter by themes
+- If the query asks about specific theological topics → filter by topics (format: "Concept/Topic")
+- If the query asks about concepts like "sanctification", "justification", "trinity" → filter by concepts (e.g., "Sanctification", "Justification", "Trinity")
+- If the query mentions specific theological terms or phrases → filter by terms (e.g., "justification by faith", "divine sovereignty")
+- If the query mentions people, works, places → filter by named_entities (format: "Class/Entity")
 
 Example responses:
 
@@ -90,13 +121,13 @@ For "What are some metaphors for sanctification?":
 {{
     "query_type": "doctrinal",
     "theological_concepts": ["sanctification", "spiritual growth", "transformation"],
-    "search_strategy": "Search for chunks about sanctification using vector similarity, then filter by Symbolic/Metaphor function to find metaphorical language",
+    "search_strategy": "Search for chunks about sanctification using vector similarity, then filter by discourse_elements containing Symbolic/Metaphor to find metaphorical language",
     "recommended_filters": {{
-        "function": ["Symbolic/Metaphor"],
-        "concepts": ["Concept/Spiritual Growth", "Concept/Transformation"],
-        "topics": ["Topic/Sanctification", "Topic/Spiritual Life"]
+        "discourse_elements": ["Symbolic/Metaphor"],
+        "concepts": ["Sanctification", "Spiritual Growth"],
+        "topics": ["Sanctification/Spiritual Growth", "Spiritual Growth/Transformation"]
     }},
-    "reasoning": "The query specifically asks for metaphors, so I'm prioritizing Symbolic/Metaphor function metadata to find sources with metaphorical language about sanctification."
+    "reasoning": "The query specifically asks for metaphors, so I'm prioritizing discourse_elements with Symbolic/Metaphor to find sources with metaphorical language about sanctification."
 }}
 
 For "What does Calvin say about predestination?":
@@ -106,8 +137,8 @@ For "What does Calvin say about predestination?":
     "search_strategy": "Search for chunks about predestination using vector similarity, then filter by Calvin as author and topics related to predestination",
     "recommended_filters": {{
         "authors": ["John Calvin"],
-        "topics": ["Topic/Predestination", "Topic/Election"],
-        "concepts": ["Concept/Divine Sovereignty", "Concept/Election"]
+        "topics": ["Predestination/Divine Sovereignty", "Election/Predestination"],
+        "concepts": ["Divine Sovereignty", "Election"]
     }},
     "reasoning": "The query specifically asks about Calvin's views, so I'm filtering by Calvin as author and topics/concepts related to predestination."
 }}
@@ -116,13 +147,13 @@ For "What are the logical arguments for the Trinity?":
 {{
     "query_type": "doctrinal",
     "theological_concepts": ["trinity", "three persons", "one God"],
-    "search_strategy": "Search for chunks about the Trinity using vector similarity, then filter by Logical/Claim function to find argumentative content",
+    "search_strategy": "Search for chunks about the Trinity using vector similarity, then filter by discourse_elements containing Logical/Claim to find argumentative content",
     "recommended_filters": {{
-        "function": ["Logical/Claim", "Logical/Argument"],
-        "topics": ["Topic/Trinity", "Topic/God"],
-        "concepts": ["Concept/God", "Concept/Trinity"]
+        "discourse_elements": ["Logical/Claim"],
+        "topics": ["Trinity/Doctrine", "God/Trinity"],
+        "concepts": ["God", "Trinity"]
     }},
-    "reasoning": "The query asks for logical arguments, so I'm prioritizing Logical/Claim function metadata to find sources with argumentative content about the Trinity."
+    "reasoning": "The query asks for logical arguments, so I'm prioritizing discourse_elements with Logical/Claim to find sources with argumentative content about the Trinity."
 }}
 
 Respond with only the JSON object, no other text.
@@ -191,12 +222,55 @@ def search_with_filters(query: str, analysis: Dict[str, Any]) -> List[Dict[str, 
         # 3. Metadata filtering
         if recommended_filters:
             for filter_type, filter_values in recommended_filters.items():
-                if filter_type in chunk_metadata:
-                    chunk_values = chunk_metadata[filter_type]
-                    if isinstance(chunk_values, list):
-                        for chunk_val in chunk_values:
+                # Map filter type names to metadata field names
+                metadata_field_map = {
+                    'function': 'discourse_elements',  # Legacy name compatibility
+                    'authors': None,  # Handled at top level, not in metadata
+                    'topics': 'topics',
+                    'concepts': 'concepts',
+                    'terms': 'terms',
+                    'scripture_references': 'scripture_references',
+                    'structure_paths': 'structure_path',
+                    'discourse_elements': 'discourse_elements',
+                    'named_entities': 'named_entities'
+                }
+                
+                # Check author filter (top-level field)
+                if filter_type == 'authors':
+                    chunk_author = chunk.get("author", "")
+                    for filter_val in filter_values:
+                        if filter_val.lower() in chunk_author.lower():
+                            filter_match_score += 1
+                            break
+                else:
+                    # Get the actual metadata field name
+                    metadata_field = metadata_field_map.get(filter_type, filter_type)
+                    
+                    if metadata_field and metadata_field in chunk_metadata:
+                        chunk_values = chunk_metadata[metadata_field]
+                        
+                        # Handle discourse_elements specially (they're strings like "[[Category/Element]] description")
+                        if metadata_field == 'discourse_elements' and isinstance(chunk_values, list):
+                            for chunk_val in chunk_values:
+                                # Extract category/element from format "[[Category/Element]] description"
+                                element_match = re.search(r'\[\[([^\]]+)\]\]', chunk_val)
+                                if element_match:
+                                    element = element_match.group(1)
+                                    for filter_val in filter_values:
+                                        if filter_val.lower() in element.lower():
+                                            filter_match_score += 1
+                                            break
+                        elif isinstance(chunk_values, list):
+                            # Regular list matching
+                            for chunk_val in chunk_values:
+                                for filter_val in filter_values:
+                                    if filter_val.lower() in str(chunk_val).lower():
+                                        filter_match_score += 1
+                                        break
+                        elif isinstance(chunk_values, str):
+                            # Handle string fields like structure_path
                             for filter_val in filter_values:
-                                if filter_val.lower() in chunk_val.lower():
+                                if filter_val.lower() in chunk_values.lower():
                                     filter_match_score += 1
                                     break
         else:
@@ -253,13 +327,21 @@ def generate_research_summary(query: str, analysis: Dict[str, Any], chunks: List
     for i, chunk in enumerate(chunks, 1):
         source = chunk.get("source", "Unknown")
         author = chunk.get("author", "Unknown")
-        structure_path = chunk.get("metadata", {}).get("structure_path", ["Unknown"])
-        structure = structure_path[0] if structure_path else "Unknown"
+        # structure_path is now a string in metadata (format: "[[Chapter I > Section]]")
+        structure_path = chunk.get("metadata", {}).get("structure_path", "")
+        # Remove brackets if present
+        if structure_path.startswith("[["):
+            structure_path = structure_path[2:]
+        if structure_path.endswith("]]"):
+            structure_path = structure_path[:-2]
+        structure = structure_path if structure_path else "Unknown"
         
         text = chunk.get("text", "")
         
+        chunk_id = chunk.get("id", f"chunk_{i}")
         chunks_text += f"""
 [Source {i}]
+Chunk ID: {chunk_id}
 Source: {source}
 Author: {author}
 Location: {structure}
@@ -299,6 +381,7 @@ Format your response as JSON:
     "sources_used": [
         {{
             "number": 1,
+            "chunk_id": "ORTHODOX_CHESTE_0",
             "source": "Source Name",
             "author": "Author Name", 
             "location": "Structure Path",
@@ -307,6 +390,8 @@ Format your response as JSON:
     ],
     "reasoning_transparency": "Explanation of the search strategy and filter choices made"
 }}
+
+IMPORTANT: Include the "chunk_id" field exactly as shown in [Source X] for each source you reference.
 
 CRITICAL CITATION RULES:
 1. The citation numbers in your summary MUST correspond exactly to the source numbers in your sources_used array
@@ -337,24 +422,102 @@ Respond with only the JSON object, no other text.
         sources_used = result.get("sources_used", [])
         summary = result.get("summary", "")
         
-        # Get available source numbers
-        available_numbers = [str(source.get("number", "")) for source in sources_used]
-        
-        # Find all citations in the summary
+        # FIRST: Find which sources are actually cited in the summary
         import re
-        citations_in_summary = re.findall(r'\[(\d+)\]', summary)
+        citation_pattern = re.compile(r'\[(\d+)\]')
+        citations_in_summary = set(int(num) for num in citation_pattern.findall(summary) if num.isdigit())
         
-        # Check for mismatched citations and fix them
+        # Keep all sources but will renumber them sequentially
+        # Sort by original number to preserve order
+        sources_used.sort(key=lambda s: s.get("number", 999))
+        
+        # Renumber sources sequentially (1, 2, 3, ...) and create mapping from old to new
+        old_to_new_mapping = {}
+        for new_num, source in enumerate(sources_used, start=1):
+            old_num = source.get("number")
+            if old_num:
+                old_to_new_mapping[int(old_num)] = new_num
+            source["number"] = new_num
+        
+        # Map source numbers from AI to actual chunk indices
+        # The AI sees chunks as [Source 1], [Source 2], etc. where 1 = chunks[0], 2 = chunks[1], etc.
+        # We need to match the AI's source numbers to the actual chunks array
+        for source in sources_used:
+            source_num = source.get("number")
+            chunk_index = None
+            
+            # First try: Match by chunk_id if provided (most reliable)
+            chunk_id = source.get("chunk_id")
+            if chunk_id:
+                for i, chunk in enumerate(chunks):
+                    if chunk.get("id") == chunk_id:
+                        chunk_index = i
+                        break
+            
+            # Second try: Match by source number (AI numbering corresponds to chunks array order)
+            if chunk_index is None and source_num and source_num > 0 and source_num <= len(chunks):
+                # AI numbers sources starting from 1, chunks array is 0-indexed
+                chunk_index = source_num - 1
+            
+            # Third try: Match by source/author/location
+            if chunk_index is None:
+                source_name = source.get("source", "")
+                source_author = source.get("author", "")
+                source_location = source.get("location", "")
+                
+                for i, chunk in enumerate(chunks):
+                    chunk_source = chunk.get("source", "Unknown")
+                    chunk_author = chunk.get("author", "Unknown")
+                    chunk_structure = chunk.get("metadata", {}).get("structure_path", "")
+                    # Remove brackets if present
+                    if chunk_structure.startswith("[["):
+                        chunk_structure = chunk_structure[2:]
+                    if chunk_structure.endswith("]]"):
+                        chunk_structure = chunk_structure[:-2]
+                    chunk_structure = chunk_structure if chunk_structure else "Unknown"
+                    
+                    # Match location more flexibly (check if location is contained in structure_path)
+                    location_match = True
+                    if source_location and source_location != "Unknown":
+                        location_match = source_location in chunk_structure or chunk_structure in source_location
+                    
+                    if (chunk_source == source_name and 
+                        chunk_author == source_author and
+                        (not source_location or location_match)):
+                        chunk_index = i
+                        break
+            
+            if chunk_index is not None and chunk_index < len(chunks):
+                source["_chunk_index"] = chunk_index
+            else:
+                # Log warning for debugging
+                print(f"⚠️  Warning: Could not map source {source_num} (ID: {chunk_id}) to chunk index. Source: {source.get('source')}, Author: {source.get('author')}, Location: {source.get('location')}")
+        
+        # Update all citations in summary to match new sequential numbering
+        citation_matches = list(citation_pattern.finditer(summary))
         fixed_summary = summary
-        for i, citation in enumerate(citations_in_summary):
-            if citation not in available_numbers:
-                # Map to the next available source number
-                if i < len(available_numbers):
-                    new_citation = available_numbers[i]
-                    fixed_summary = fixed_summary.replace(f'[{citation}]', f'[{new_citation}]')
+        
+        # Replace from end to start to preserve string positions
+        for match in reversed(citation_matches):
+            old_citation_num = int(match.group(1))
+            if old_citation_num in old_to_new_mapping:
+                new_citation_num = old_to_new_mapping[old_citation_num]
+                start_pos = match.start()
+                end_pos = match.end()
+                fixed_summary = fixed_summary[:start_pos] + f'[{new_citation_num}]' + fixed_summary[end_pos:]
+            else:
+                # Citation doesn't map to any source - remove it
+                start_pos = match.start()
+                end_pos = match.end()
+                fixed_summary = fixed_summary[:start_pos] + fixed_summary[end_pos:]
+                print(f"⚠️  Removed unmapped citation [{old_citation_num}]")
         
         # Update the summary with fixed citations
         result["summary"] = fixed_summary
+        
+        # Log the renumbering
+        if old_to_new_mapping and len(old_to_new_mapping) > 0:
+            print(f"📝 Renumbered citations sequentially: {old_to_new_mapping}")
         
         return result
     except Exception as e:
@@ -404,6 +567,7 @@ if __name__ == '__main__':
     # Load dataset on startup
     if load_dataset():
         print("Dataset loaded successfully")
-        app.run(debug=True, port=5000)
+        print("Starting Flask app on http://localhost:5001")
+        app.run(debug=True, port=5001, host='127.0.0.1')
     else:
         print("Failed to load dataset")

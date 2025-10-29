@@ -510,13 +510,45 @@
                 return 'Text not available';
             }
             
-            // Find matching chunk by source name and author
-            const chunk = chunks.find(c => 
-                c.source === sourceInfo.source && 
-                c.author === sourceInfo.author
-            );
+            // Use the chunk index if available (set by backend) - most reliable
+            if (sourceInfo._chunk_index !== undefined && 
+                sourceInfo._chunk_index >= 0 && 
+                sourceInfo._chunk_index < chunks.length) {
+                const chunk = chunks[sourceInfo._chunk_index];
+                if (chunk && chunk.text) {
+                    return chunk.text;
+                }
+            }
             
-            return chunk ? chunk.text : 'Text not available';
+            // Fallback 1: Match by chunk_id if available
+            if (sourceInfo.chunk_id) {
+                const chunk = chunks.find(c => c.id === sourceInfo.chunk_id);
+                if (chunk && chunk.text) {
+                    return chunk.text;
+                }
+            }
+            
+            // Fallback 2: Match by source name, author, and location
+            let matchingChunks = chunks.filter(c => {
+                const c_source = c.source === sourceInfo.source;
+                const c_author = c.author === sourceInfo.author;
+                if (!c_source || !c_author) return false;
+                
+                // Try to match location if provided
+                if (sourceInfo.location && sourceInfo.location !== 'Unknown') {
+                    const chunkLocation = c.metadata && c.metadata.structure_path ? 
+                        c.metadata.structure_path.replace(/[\[\]]/g, '') : '';
+                    return chunkLocation && chunkLocation.includes(sourceInfo.location);
+                }
+                return true;
+            });
+            
+            // If multiple matches, use the first one
+            if (matchingChunks.length > 0) {
+                return matchingChunks[0].text || 'Text not available';
+            }
+            
+            return 'Text not available';
         }
 
         function findChunkForSource(sourceNumber, chunks) {
@@ -531,11 +563,35 @@
                 return null;
             }
             
-            // Find matching chunk by source name and author
-            return chunks.find(c => 
-                c.source === sourceInfo.source && 
-                c.author === sourceInfo.author
-            );
+            // Use the chunk index if available (set by backend) - most reliable
+            if (sourceInfo._chunk_index !== undefined && 
+                sourceInfo._chunk_index >= 0 && 
+                sourceInfo._chunk_index < chunks.length) {
+                return chunks[sourceInfo._chunk_index];
+            }
+            
+            // Fallback 1: Match by chunk_id if available
+            if (sourceInfo.chunk_id) {
+                const chunk = chunks.find(c => c.id === sourceInfo.chunk_id);
+                if (chunk) return chunk;
+            }
+            
+            // Fallback 2: Find matching chunk by source name, author, and location
+            let matchingChunks = chunks.filter(c => {
+                const c_source = c.source === sourceInfo.source;
+                const c_author = c.author === sourceInfo.author;
+                if (!c_source || !c_author) return false;
+                
+                // Try to match location if provided
+                if (sourceInfo.location && sourceInfo.location !== 'Unknown') {
+                    const chunkLocation = c.metadata && c.metadata.structure_path ? 
+                        c.metadata.structure_path.replace(/[\[\]]/g, '') : '';
+                    return chunkLocation && chunkLocation.includes(sourceInfo.location);
+                }
+                return true;
+            });
+            
+            return matchingChunks.length > 0 ? matchingChunks[0] : null;
         }
 
         function generateMetadataTooltip(metadata) {
@@ -543,12 +599,17 @@
             
             let tooltipContent = '';
             
-            // Function metadata
-            if (metadata.function && metadata.function.length > 0) {
+            // Discourse Elements metadata
+            if (metadata.discourse_elements && metadata.discourse_elements.length > 0) {
+                // Extract just the Category/Element part for cleaner display
+                let elements = metadata.discourse_elements.map(el => {
+                    let match = el.match(/\[\[([^\]]+)\]\]/);
+                    return match ? match[1] : el;
+                });
                 tooltipContent += `
                     <div class="metadata-section">
-                        <div class="metadata-label">Function</div>
-                        <div class="metadata-values">${metadata.function.join(', ')}</div>
+                        <div class="metadata-label">Discourse Elements</div>
+                        <div class="metadata-values">${elements.join(', ')}</div>
                     </div>
                 `;
             }
@@ -573,12 +634,12 @@
                 `;
             }
             
-            // Themes metadata
-            if (metadata.themes && metadata.themes.length > 0) {
+            // Terms metadata
+            if (metadata.terms && metadata.terms.length > 0) {
                 tooltipContent += `
                     <div class="metadata-section">
-                        <div class="metadata-label">Themes</div>
-                        <div class="metadata-values">${metadata.themes.join(', ')}</div>
+                        <div class="metadata-label">Terms</div>
+                        <div class="metadata-values">${metadata.terms.join(', ')}</div>
                     </div>
                 `;
             }
@@ -593,12 +654,12 @@
                 `;
             }
             
-            // Proper nouns
-            if (metadata.proper_nouns && metadata.proper_nouns.length > 0) {
+            // Named entities
+            if (metadata.named_entities && metadata.named_entities.length > 0) {
                 tooltipContent += `
                     <div class="metadata-section">
-                        <div class="metadata-label">Proper Nouns</div>
-                        <div class="metadata-values">${metadata.proper_nouns.join(', ')}</div>
+                        <div class="metadata-label">Named Entities</div>
+                        <div class="metadata-values">${metadata.named_entities.join(', ')}</div>
                     </div>
                 `;
             }

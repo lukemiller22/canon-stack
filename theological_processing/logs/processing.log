@@ -1,0 +1,6 @@
+2025-10-29T08:32:06.221351 | CHUNKED | orthodoxy.xml → 224 chunks → ORTHODOX_CHESTE_chunks.jsonl
+2025-10-29T09:16:15.911034 | ANNOTATED | ORTHODOX_CHESTE_chunks.jsonl → 224 chunks → ORTHODOX_CHESTE_annotated.jsonl
+2025-10-29T09:50:22.890685 | ANNOTATED | ORTHODOX_CHESTE_chunks.jsonl → 224 chunks → ORTHODOX_CHESTE_annotated.jsonl
+2025-10-29T11:12:39.078816 | ANNOTATED | ORTHODOX_CHESTE_chunks.jsonl → 224 chunks → ORTHODOX_CHESTE_annotated.jsonl
+2025-10-29T11:34:34.654502 | COMPLETE | ORTHODOX_CHESTE_annotated.jsonl → 224 chunks → ORTHODOX_CHESTE_complete.jsonl
+2025-10-29T11:37:24.169063 | DEPLOYED | ORTHODOX_CHESTE_complete.jsonl → 0 chunks → ORTHODOX_CHESTE_complete.jsonl

@@ -21,6 +21,7 @@ import json
 import os
 import shutil
 import xml.etree.ElementTree as ET
+import re
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
@@ -265,6 +266,33 @@ class TheologicalProcessingPipeline:
         
         return str(output_file)
     
+    def process_stage_4_to_deployed(self, complete_file: str) -> str:
+        """
+        Stage 4→5: Deploy complete chunks to production-ready folder.
+        
+        This is a simple copy operation - the file is ready for deployment.
+        """
+        complete_path = Path(complete_file)
+        if not complete_path.exists():
+            complete_path = self.base_dir / '04_complete' / complete_file
+        
+        if not complete_path.exists():
+            print(f"Error: Complete file not found: {complete_file}")
+            return ""
+        
+        print(f"Deploying {complete_path.name} → production...")
+        
+        # Copy to deployed folder
+        deployed_file = self.base_dir / '05_deployed' / complete_path.name
+        shutil.copy2(complete_path, deployed_file)
+        
+        # Log deployment
+        self._log_processing(complete_path.name, 'deployed', 0, deployed_file)
+        
+        print(f"✓ Deployed to production → {deployed_file}")
+        
+        return str(deployed_file)
+    
     def _process_xml_source(self, source_path: Path, custom_template: Optional[str]) -> tuple:
         """Process XML source file using CCELThMLProcessor's robust XML handling."""
         
@@ -416,36 +444,412 @@ class TheologicalProcessingPipeline:
         """
         raise NotImplementedError("DOCX processing not yet implemented. Use python-docx library first.")
     
+    def _load_indexes(self) -> Dict[str, Any]:
+        """Load all index files needed for annotation."""
+        indexes = {
+            'concepts': [],
+            'discourse_elements': [],
+            'topics': [],
+            'terms': []
+        }
+        
+        base_dir = Path(__file__).parent
+        
+        # Load Concepts Index
+        concepts_file = base_dir / 'Index: Concepts.md'
+        if concepts_file.exists():
+            with open(concepts_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('- [[') and 'Concept/' in line:
+                        # Extract concept name
+                        match = re.search(r'\[\[Concept/([^\]]+)\]\]', line)
+                        if match:
+                            indexes['concepts'].append(match.group(1))
+        
+        # Store as set for quick lookup during validation
+        indexes['concepts_set'] = set(indexes['concepts']) if indexes['concepts'] else set()
+        
+        # Load Discourse Elements (Function index)
+        function_file = base_dir / 'Index: Function.md'
+        if function_file.exists():
+            with open(function_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Extract all discourse elements in [[Category/Element]] format
+                pattern = r'\[\[([^/]+)/([^\]]+)\]\]'
+                matches = re.findall(pattern, content)
+                for category, element in matches:
+                    full_name = f"{category}/{element}"
+                    indexes['discourse_elements'].append(full_name)
+        
+        # Store as set for quick lookup during validation (always initialize even if file missing)
+        indexes['discourse_elements_set'] = set(indexes['discourse_elements']) if indexes['discourse_elements'] else set()
+        
+        # Load Topics and Terms (if they exist and have content)
+        topics_file = base_dir / 'Index: Topics.md'
+        if topics_file.exists():
+            with open(topics_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if len(content.strip()) > 10:  # Has meaningful content
+                    indexes['topics'] = content
+        
+        terms_file = base_dir / 'Index: Terms.md'
+        if terms_file.exists():
+            with open(terms_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if len(content.strip()) > 10:  # Has meaningful content
+                    indexes['terms'] = content
+        
+        return indexes
+    
+    def _build_annotation_prompt(self, chunk_text: str, chunk_structure_path: List[str], indexes: Dict[str, Any], source_metadata: Optional[Dict] = None) -> str:
+        """Build the annotation prompt for a single chunk."""
+        
+        # Convert structure_path from array to breadcrumb format
+        structure_path_str = ""
+        if chunk_structure_path and len(chunk_structure_path) > 0:
+            # Join array elements into breadcrumb format
+            path_text = chunk_structure_path[0] if isinstance(chunk_structure_path, list) else str(chunk_structure_path)
+            structure_path_str = f"[[{path_text}]]" if path_text else ""
+        
+        # Get ALL concepts for prompt (they are fixed, so AI needs to see them all)
+        concepts_list = ', '.join([f'[[Concept/{c}]]' for c in indexes['concepts']])
+        
+        # Get all discourse elements for prompt (grouped by category)
+        discourse_elements_by_category = {}
+        for de in indexes['discourse_elements']:
+            category, element = de.split('/', 1)
+            if category not in discourse_elements_by_category:
+                discourse_elements_by_category[category] = []
+            discourse_elements_by_category[category].append(element)
+        
+        discourse_elements_list = ""
+        for category in ['Semantic', 'Logical', 'Narrative', 'Personal', 'Practical', 'Symbolic', 'Reference', 'Structural']:
+            if category in discourse_elements_by_category:
+                elements = [f'[[{category}/{e}]]' for e in discourse_elements_by_category[category]]
+                discourse_elements_list += f"\n{category}: {', '.join(elements)}"
+        
+        prompt = f"""You are helping to create high-quality metadata for theological text chunks to improve RAG (Retrieval Augmented Generation) performance. Your task is to analyze a text chunk and provide structured metadata following specific guidelines.
+
+## Text Chunk
+{chunk_text}
+
+## Current Structure Path
+{structure_path_str if structure_path_str else "(to be determined)"}
+
+## Metadata Structure
+For this chunk, provide metadata in this exact format:
+* concepts:: [[Concept1]], [[Concept2]]
+* topics:: [[Concept1/Topic1]], [[Concept2/Topic2]]
+* terms:: [[Term1]], [[Term2]]
+* discourse-elements::
+  * [[Category/Element]] Description or quote
+  * [[Category/Element]] Description or quote
+* scripture-references:: [Bible references if any, standardized format]
+* structure-path:: {structure_path_str if structure_path_str else "Breadcrumb format (e.g. [[Section > Subsection]])"}
+* named-entities:: [[Person/Entity]], [[Place/Entity]], [[Event/Entity]], [[Ideology/Entity]], [[Period/Entity]], [[Work/Entity]], [[Group/Entity]]
+
+## Critical Constraints
+
+### Concepts Index (Fixed)
+Use ONLY concepts from this EXACT list (NO additions allowed, NO substitutions):
+{concepts_list}
+
+**CRITICAL**: You must use concepts from the list above. If a concept is not in the list, do NOT use it. Better to leave blank than use an invalid concept.
+
+Usually 1-3 concepts per chunk.
+
+### Topics Index (Flexible)
+When assigning topics under selected concepts, focus on **questions, issues, aspects, or debates** rather than simple subtopics. Topics must use namespaced format: `[[Concept/Topic]]`
+
+Examples:
+- Under "Authority": `[[Authority/Scripture vs Tradition]]`, `[[Authority/Papal Infallibility]]`
+- Under "Salvation": `[[Salvation/Faith vs Works]]`, `[[Salvation/Universal vs Particular]]`
+
+### Term Index (Flexible)
+Select 3-5 terms that represent how readers would search for this content. Include:
+- Synonyms and variant expressions
+- Familiar and colloquial expressions
+- Poetic and literary language
+- Technical and scholarly terms
+- Memorable phrases
+
+### Discourse Elements (Fixed)
+Use ONLY elements from this EXACT list (NO additions allowed, NO substitutions):
+{discourse_elements_list}
+
+Format each as: `[[Category/Element]]` followed by a description or quote.
+
+**CRITICAL**: If none of these elements fit, use the closest match. Do NOT create new discourse elements like "Narrative/Hypothetical Scenario" or "Personal/Emotional Response" - use the fixed elements from the list above.
+
+Every chunk must have at least one discourse element. Typically 3-5 per chunk.
+
+### Scripture References (Fixed)
+Only add if a verse, chapter, or book is mentioned. Normalize format: "John 3:16" becomes [[John 3]] and [[John 3:16]].
+
+### Structure Path (Flexible)
+{('Use the provided structure path: ' + structure_path_str if structure_path_str else 'Determine the hierarchical location in breadcrumb format: [[Section > Subsection]]')}
+
+### Named Entities (Class Fixed, Entity Flexible)
+Use namespaced format: `[[Class/Entity]]`
+Classes: Person, Place, Event, Group, Work, Period, Ideology
+
+## Output Format
+Provide your response in this exact format (no additional explanation):
+
+concepts:: [[Concept1]], [[Concept2]]
+topics:: [[Concept1/Topic1]], [[Concept2/Topic2]]
+terms:: [[Term1]], [[Term2]]
+discourse-elements::
+* [[Category/Element]] Description
+* [[Category/Element]] Description
+scripture-references:: [[Book Chapter:Verse]] (if any)
+structure-path:: [[Section > Subsection]]
+named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
+        
+        return prompt
+    
+    def _parse_annotation_response(self, response_text: str, valid_discourse_elements: Optional[set] = None, valid_concepts: Optional[set] = None) -> Dict[str, Any]:
+        """Parse the AI response into structured metadata."""
+        metadata = {
+            'concepts': [],
+            'topics': [],
+            'terms': [],
+            'discourse_elements': [],
+            'scripture_references': [],
+            'structure_path': '',
+            'named_entities': []
+        }
+        
+        # Extract concepts
+        concepts_match = re.search(r'concepts::\s*(.+)', response_text, re.IGNORECASE | re.MULTILINE)
+        if concepts_match:
+            concepts_str = concepts_match.group(1).strip()
+            extracted_concepts = re.findall(r'\[\[Concept/([^\]]+)\]\]', concepts_str)
+            # Validate against fixed list
+            if valid_concepts is None:
+                # Fallback: load if not provided
+                valid_concepts = self._load_indexes().get('concepts_set', set())
+            # Only keep concepts that are in the fixed list
+            metadata['concepts'] = [c for c in extracted_concepts if c in valid_concepts]
+        
+        # Extract topics
+        topics_match = re.search(r'topics::\s*(.+)', response_text, re.IGNORECASE | re.MULTILINE)
+        if topics_match:
+            topics_str = topics_match.group(1).strip()
+            metadata['topics'] = re.findall(r'\[\[([^\]]+)\]\]', topics_str)
+        
+        # Extract terms
+        terms_match = re.search(r'terms::\s*(.+)', response_text, re.IGNORECASE | re.MULTILINE)
+        if terms_match:
+            terms_str = terms_match.group(1).strip()
+            metadata['terms'] = re.findall(r'\[\[([^\]]+)\]\]', terms_str)
+        
+        # Extract discourse elements
+        discourse_match = re.search(r'discourse-elements::\s*(.+?)(?=\n\w+::|\Z)', response_text, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        if discourse_match:
+            discourse_text = discourse_match.group(1)
+            # Extract each element with its description
+            lines = discourse_text.split('\n')
+            if valid_discourse_elements is None:
+                # Fallback: load if not provided
+                valid_discourse_elements = self._load_indexes().get('discourse_elements_set', set())
+            for line in lines:
+                line = line.strip()
+                if line.startswith('*') or line.startswith('-'):
+                    line = line.lstrip('*-').strip()
+                    element_match = re.search(r'\[\[([^\]]+)\]\]\s*(.+)', line)
+                    if element_match:
+                        element_full = element_match.group(1)
+                        # Validate against fixed list
+                        if element_full in valid_discourse_elements:
+                            desc = element_match.group(2).strip()
+                            metadata['discourse_elements'].append(f"[[{element_full}]] {desc}")
+                        # If invalid, skip it (don't add to metadata)
+        
+        # Extract scripture references - stop at next field (structure-path, named-entities, or any new field)
+        # Use non-greedy match that stops at next field or end of string
+        scripture_match = re.search(r'scripture-references::\s*(.+?)(?=\n(?:structure-path|named-entities|\w+)::|\Z)', response_text, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        if scripture_match:
+            scripture_str = scripture_match.group(1).strip()
+            if scripture_str and scripture_str.lower() not in ['none', 'n/a', '']:
+                # Only extract if it looks like a Bible reference (contains book names or chapter/verse patterns)
+                refs = re.findall(r'\[\[([^\]]+)\]\]', scripture_str)
+                # Basic validation: check if it contains Bible book names or chapter/verse patterns
+                # This will filter out structure_path content that got misclassified
+                bible_books = ['genesis', 'exodus', 'leviticus', 'numbers', 'deuteronomy', 'joshua', 'judges', 'ruth', 
+                              'samuel', 'kings', 'chronicles', 'ezra', 'nehemiah', 'esther', 'job', 'psalm', 'psalms',
+                              'proverbs', 'ecclesiastes', 'song', 'isaiah', 'jeremiah', 'lamentations', 'ezekiel',
+                              'daniel', 'hosea', 'joel', 'amos', 'obadiah', 'jonah', 'micah', 'nahum', 'habakkuk',
+                              'zephaniah', 'haggai', 'zechariah', 'malachi', 'matthew', 'mark', 'luke', 'john',
+                              'acts', 'romans', 'corinthians', 'galatians', 'ephesians', 'philippians', 'colossians',
+                              'thessalonians', 'timothy', 'titus', 'philemon', 'hebrews', 'james', 'peter', 'jude', 'revelation']
+                validated_refs = []
+                for ref in refs:
+                    ref_lower = ref.lower()
+                    # Check if it contains a book name or chapter/verse pattern
+                    # Also check that it doesn't look like a structure path (contains > or chapter/roman numerals pattern)
+                    is_structure_path = '>' in ref or re.search(r'\bchapter\s+[ivxlcdm]+\b', ref_lower) or re.search(r'\b(chapter|part|section)\s+[ivxlcdm]+', ref_lower)
+                    if not is_structure_path and (any(book in ref_lower for book in bible_books) or re.search(r'\d+:\d+|\d+\s+', ref)):
+                        validated_refs.append(ref)
+                metadata['scripture_references'] = validated_refs
+        
+        # Extract structure path
+        structure_match = re.search(r'structure-path::\s*(.+)', response_text, re.IGNORECASE | re.MULTILINE)
+        if structure_match:
+            structure_str = structure_match.group(1).strip()
+            if structure_str:
+                # Remove surrounding brackets if present
+                structure_str = re.sub(r'^\[\[', '', structure_str)
+                structure_str = re.sub(r'\]\]$', '', structure_str)
+                metadata['structure_path'] = structure_str
+        
+        # Extract named entities
+        entities_match = re.search(r'named-entities::\s*(.+)', response_text, re.IGNORECASE | re.MULTILINE)
+        if entities_match:
+            entities_str = entities_match.group(1).strip()
+            if entities_str and entities_str.lower() not in ['none', 'n/a', '']:
+                metadata['named_entities'] = re.findall(r'\[\[([^\]]+)\]\]', entities_str)
+        
+        return metadata
+    
     def _annotate_chunks_with_ai(self, chunks: List[Dict], metadata_file: Path) -> List[Dict]:
-        """Annotate chunks using AI (LLM).
+        """Annotate chunks using Anthropic Claude API."""
+        import anthropic
+        import os
+        from dotenv import load_dotenv
         
-        Note: This is a placeholder implementation. 
-        To implement actual AI annotation, integrate with your LLM service
-        and use the theological annotation prompt from README.md.
-        """
+        # Load environment variables from .env file
+        load_dotenv()
+        
+        # Check for API key
+        api_key = os.getenv('ANTHROPIC_API_KEY')
+        if not api_key:
+            raise ValueError("ANTHROPIC_API_KEY not found. Please set it in your .env file or as an environment variable.")
+        
+        # Initialize Anthropic client
+        client = anthropic.Anthropic(api_key=api_key)
+        
+        # Load indexes
+        print("Loading index files...")
+        indexes = self._load_indexes()
+        print(f"  ✓ Loaded {len(indexes['concepts'])} concepts")
+        print(f"  ✓ Loaded {len(indexes['discourse_elements'])} discourse elements")
+        
+        # Load source metadata if available
+        source_metadata = None
+        if metadata_file.exists():
+            # You might want to parse YAML here if needed
+            pass
+        
         annotated_chunks = []
+        total_chunks = len(chunks)
         
-        for chunk in chunks:
-            # Create chunk with annotation placeholder
-            annotated_chunk = chunk.copy()
-            annotated_chunk.update({
-                'metadata': {
-                    'concepts': [],
-                    'topics': [],
-                    'terms': [],
-                    'discourse_elements': [],
-                    'scripture_references': [],
-                    'named_entities': []
-                },
-                'processing_stage': 'annotated',
-                'annotation_method': 'ai_pending',
-                'processing_timestamp': datetime.now().isoformat()
-            })
-            annotated_chunks.append(annotated_chunk)
+        print(f"\nAnnotating {total_chunks} chunks using Anthropic Claude API...")
+        print("(This may take several minutes and incur API costs)\n")
         
-        # TODO: Implement actual AI annotation using your prompt
-        print("⚠️  AI annotation not yet implemented - creating template")
+        for idx, chunk in enumerate(chunks, 1):
+            chunk_text = chunk.get('text', '')
+            chunk_structure_path = chunk.get('structure_path', [])
+            
+            if not chunk_text:
+                print(f"⚠️  Skipping chunk {idx}: empty text")
+                annotated_chunks.append(chunk.copy())
+                continue
+            
+            try:
+                # Build prompt
+                prompt = self._build_annotation_prompt(chunk_text, chunk_structure_path, indexes, source_metadata)
+                
+                # Call Anthropic API
+                message = client.messages.create(
+                    model="claude-sonnet-4-20250514",
+                    max_tokens=4000,
+                    temperature=0.3,
+                    messages=[{
+                        "role": "user",
+                        "content": prompt
+                    }]
+                )
+                
+                # Parse response
+                response_text = message.content[0].text
+                metadata = self._parse_annotation_response(
+                    response_text, 
+                    valid_discourse_elements=indexes['discourse_elements_set'],
+                    valid_concepts=indexes['concepts_set']
+                )
+                
+                # Create annotated chunk
+                annotated_chunk = chunk.copy()
+                
+                # Remove the top-level structure_path since it will be in metadata
+                # (it was only there during the chunking stage for reference)
+                if 'structure_path' in annotated_chunk:
+                    del annotated_chunk['structure_path']
+                
+                # Convert structure_path from array to string format
+                structure_path_str = ""
+                if chunk_structure_path and len(chunk_structure_path) > 0:
+                    path_text = chunk_structure_path[0] if isinstance(chunk_structure_path, list) else str(chunk_structure_path)
+                    structure_path_str = f"[[{path_text}]]"
+                elif metadata.get('structure_path'):
+                    structure_path_str = f"[[{metadata['structure_path']}]]"
+                
+                annotated_chunk.update({
+                    'metadata': {
+                        'concepts': metadata['concepts'],
+                        'topics': metadata['topics'],
+                        'terms': metadata['terms'],
+                        'discourse_elements': metadata['discourse_elements'],
+                        'scripture_references': metadata['scripture_references'],
+                        'structure_path': structure_path_str,
+                        'named_entities': metadata['named_entities']
+                    },
+                    'processing_stage': 'annotated',
+                    'annotation_method': 'anthropic_claude',
+                    'annotation_model': 'claude-sonnet-4-20250514',
+                    'processing_timestamp': datetime.now().isoformat()
+                })
+                
+                annotated_chunks.append(annotated_chunk)
+                
+                # Progress indicator
+                if idx % 10 == 0 or idx == total_chunks:
+                    print(f"  ✓ Annotated {idx}/{total_chunks} chunks")
+                
+            except Exception as e:
+                print(f"⚠️  Error annotating chunk {idx}: {e}")
+                # Add chunk with empty metadata on error
+                annotated_chunk = chunk.copy()
+                # Remove the top-level structure_path since it will be in metadata
+                if 'structure_path' in annotated_chunk:
+                    del annotated_chunk['structure_path']
+                
+                # Convert structure_path from array to string format for metadata
+                structure_path_str = ""
+                if chunk_structure_path and len(chunk_structure_path) > 0:
+                    path_text = chunk_structure_path[0] if isinstance(chunk_structure_path, list) else str(chunk_structure_path)
+                    structure_path_str = f"[[{path_text}]]"
+                
+                annotated_chunk.update({
+                    'metadata': {
+                        'concepts': [],
+                        'topics': [],
+                        'terms': [],
+                        'discourse_elements': [],
+                        'scripture_references': [],
+                        'structure_path': structure_path_str,
+                        'named_entities': []
+                    },
+                    'processing_stage': 'annotated',
+                    'annotation_method': 'anthropic_claude_failed',
+                    'annotation_error': str(e),
+                    'processing_timestamp': datetime.now().isoformat()
+                })
+                annotated_chunks.append(annotated_chunk)
         
+        print(f"\n✓ Completed annotation of {total_chunks} chunks")
         return annotated_chunks
     
     def _create_annotation_template(self, chunks: List[Dict], metadata_file: Path) -> List[Dict]:
@@ -471,28 +875,94 @@ class TheologicalProcessingPipeline:
         
         return annotated_chunks
     
-    def _add_embeddings(self, chunks: List[Dict], embedding_model: str) -> List[Dict]:
-        """Add vector embeddings to chunks.
+    def _add_embeddings(self, chunks: List[Dict], embedding_model: str = 'openai') -> List[Dict]:
+        """Add vector embeddings to chunks using OpenAI API.
         
-        Note: This is a placeholder implementation.
-        To implement actual embedding generation, integrate with your embedding service
-        (e.g., OpenAI embeddings, Cohere, or local models).
+        Only the 'text' field of each chunk is embedded, not metadata or other fields.
+        
+        embedding_model: 'openai' (uses text-embedding-3-small) or model name
         """
+        from openai import OpenAI
+        import os
+        from dotenv import load_dotenv
+        import time
+        
+        # Load environment variables
+        load_dotenv()
+        
+        # Check for API key
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not found. Please set it in your .env file or as an environment variable.")
+        
+        # Initialize OpenAI client
+        client = OpenAI(api_key=api_key)
+        
+        # Determine model name
+        if embedding_model == 'openai':
+            model_name = 'text-embedding-3-small'
+        else:
+            model_name = embedding_model
+        
         complete_chunks = []
+        total_chunks = len(chunks)
         
-        for chunk in chunks:
+        print(f"\nGenerating embeddings for {total_chunks} chunks using {model_name}...")
+        print("(Only embedding the 'text' field of each chunk)")
+        print("(This may take several minutes and incur API costs)\n")
+        
+        for idx, chunk in enumerate(chunks, 1):
             complete_chunk = chunk.copy()
+            chunk_text = chunk.get('text', '')
             
-            # TODO: Implement actual embedding generation
-            complete_chunk.update({
-                'embedding': [0.0] * 1536,  # Placeholder for OpenAI embedding
-                'processing_stage': 'complete',
-                'embedding_model': embedding_model,
-                'processing_timestamp': datetime.now().isoformat()
-            })
-            complete_chunks.append(complete_chunk)
+            if not chunk_text:
+                print(f"⚠️  Skipping chunk {idx}: empty text")
+                complete_chunk.update({
+                    'embedding': None,
+                    'processing_stage': 'complete',
+                    'embedding_model': model_name,
+                    'embedding_error': 'empty_text',
+                    'processing_timestamp': datetime.now().isoformat()
+                })
+                complete_chunks.append(complete_chunk)
+                continue
+            
+            try:
+                # Get embedding from OpenAI - ONLY embedding the text field
+                response = client.embeddings.create(
+                    model=model_name,
+                    input=chunk_text
+                )
+                embedding = response.data[0].embedding
+                
+                complete_chunk.update({
+                    'embedding': embedding,
+                    'processing_stage': 'complete',
+                    'embedding_model': model_name,
+                    'processing_timestamp': datetime.now().isoformat()
+                })
+                complete_chunks.append(complete_chunk)
+                
+                # Progress indicator
+                if idx % 10 == 0 or idx == total_chunks:
+                    print(f"  ✓ Generated embeddings for {idx}/{total_chunks} chunks")
+                
+                # Rate limiting - small delay every 100 requests to avoid hitting limits
+                if idx % 100 == 0:
+                    time.sleep(1)
+                    
+            except Exception as e:
+                print(f"⚠️  Error generating embedding for chunk {idx}: {e}")
+                complete_chunk.update({
+                    'embedding': None,
+                    'processing_stage': 'complete',
+                    'embedding_model': model_name,
+                    'embedding_error': str(e),
+                    'processing_timestamp': datetime.now().isoformat()
+                })
+                complete_chunks.append(complete_chunk)
         
-        print("⚠️  Embedding generation not yet implemented - creating placeholder")
+        print(f"\n✓ Completed embedding generation for {total_chunks} chunks")
         return complete_chunks
     
     def _is_human_approved(self, file_path: Path) -> bool:
@@ -565,7 +1035,7 @@ class TheologicalProcessingPipeline:
 
 def main():
     parser = argparse.ArgumentParser(description='Staged Theological Text Processing Pipeline')
-    parser.add_argument('--stage', choices=['chunk', 'annotate', 'vectorize', 'status'], 
+    parser.add_argument('--stage', choices=['chunk', 'annotate', 'vectorize', 'deploy', 'status'], 
                        required=True, help='Processing stage to run')
     parser.add_argument('--source', help='Source file to process')
     parser.add_argument('--annotation-method', choices=['ai', 'manual'], default='ai',
@@ -616,7 +1086,18 @@ def main():
         
         output_file = pipeline.process_stage_3_to_complete(args.source)
         if output_file:
-            print(f"\nProcessing complete! Final file: {output_file}")
+            print(f"\nNext steps:")
+            print(f"1. Complete file ready: {output_file}")
+            print(f"2. Deploy to production: python pipeline_manager.py --stage deploy --source {Path(output_file).name}")
+    
+    elif args.stage == 'deploy':
+        if not args.source:
+            print("Error: --source required for deployment stage")
+            return
+        
+        output_file = pipeline.process_stage_4_to_deployed(args.source)
+        if output_file:
+            print(f"\n✓ Successfully deployed to production: {output_file}")
 
 
 if __name__ == '__main__':
