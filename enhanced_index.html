@@ -35,6 +35,122 @@
             overflow: hidden;
         }
 
+        .layout-container {
+            display: flex;
+            flex: 1;
+            gap: 8px;
+            overflow: hidden;
+            min-height: 0; /* allow children to shrink and scroll */
+            height: 100%;
+        }
+
+        .layout-sidebar {
+            width: 40px;
+            background: #f8f8f8;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 4px;
+            gap: 8px;
+        }
+
+        .layout-icon {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #c0c0c0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: white;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .layout-icon:hover {
+            background: #e8f4fd;
+            border-color: #4a90e2;
+        }
+
+        .layout-icon.active {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .main-layout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0; /* critical for nested scrolling */
+            height: 100%;
+        }
+
+        .draft-panel {
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .draft-header {
+            background: #f8f8f8;
+            border-bottom: 1px solid #d0d0d0;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .draft-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2d2d2d;
+        }
+
+        .draft-textarea {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            background: white;
+        }
+
+        .draft-textarea:focus {
+            outline: none;
+        }
+
+        .copy-options {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .copy-btn {
+            padding: 2px 6px;
+            font-size: 10px;
+            background: #f0f0f0;
+            border: 1px solid #c0c0c0;
+            border-radius: 2px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .copy-btn:hover {
+            background: #e0e0e0;
+            color: #333;
+        }
+
         .header {
             background: #3a3a3a;
             color: white;
@@ -189,7 +305,7 @@
             flex: 1 1 0;
             min-height: 0;
             align-items: stretch;
-            overflow: hidden;
+            height: 100%; /* ensure panels receive height */
         }
 
         .panel {
@@ -200,7 +316,7 @@
             flex-direction: column;
             min-height: 0;
             height: 100%;
-            overflow: hidden;
+            max-height: 100%;
         }
 
         .panel-header {
@@ -214,11 +330,14 @@
         }
 
         .panel-content {
-            padding: 10px;
+            padding: 10px 10px 28px; /* extra bottom padding so last line isn't clipped */
             flex: 1 1 auto;
             overflow-y: auto;
             overflow-x: hidden;
             min-height: 0;
+            max-height: 100%;
+            box-sizing: border-box;
+            scroll-padding-bottom: 28px; /* ensure scroll snaps allow viewing padded end */
             -webkit-overflow-scrolling: touch;
             position: relative;
             overscroll-behavior: contain;
@@ -408,8 +527,9 @@
             padding: 8px;
             position: absolute;
             z-index: 1000;
-            bottom: 125%;
+            top: 100%;
             right: 0;
+            margin-top: 4px;
             opacity: 0;
             transition: opacity 0.3s;
             font-size: 11px;
@@ -420,11 +540,11 @@
         .metadata-tooltip .tooltip-content::after {
             content: "";
             position: absolute;
-            top: 100%;
+            bottom: 100%;
             right: 15px;
             border-width: 4px;
             border-style: solid;
-            border-color: #2d2d2d transparent transparent transparent;
+            border-color: transparent transparent #2d2d2d transparent;
         }
 
         .metadata-tooltip:hover .tooltip-content {
@@ -458,13 +578,38 @@
         .history-item {
             padding: 6px 8px;
             border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
             font-size: 12px;
             transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .history-item:hover {
             background: #f5f5f5;
+        }
+
+        .delete-draft-btn {
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .delete-draft-btn:hover {
+            background: #ff6b6b;
+            color: white;
         }
 
         .history-item:last-child {
@@ -589,7 +734,6 @@
             </div>
             
             <div class="history-controls">
-                <button class="history-btn" id="showHistoryBtn" onclick="toggleHistoryPanel()">History</button>
                 <button class="history-btn" id="saveSearchBtn" onclick="saveCurrentSearch()" disabled>Save</button>
             </div>
         </div>
@@ -597,6 +741,93 @@
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <span style="margin-left: 8px;">Analyzing query and searching sources...</span>
+        </div>
+
+        <div class="layout-container" id="layoutContainer" style="display: flex;">
+            <div class="layout-sidebar">
+                <div class="layout-icon active" id="researchIcon" onclick="switchLayout('research')" title="Research Mode">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="8" cy="8" r="6"></circle>
+                        <path d="m14 14-3-3"></path>
+                    </svg>
+                </div>
+                <div class="layout-icon" id="draftIcon" onclick="switchLayout('draft')" title="Draft Mode">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"></path>
+                        <path d="M7 7h4M7 11h2M7 9h3"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="main-layout">
+                <!-- Research Layout -->
+                <div class="main-content" id="researchLayout" style="display: grid;">
+                    <div class="panel">
+                        <div class="panel-header">Research Summary</div>
+                        <div class="panel-content" id="researchContent"></div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">Sources & Citations</div>
+                        <div class="panel-content" id="sourcesContent"></div>
+                    </div>
+
+                    <div class="panel history-panel">
+                        <div class="panel-header">
+                            Search History
+                            <button class="clear-history-btn" onclick="clearSearchHistory()">Clear All</button>
+                        </div>
+                        <div class="panel-content">
+                            <div id="sourceSelectionSection" style="display: none;">
+                                <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px;">Select Sources:</div>
+                                <div id="sourcesList"></div>
+                                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+                                    <button class="history-btn" onclick="selectAllSources()">All</button>
+                                    <button class="history-btn" onclick="selectNoSources()">None</button>
+                                    <button class="history-btn" onclick="applySourceSelection()">Apply</button>
+                                </div>
+                            </div>
+                            <div id="searchHistorySection">
+                                <div class="search-history-list" id="searchHistoryList">
+                                    <div class="no-results">No saved searches yet</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Draft Layout -->
+                <div class="main-content" id="draftLayout" style="display: none;">
+                    <div class="draft-panel">
+                        <div class="draft-header">
+                            <div class="draft-title">Draft</div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="search-btn" id="newDraftBtn" onclick="newDraft()">New Draft</button>
+                                <button class="search-btn" id="findCitationsBtn" onclick="findCitationsForDraft()">Find Citations</button>
+                                <button class="search-btn" id="saveDraftBtn" onclick="saveDraft()">Save Draft</button>
+                            </div>
+                        </div>
+                        <textarea class="draft-textarea" id="draftTextarea" placeholder="Start writing your theological draft here..."></textarea>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">Sources & Citations</div>
+                        <div class="panel-content" id="draftSourcesContent"></div>
+                    </div>
+
+                    <div class="panel history-panel">
+                        <div class="panel-header">
+                            Draft History
+                            <button class="clear-history-btn" onclick="clearDraftHistory()">Clear All</button>
+                        </div>
+                        <div class="panel-content">
+                            <div class="search-history-list" id="draftHistoryList">
+                                <div class="no-results">No saved drafts yet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="main-content" id="mainContent" style="display: none;">
@@ -640,12 +871,26 @@
         let availableSources = [];
         let selectedSources = new Set();
         let searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        let draftHistory = JSON.parse(localStorage.getItem('draftHistory') || '[]');
         let currentSearchResult = null;
+        let currentLayout = 'research';
+        let currentDraftCitations = null;
+        let draftAutosaveTimer = null;
+        let currentDraftId = null; // Track which draft is currently being edited
 
         // Initialize the interface
         document.addEventListener('DOMContentLoaded', function() {
             loadAvailableSources();
             displaySearchHistory();
+            displayDraftHistory();
+            // Ensure the new layout is visible on load
+            try {
+                document.getElementById('layoutContainer').style.display = 'flex';
+                switchLayout('research');
+            } catch (e) {
+                console.warn('Layout init warning:', e);
+            }
+            // Draft layout starts empty - no autosave restoration
             
             // Handle Enter key in search input
             document.getElementById('queryInput').addEventListener('keypress', function(e) {
@@ -654,6 +899,12 @@
                 }
             });
             
+            // Autosave on draft input (debounced)
+            const draftTA = document.getElementById('draftTextarea');
+            draftTA.addEventListener('input', () => {
+                scheduleDraftAutosave();
+            });
+
             // Handle source stack selection
             document.getElementById('sourceStack').addEventListener('change', function() {
                 if (this.value === 'custom') {
@@ -743,42 +994,6 @@
             hideSourceSelection();
         }
 
-        function toggleHistoryPanel() {
-            const panel = document.getElementById('historyPanel');
-            const btn = document.getElementById('showHistoryBtn');
-            const mainContent = document.getElementById('mainContent');
-            const researchPanel = mainContent.children[0];
-            const sourcesPanel = mainContent.children[1];
-            
-            if (panel.style.display === 'none' || panel.style.display === '') {
-                // Show history panel
-                panel.style.display = 'block';
-                btn.classList.add('active');
-                hideSourceSelection();
-                
-                // Always ensure main content is visible and use normal grid layout
-                mainContent.style.display = 'grid';
-                mainContent.style.gridTemplateColumns = '2fr 1fr 200px';
-                
-                // Always show research and sources panels (even if empty) to maintain layout
-                researchPanel.style.display = 'block';
-                sourcesPanel.style.display = 'block';
-                
-                // Refresh history display
-                displaySearchHistory();
-            } else {
-                // Hide history panel
-                panel.style.display = 'none';
-                btn.classList.remove('active');
-                
-                // If no content in main panels, hide mainContent entirely
-                const researchContent = document.getElementById('researchContent');
-                const sourcesContent = document.getElementById('sourcesContent');
-                if (!researchContent.innerHTML.trim() && !sourcesContent.innerHTML.trim()) {
-                    mainContent.style.display = 'none';
-                }
-            }
-        }
 
         function saveCurrentSearch() {
             if (!currentSearchResult) return;
@@ -843,13 +1058,13 @@
                 reasoning_transparency: entry.reasoning,
                 chunks: entry.chunks || [] // Use saved chunks, or empty array if not available (for backwards compatibility)
             });
-            
-            document.getElementById('mainContent').style.display = 'grid';
-            // Restore normal grid layout
-            document.getElementById('mainContent').style.gridTemplateColumns = '2fr 1fr 200px';
-            const mainContent = document.getElementById('mainContent');
-            mainContent.children[0].style.display = 'block';
-            mainContent.children[1].style.display = 'block';
+            // Ensure only the new layout is visible
+            document.getElementById('layoutContainer').style.display = 'flex';
+            document.getElementById('researchLayout').style.display = 'grid';
+            document.getElementById('draftLayout').style.display = 'none';
+            // Hide legacy container to avoid double panels
+            const legacyMain = document.getElementById('mainContent');
+            if (legacyMain) legacyMain.style.display = 'none';
             
             document.getElementById('saveSearchBtn').disabled = true;
             currentSearchResult = entry;
@@ -861,6 +1076,408 @@
                 localStorage.removeItem('searchHistory');
                 displaySearchHistory();
             }
+        }
+
+        function saveDraft() {
+            const textarea = document.getElementById('draftTextarea');
+            const draftText = textarea.value.trim();
+            
+            if (!draftText) {
+                alert('Please write some content before saving the draft.');
+                return;
+            }
+            
+            // Check if we should update existing draft or create new one
+            let draftEntry;
+            let isUpdate = false;
+            
+            if (currentDraftId) {
+                // Update existing draft
+                const existingIndex = draftHistory.findIndex(d => d.id === currentDraftId);
+                if (existingIndex !== -1) {
+                    draftEntry = draftHistory[existingIndex];
+                    draftEntry.title = draftText.substring(0, 50) + (draftText.length > 50 ? '...' : '');
+                    draftEntry.content = draftText;
+                    draftEntry.date = new Date().toLocaleDateString();
+                    draftEntry.wordCount = draftText.split(/\s+/).length;
+                    draftEntry.citations = currentDraftCitations ? {
+                        sources_used: currentDraftCitations.sources_used || [],
+                        chunks: currentDraftCitations.chunks || []
+                    } : null;
+                    // Move to top
+                    draftHistory.splice(existingIndex, 1);
+                    draftHistory.unshift(draftEntry);
+                    isUpdate = true;
+                } else {
+                    currentDraftId = null; // Draft was deleted, create new
+                }
+            }
+            
+            if (!isUpdate) {
+                // Create new draft
+                draftEntry = {
+                    id: Date.now(),
+                    title: draftText.substring(0, 50) + (draftText.length > 50 ? '...' : ''),
+                    content: draftText,
+                    date: new Date().toLocaleDateString(),
+                    wordCount: draftText.split(/\s+/).length,
+                    citations: currentDraftCitations ? {
+                        sources_used: currentDraftCitations.sources_used || [],
+                        chunks: currentDraftCitations.chunks || []
+                    } : null
+                };
+                draftHistory.unshift(draftEntry);
+                currentDraftId = draftEntry.id;
+            }
+            
+            if (draftHistory.length > 50) {
+                draftHistory = draftHistory.slice(0, 50); // Keep only last 50 drafts
+            }
+            
+            localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+            displayDraftHistory();
+            // Update autosave snapshot
+            persistDraftAutosave();
+            
+            // Show feedback
+            const btn = document.getElementById('saveDraftBtn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saved!';
+            btn.style.background = '#d4edda';
+            btn.style.color = '#155724';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#4a90e2';
+                btn.style.color = 'white';
+            }, 1000);
+        }
+
+        function displayDraftHistory() {
+            const historyList = document.getElementById('draftHistoryList');
+            
+            if (draftHistory.length === 0) {
+                historyList.innerHTML = '<div class="no-results">No saved drafts yet</div>';
+                return;
+            }
+            
+            historyList.innerHTML = draftHistory.map(draft => `
+                <div class="history-item">
+                    <div onclick="loadDraft(${draft.id})" style="flex: 1; cursor: pointer;">
+                        <div class="history-title">${draft.title}</div>
+                        <div class="history-meta">${draft.date} • ${draft.wordCount} words${draft.citations && draft.citations.sources_used ? ` • ${draft.citations.sources_used.length} sources` : ''}</div>
+                    </div>
+                    <button class="delete-draft-btn" onclick="event.stopPropagation(); deleteDraft(${draft.id})" title="Delete draft">×</button>
+                </div>
+            `).join('');
+        }
+
+        function loadDraft(draftId) {
+            const draft = draftHistory.find(d => d.id === draftId);
+            if (!draft) return;
+            
+            document.getElementById('draftTextarea').value = draft.content;
+            currentDraftId = draftId; // Set current draft ID so we can update it
+            
+            if (draft.citations) {
+                currentDraftCitations = draft.citations;
+                displayDraftSearchResults(currentDraftCitations);
+            } else {
+                currentDraftCitations = null;
+                document.getElementById('draftSourcesContent').innerHTML = '';
+            }
+            
+            // Switch to draft layout if not already there
+            if (currentLayout !== 'draft') {
+                switchLayout('draft');
+            }
+            scheduleDraftAutosave();
+        }
+
+        function deleteDraft(draftId) {
+            // Remove from history
+            const index = draftHistory.findIndex(d => d.id === draftId);
+            if (index !== -1) {
+                draftHistory.splice(index, 1);
+                localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                displayDraftHistory();
+                
+                // If this was the current draft being edited, clear it
+                if (currentDraftId === draftId) {
+                    document.getElementById('draftTextarea').value = '';
+                    currentDraftId = null;
+                    currentDraftCitations = null;
+                    document.getElementById('draftSourcesContent').innerHTML = '';
+                    localStorage.removeItem('draftAutosave');
+                }
+            }
+        }
+
+        function newDraft() {
+            // Clear current draft state
+            document.getElementById('draftTextarea').value = '';
+            currentDraftId = null;
+            currentDraftCitations = null;
+            document.getElementById('draftSourcesContent').innerHTML = '';
+            
+            // Clear autosave
+            localStorage.removeItem('draftAutosave');
+            
+            // Switch to draft layout if not already there
+            if (currentLayout !== 'draft') {
+                switchLayout('draft');
+            }
+        }
+
+        function clearDraftHistory() {
+            if (confirm('Are you sure you want to clear all draft history?')) {
+                draftHistory = [];
+                localStorage.removeItem('draftHistory');
+                displayDraftHistory();
+            }
+        }
+
+        function scheduleDraftAutosave() {
+            if (draftAutosaveTimer) clearTimeout(draftAutosaveTimer);
+            draftAutosaveTimer = setTimeout(() => {
+                persistDraftAutosave();
+            }, 800);
+        }
+
+        function persistDraftAutosave() {
+            try {
+                const content = document.getElementById('draftTextarea').value.trim();
+                
+                // Only autosave if there's actual content and we have a currentDraftId
+                if (!content || !currentDraftId) {
+                    // Just store to autosave key for session persistence (not restored on page load)
+                    const snapshot = {
+                        content,
+                        citations: currentDraftCitations,
+                        timestamp: Date.now(),
+                        draftId: currentDraftId
+                    };
+                    localStorage.setItem('draftAutosave', JSON.stringify(snapshot));
+                    return;
+                }
+                
+                // Update existing draft if we have a currentDraftId
+                const existingIndex = draftHistory.findIndex(d => d.id === currentDraftId);
+                if (existingIndex !== -1) {
+                    const draft = draftHistory[existingIndex];
+                    draft.content = content;
+                    draft.title = content.substring(0, 50) + (content.length > 50 ? '...' : '');
+                    draft.wordCount = content.split(/\s+/).length;
+                    draft.citations = currentDraftCitations ? {
+                        sources_used: currentDraftCitations.sources_used || [],
+                        chunks: currentDraftCitations.chunks || []
+                    } : null;
+                    // Keep in place (don't move to top on autosave)
+                    localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                } else {
+                    currentDraftId = null; // Draft was deleted
+                }
+            } catch (e) {
+                console.error('Autosave error:', e);
+            }
+        }
+
+        function switchLayout(layout) {
+            currentLayout = layout;
+            
+            // Update layout icons
+            document.getElementById('researchIcon').classList.toggle('active', layout === 'research');
+            document.getElementById('draftIcon').classList.toggle('active', layout === 'draft');
+            
+            // Show/hide layouts
+            if (layout === 'research') {
+                document.getElementById('researchLayout').style.display = 'grid';
+                document.getElementById('researchLayout').style.gridTemplateColumns = '2fr 1fr 200px';
+                document.getElementById('draftLayout').style.display = 'none';
+            } else if (layout === 'draft') {
+                document.getElementById('draftLayout').style.display = 'grid';
+                document.getElementById('draftLayout').style.gridTemplateColumns = '2fr 1fr 200px';
+                document.getElementById('researchLayout').style.display = 'none';
+            }
+            
+            // Show layout container
+            document.getElementById('layoutContainer').style.display = 'flex';
+            
+            // Hide old main content if it exists
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        function findCitationsForDraft() {
+            const textarea = document.getElementById('draftTextarea');
+            const text = textarea.value;
+            const cursorPos = textarea.selectionStart;
+            
+            if (!text.trim()) {
+                alert('Please write some content first before searching for citations.');
+                return;
+            }
+            
+            // Extract context around cursor (5 sentences)
+            const context = extractContextAroundCursor(text, cursorPos);
+            
+            if (!context.trim()) {
+                alert('Could not extract enough context around cursor position.');
+                return;
+            }
+            
+            // Show loading
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            
+            // Perform context search
+            fetch('/api/search-context', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    context_text: context,
+                    selected_sources: Array.from(selectedSources)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayDraftSearchResults(data);
+                currentDraftCitations = data;
+                scheduleDraftAutosave();
+            })
+            .catch(error => {
+                console.error('Context search error:', error);
+                document.getElementById('draftSourcesContent').innerHTML = `
+                    <div class="error">Error: ${error.message}</div>
+                `;
+            })
+            .finally(() => {
+                loading.style.display = 'none';
+            });
+        }
+
+        function extractContextAroundCursor(text, cursorPos) {
+            // Split text into sentences
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            
+            if (sentences.length === 0) return '';
+            
+            // Find which sentence the cursor is in
+            let currentSentenceIndex = 0;
+            let charCount = 0;
+            
+            for (let i = 0; i < sentences.length; i++) {
+                charCount += sentences[i].length + 1; // +1 for the punctuation
+                if (charCount >= cursorPos) {
+                    currentSentenceIndex = i;
+                    break;
+                }
+            }
+            
+            // Extract 2 sentences before, current sentence, and 2 sentences after
+            const startIndex = Math.max(0, currentSentenceIndex - 2);
+            const endIndex = Math.min(sentences.length, currentSentenceIndex + 3);
+            
+            return sentences.slice(startIndex, endIndex).join('. ').trim();
+        }
+
+        function displayDraftSearchResults(data) {
+            const sourcesContent = document.getElementById('draftSourcesContent');
+            
+            // Store sources for citation handling
+            currentSources = data.sources_used || [];
+            currentDraftCitations = data;
+            
+            // Display sources with copy options
+            let sourcesHtml = '';
+            if (currentSources.length > 0) {
+                sourcesHtml = currentSources.map((source, index) => {
+                    const chunk = data.chunks ? data.chunks[index] : null;
+                    // Build metadata tooltip
+                    const metadata = chunk ? (chunk.metadata || {}) : {};
+                    let tooltipContent = '';
+                    
+                    if (metadata.topics && metadata.topics.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Topics</div><div class="metadata-values">${metadata.topics.join(', ')}</div></div>`;
+                    }
+                    if (metadata.concepts && metadata.concepts.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Concepts</div><div class="metadata-values">${metadata.concepts.join(', ')}</div></div>`;
+                    }
+                    if (metadata.terms && metadata.terms.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Terms</div><div class="metadata-values">${metadata.terms.join(', ')}</div></div>`;
+                    }
+                    if (metadata.discourse_elements && metadata.discourse_elements.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Discourse Elements</div><div class="metadata-values">${metadata.discourse_elements.join(', ')}</div></div>`;
+                    }
+                    if (metadata.scripture_references && metadata.scripture_references.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Scripture References</div><div class="metadata-values">${metadata.scripture_references.join(', ')}</div></div>`;
+                    }
+                    if (metadata.named_entities && metadata.named_entities.length > 0) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Named Entities</div><div class="metadata-values">${metadata.named_entities.join(', ')}</div></div>`;
+                    }
+                    if (metadata.structure_path) {
+                        tooltipContent += `<div class="metadata-section"><div class="metadata-label">Location</div><div class="metadata-values">${metadata.structure_path}</div></div>`;
+                    }
+                    
+                    const chunkText = chunk ? chunk.text : '';
+                    const citationText = `(${source.source || 'Unknown'}, ${source.author || 'Unknown'})`;
+                    const encodedText = encodeURIComponent(chunkText);
+                    const encodedCitation = encodeURIComponent(citationText);
+                    
+                    return `
+                        <div class="source-item" id="source-${source.number}">
+                            <div class="source-header">
+                                <div class="source-number">${source.number}</div>
+                                <div class="source-title">${source.source || 'Unknown'}</div>
+                                ${tooltipContent ? `
+                                <div class="metadata-tooltip">
+                                    <span style="cursor: help; color: #666;">ⓘ</span>
+                                    <div class="tooltip-content">${tooltipContent}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                            <div class="source-meta">
+                                <strong>Author:</strong> ${source.author || 'Unknown'}<br>
+                                <strong>Location:</strong> ${source.location || 'Unknown'}
+                            </div>
+                            <div class="source-text">${chunkText || 'Text not available'}</div>
+                            ${source.relevance ? `<div class="source-relevance"><strong>Relevance:</strong> ${source.relevance}</div>` : ''}
+                            <div class="copy-options">
+                                <button class="copy-btn" data-text="${encodedText}" onclick="copyToClipboard(event)">Copy Text</button>
+                                <button class="copy-btn" data-text="${encodedCitation}" onclick="copyToClipboard(event)">Copy Citation</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                sourcesHtml = '<div class="no-results">No sources found</div>';
+            }
+            
+            sourcesContent.innerHTML = sourcesHtml;
+            scheduleDraftAutosave();
+        }
+
+        function copyToClipboard(event) {
+            const btn = event.target;
+            const textToCopy = decodeURIComponent(btn.getAttribute('data-text') || '');
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Show brief feedback
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#d4edda';
+                btn.style.color = '#155724';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#f0f0f0';
+                    btn.style.color = '#666';
+                }, 1000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy to clipboard');
+            });
         }
 
         function performSearch() {
@@ -882,7 +1499,8 @@
             // Show loading state
             searchBtn.disabled = true;
             loading.style.display = 'block';
-            mainContent.style.display = 'none';
+            document.getElementById('layoutContainer').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
 
             // Prepare request data
             const requestData = {
@@ -1010,11 +1628,17 @@
             }
 
             sourcesContent.innerHTML = sourcesHtml;
-            mainContent.style.display = 'grid';
+            
+            // Show research layout
+            document.getElementById('layoutContainer').style.display = 'flex';
+            document.getElementById('researchLayout').style.display = 'grid';
+            document.getElementById('draftLayout').style.display = 'none';
+            
             // Ensure normal grid layout when displaying results
-            mainContent.style.gridTemplateColumns = '2fr 1fr 200px';
-            const researchPanel = mainContent.children[0];
-            const sourcesPanel = mainContent.children[1];
+            const researchLayout = document.getElementById('researchLayout');
+            researchLayout.style.gridTemplateColumns = '2fr 1fr 200px';
+            const researchPanel = researchLayout.children[0];
+            const sourcesPanel = researchLayout.children[1];
             researchPanel.style.display = 'block';
             sourcesPanel.style.display = 'block';
         }

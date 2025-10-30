@@ -313,7 +313,7 @@ Create a comprehensive research summary with proper numbered citations."""
                     'source': chunk.get('source', 'Unknown Source'),
                     'author': chunk.get('author', 'Unknown Author'),
                     'location': chunk.get('metadata', {}).get('structure_path', 'Unknown'),
-                    'relevance_explanation': f"Similarity: {chunk.get('similarity_score', 0):.3f}, Relevance: {chunk.get('final_score', 0):.3f}",
+                    'relevance_explanation': generate_relevance_explanation(query, chunk),
                     'chunk_id': chunk.get('id', ''),
                     '_chunk_index': chunk.get('_chunk_index', i-1),
                     'metadata': chunk.get('metadata', {})
@@ -335,7 +335,7 @@ Create a comprehensive research summary with proper numbered citations."""
                     'source': chunk.get('source', 'Unknown Source'),
                     'author': chunk.get('author', 'Unknown Author'),
                     'location': chunk.get('metadata', {}).get('structure_path', 'Unknown'),
-                    'relevance_explanation': f"Provides relevant content with similarity score {chunk.get('similarity_score', 0):.3f}",
+                    'relevance_explanation': generate_relevance_explanation(query, chunk),
                     'chunk_id': chunk.get('id', ''),
                     '_chunk_index': chunk.get('_chunk_index', chunk_index),
                     'metadata': chunk.get('metadata', {})
@@ -416,6 +416,101 @@ def search():
     except Exception as e:
         print(f"Error in search: {e}")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/search-context', methods=['POST'])
+def search_context():
+    """Search for relevant chunks based on draft context around cursor"""
+    try:
+        data = request.get_json()
+        context_text = data.get('context_text', '').strip()
+        selected_sources = data.get('selected_sources', [])
+        
+        if not context_text:
+            return jsonify({"error": "Context text is required"}), 400
+        
+        # Use the context as the query for analysis
+        analysis = analyze_query(context_text)
+        
+        # Search with filters and source selection
+        chunks = search_with_filters(context_text, analysis, selected_sources)
+        
+        # For draft mode, we don't need a research summary, just return the chunks
+        # Format the response similar to research mode but without synthesis
+        sources_used = []
+        for i, chunk in enumerate(chunks[:10], 1):  # Use top 10 chunks
+            # Generate a relevance explanation using AI
+            relevance_explanation = generate_relevance_explanation(context_text, chunk)
+            
+            source_info = {
+                "number": i,
+                "source": chunk.get('source', 'Unknown'),
+                "author": chunk.get('author', 'Unknown'),
+                "location": chunk.get('metadata', {}).get('structure_path', 'Unknown'),
+                "relevance": relevance_explanation
+            }
+            sources_used.append(source_info)
+        
+        result = {
+            "sources_used": sources_used,
+            "chunks": chunks,
+            "reasoning_transparency": analysis.get('search_strategy', 'Context-based search'),
+            "query_analysis": analysis
+        }
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Error in context search: {e}")
+        return jsonify({"error": str(e)}), 500
+
+def generate_relevance_explanation(context_text, chunk):
+    """Generate a 1-2 sentence explanation of why this chunk is relevant to the context"""
+    try:
+        chunk_text = chunk.get('text', '')[:500]  # Limit chunk text for API efficiency
+        similarity_score = chunk.get('similarity_score', 0)
+        metadata = chunk.get('metadata', {})
+        
+        # Build metadata context for the AI
+        metadata_context = []
+        if metadata.get('topics'):
+            metadata_context.append(f"Topics: {', '.join(metadata['topics'])}")
+        if metadata.get('concepts'):
+            metadata_context.append(f"Concepts: {', '.join(metadata['concepts'])}")
+        if metadata.get('terms'):
+            metadata_context.append(f"Terms: {', '.join(metadata['terms'])}")
+        if metadata.get('discourse_elements'):
+            metadata_context.append(f"Discourse Elements: {', '.join(metadata['discourse_elements'])}")
+        if metadata.get('scripture_references'):
+            metadata_context.append(f"Scripture References: {', '.join(metadata['scripture_references'])}")
+        if metadata.get('named_entities'):
+            metadata_context.append(f"Named Entities: {', '.join(metadata['named_entities'])}")
+        
+        metadata_str = " | ".join(metadata_context) if metadata_context else "No specific metadata filters"
+        
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{
+                "role": "system",
+                "content": """You are a theological research assistant. Given a context from a draft and a source chunk with metadata, explain in 1-2 sentences why this source is relevant to the context. Be specific about the connection and mention relevant metadata filters that helped identify this source. Keep it concise and helpful for a writer."""
+            }, {
+                "role": "user",
+                "content": f"""Context from draft: {context_text}
+
+Source chunk: {chunk_text}
+
+Metadata filters that matched: {metadata_str}
+
+Explain why this source is relevant to the context in 1-2 sentences, mentioning the key metadata filters that helped identify it."""
+            }],
+            temperature=0.3,
+            max_tokens=200
+        )
+        
+        return response.choices[0].message.content.strip()
+        
+    except Exception as e:
+        print(f"Error generating relevance explanation: {e}")
+        return f"Relevant content with similarity score {similarity_score:.3f}"
 
 if __name__ == '__main__':
     # Load dataset on startup
