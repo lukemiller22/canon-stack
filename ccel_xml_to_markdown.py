@@ -208,6 +208,11 @@ class CCELThMLProcessor:
         """
         Chunk text into segments of approximately max_length characters,
         respecting paragraph boundaries when possible.
+        
+        Strategy:
+        - Target size: max_length (default 1500)
+        - Soft limit: max_length * 1.4 (default 2100) - allows small overflow to avoid tiny chunks
+        - If next paragraph is small (< 400 chars) and total < soft limit, combine it
         """
         if len(text) <= max_length:
             return [text]
@@ -215,15 +220,52 @@ class CCELThMLProcessor:
         chunks = []
         paragraphs = text.split('\n\n')
         current_chunk = ""
+        soft_limit = int(max_length * 1.4)  # Allow 40% overflow for small paragraphs
+        small_paragraph_threshold = 400  # Paragraphs under this size can overflow
         
-        for paragraph in paragraphs:
-            # If adding this paragraph would exceed max_length
-            if len(current_chunk) + len(paragraph) + 2 > max_length:
-                if current_chunk:
+        for i, paragraph in enumerate(paragraphs):
+            paragraph_len = len(paragraph)
+            combined_len = len(current_chunk) + paragraph_len + 2  # +2 for paragraph break
+            
+            # Check if adding this paragraph would exceed max_length
+            would_exceed = combined_len > max_length
+            
+            if would_exceed:
+                # Check if we should combine anyway (small paragraph, under soft limit)
+                is_small = paragraph_len < small_paragraph_threshold
+                within_soft_limit = combined_len <= soft_limit
+                
+                if current_chunk and is_small and within_soft_limit:
+                    # Combine small paragraph even if it slightly exceeds target
+                    current_chunk += "\n\n" + paragraph if current_chunk else paragraph
+                elif current_chunk:
+                    # Save current chunk and start new one
                     chunks.append(current_chunk.strip())
-                    current_chunk = paragraph
+                    
+                    # Check if this single paragraph is too long
+                    if paragraph_len > max_length:
+                        # Single paragraph is too long, split by sentences
+                        sentences = re.split(r'(?<=[.!?])\s+', paragraph)
+                        temp_chunk = ""
+                        for sentence in sentences:
+                            if len(temp_chunk) + len(sentence) + 1 > max_length:
+                                if temp_chunk:
+                                    chunks.append(temp_chunk.strip())
+                                    temp_chunk = sentence
+                                else:
+                                    # Single sentence too long, force split
+                                    while len(sentence) > max_length:
+                                        chunks.append(sentence[:max_length].strip())
+                                        sentence = sentence[max_length:]
+                                    temp_chunk = sentence
+                            else:
+                                temp_chunk += " " + sentence if temp_chunk else sentence
+                        current_chunk = temp_chunk
+                    else:
+                        current_chunk = paragraph
                 else:
-                    # Single paragraph is too long, split by sentences
+                    # Empty current chunk and paragraph is too long
+                    # Split by sentences
                     sentences = re.split(r'(?<=[.!?])\s+', paragraph)
                     temp_chunk = ""
                     for sentence in sentences:
@@ -241,10 +283,37 @@ class CCELThMLProcessor:
                             temp_chunk += " " + sentence if temp_chunk else sentence
                     current_chunk = temp_chunk
             else:
+                # Safe to add paragraph
                 current_chunk += "\n\n" + paragraph if current_chunk else paragraph
         
         if current_chunk:
             chunks.append(current_chunk.strip())
+        
+        # Post-process: Combine tiny trailing chunks with previous chunk
+        # This handles cases where a single paragraph was split by sentences and left a tiny chunk
+        if len(chunks) > 1:
+            final_chunks = []
+            i = 0
+            while i < len(chunks):
+                chunk = chunks[i]
+                chunk_len = len(chunk)
+                
+                # If this is a small chunk (< 400) and we can combine it with previous
+                if chunk_len < small_paragraph_threshold and len(final_chunks) > 0:
+                    prev_chunk = final_chunks[-1]
+                    combined_len = len(prev_chunk) + chunk_len + 2  # +2 for paragraph break
+                    
+                    # Combine if under soft limit
+                    if combined_len <= soft_limit:
+                        final_chunks[-1] = prev_chunk + "\n\n" + chunk
+                        i += 1
+                        continue
+                
+                # Keep chunk as is
+                final_chunks.append(chunk)
+                i += 1
+            
+            return final_chunks
         
         return chunks
     

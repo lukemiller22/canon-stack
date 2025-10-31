@@ -43,8 +43,8 @@ def load_dataset():
         dataset = []
         sources_map = {}
         
-        # Load all JSONL files from the deployed directory
-        jsonl_files = list(deployed_dir.glob('*.jsonl'))
+        # Load all JSONL files from the deployed directory (exclude backup files)
+        jsonl_files = [f for f in deployed_dir.glob('*.jsonl') if 'backup' not in f.name.lower()]
         
         if not jsonl_files:
             print(f"Warning: No JSONL files found in {deployed_dir}")
@@ -297,7 +297,8 @@ Create a comprehensive research summary with proper numbered citations."""
         summary = response.choices[0].message.content
         
         # Extract citations and create source list
-        citation_pattern = re.compile(r'\[(\d+)\]')
+        # Look for both square brackets [1] and parentheses (1)
+        citation_pattern = re.compile(r'[\[\(](\d+)[\]\)]')
         cited_numbers = set()
         for match in citation_pattern.finditer(summary):
             try:
@@ -327,32 +328,47 @@ Create a comprehensive research summary with proper numbered citations."""
         
         # Update sources list to match new numbering
         renumbered_sources = []
-        for old_num in sorted(cited_numbers):
+        for new_num, old_num in enumerate(sorted(cited_numbers), 1):
             chunk_index = old_num - 1
             if chunk_index < len(chunks):
                 chunk = chunks[chunk_index]
                 source_entry = {
+                    'number': new_num,  # Add number field for frontend
                     'source': chunk.get('source', 'Unknown Source'),
                     'author': chunk.get('author', 'Unknown Author'),
                     'location': chunk.get('metadata', {}).get('structure_path', 'Unknown'),
                     'relevance_explanation': generate_relevance_explanation(query, chunk),
                     'chunk_id': chunk.get('id', ''),
                     '_chunk_index': chunk.get('_chunk_index', chunk_index),
-                    'metadata': chunk.get('metadata', {})
+                    'metadata': chunk.get('metadata', {}),
+                    'text': chunk.get('text', '')  # Include text for display
                 }
                 renumbered_sources.append(source_entry)
         
-        # Fix citations in summary
-        citation_matches = list(citation_pattern.finditer(summary))
+        # Fix citations in summary - preserve original format (brackets or parentheses)
+        # Extract all citations with their positions and formats
+        citation_matches = []
+        for match in citation_pattern.finditer(summary):
+            old_citation_num = int(match.group(1))
+            # Determine if it's brackets or parentheses
+            start_char = summary[match.start()]
+            end_char = summary[match.end() - 1]
+            citation_format = (start_char, end_char)  # e.g., ('[', ']') or ('(', ')')
+            citation_matches.append((match.start(), match.end(), old_citation_num, citation_format))
+        
+        # Sort by position in reverse to replace from end to start
+        citation_matches.sort(key=lambda x: x[0], reverse=True)
         fixed_summary = summary
         
-        for match in reversed(citation_matches):
-            old_citation_num = int(match.group(1))
+        for start_pos, end_pos, old_citation_num, citation_format in citation_matches:
             if old_citation_num in old_to_new_mapping:
                 new_citation_num = old_to_new_mapping[old_citation_num]
-                start_pos = match.start()
-                end_pos = match.end()
-                fixed_summary = fixed_summary[:start_pos] + f'[{new_citation_num}]' + fixed_summary[end_pos:]
+                # Preserve original format (brackets or parentheses)
+                if citation_format == ('(', ')'):
+                    new_citation = f'({new_citation_num})'
+                else:
+                    new_citation = f'[{new_citation_num}]'
+                fixed_summary = fixed_summary[:start_pos] + new_citation + fixed_summary[end_pos:]
         
         return {
             "summary": fixed_summary,

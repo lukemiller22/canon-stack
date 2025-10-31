@@ -19,6 +19,7 @@ Usage:
 
 import json
 import os
+import sys
 import shutil
 import xml.etree.ElementTree as ET
 import re
@@ -30,6 +31,19 @@ import argparse
 
 from source_metadata_manager import SourceMetadataManager
 from ccel_xml_to_markdown import CCELThMLProcessor
+
+# Import enhanced processor for sources with nested structures
+try:
+    # Import with path adjustment for scripts folder
+    from pathlib import Path
+    scripts_path = Path(__file__).parent / 'theological_processing' / 'scripts'
+    if str(scripts_path) not in sys.path:
+        sys.path.insert(0, str(scripts_path))
+    from chunk_confessions import ConfessionsProcessor
+    CONFESSIONS_PROCESSOR_AVAILABLE = True
+except ImportError:
+    CONFESSIONS_PROCESSOR_AVAILABLE = False
+    ConfessionsProcessor = None
 
 
 @dataclass
@@ -379,6 +393,23 @@ class TheologicalProcessingPipeline:
         except Exception as e:
             raise ValueError(f"Failed to extract metadata from XML: {e}")
         
+        # Detect if we need the enhanced processor for nested structures (e.g., Confessions)
+        # Check by source title or filename
+        source_title = source_metadata.identification.title.lower()
+        filename_lower = source_path.name.lower()
+        needs_enhanced_processor = (
+            'confession' in source_title or 
+            'confession' in filename_lower or
+            source_path.stem.lower() == 'confessions'
+        )
+        
+        # Use enhanced processor if available and needed
+        if needs_enhanced_processor and CONFESSIONS_PROCESSOR_AVAILABLE:
+            print(f"Detected nested structure (Books > Chapters), using enhanced processor...")
+            processor = ConfessionsProcessor()
+        else:
+            processor = CCELThMLProcessor()
+        
         # Process sections and create chunks
         try:
             sections = processor.process_div1_sections(root)
@@ -539,7 +570,7 @@ class TheologicalProcessingPipeline:
 
 ## Metadata Structure
 For this chunk, provide metadata in this exact format:
-* concepts:: [[Concept1]], [[Concept2]]
+* concepts:: [[Concept/Concept1]], [[Concept/Concept2]]
 * topics:: [[Concept1/Topic1]], [[Concept2/Topic2]]
 * terms:: [[Concept1/Term1]], [[Concept2/Term2]]
 * discourse-elements::
@@ -567,7 +598,9 @@ Examples:
 - Under "Salvation": `[[Salvation/Faith vs Works]]`, `[[Salvation/Universal vs Particular]]`
 
 ### Term Index (Flexible)
-Select 3-5 terms that relate to the concepts assigned to this chunk. Terms must use namespaced format: `[[Concept/Term]]` and should be related to the concepts you've assigned.
+Select 3-5 terms that relate to the concepts assigned to this chunk. **Terms MUST use namespaced format: `[[Concept/Term]]`** and must be related to one of the concepts you've assigned above.
+
+**CRITICAL**: Terms must use namespaced format `[[Concept/Term]]` where "Concept" is one of the concepts you assigned above. If you assign concepts like "Faith" and "Salvation", your terms must be formatted as `[[Faith/term]]` or `[[Salvation/term]]`, NOT as unnamespaced terms.
 
 Terms should represent how readers would search for this content and include:
 - Synonyms and variant expressions
@@ -577,10 +610,14 @@ Terms should represent how readers would search for this content and include:
 - Memorable phrases
 
 Examples:
-- Under "Faith": `[[Faith/christian faith]]`, `[[Faith/personal conviction]]`
-- Under "Apologetics": `[[Apologetics/rational defense]]`, `[[Apologetics/evidential argument]]`
+- If you assigned "Faith" and "Salvation" as concepts:
+  - `[[Faith/christian faith]]`, `[[Faith/personal conviction]]`, `[[Salvation/grace]]`, `[[Faith/belief]]`
+  - NOT: `faith`, `christian faith`, `personal conviction` (unnamespaced)
 
-**IMPORTANT**: Only create terms that relate to the concepts you've assigned to this chunk. Terms must follow the `[[Concept/Term]]` format.
+**IMPORTANT**: 
+- Only create terms that relate to the concepts you've assigned to this chunk
+- Terms MUST follow the `[[Concept/Term]]` format - this is required, not optional
+- Every term must be namespaced with one of your assigned concepts
 
 ### Discourse Elements (Fixed)
 Use ONLY elements from this EXACT list (NO additions allowed, NO substitutions):
@@ -605,7 +642,7 @@ Classes: Person, Place, Event, Group, Work, Period, Ideology
 ## Output Format
 Provide your response in this exact format (no additional explanation):
 
-concepts:: [[Concept1]], [[Concept2]]
+concepts:: [[Concept/Concept1]], [[Concept/Concept2]]
 topics:: [[Concept1/Topic1]], [[Concept2/Topic2]]
 terms:: [[Concept1/Term1]], [[Concept2/Term2]]
 discourse-elements::
@@ -633,13 +670,36 @@ named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
         concepts_match = re.search(r'concepts::\s*(.+)', response_text, re.IGNORECASE | re.MULTILINE)
         if concepts_match:
             concepts_str = concepts_match.group(1).strip()
+            # Try both formats: [[Concept/Name]] and [[Name]] (fallback)
             extracted_concepts = re.findall(r'\[\[Concept/([^\]]+)\]\]', concepts_str)
+            if not extracted_concepts:
+                # Fallback: try without Concept/ prefix
+                extracted_concepts = re.findall(r'\[\[([^\]]+)\]\]', concepts_str)
             # Validate against fixed list
             if valid_concepts is None:
                 # Fallback: load if not provided
                 valid_concepts = self._load_indexes().get('concepts_set', set())
             # Only keep concepts that are in the fixed list
             metadata['concepts'] = [c for c in extracted_concepts if c in valid_concepts]
+        
+        # Fallback: If no concepts found, derive from topics and terms
+        if not metadata['concepts']:
+            derived_concepts = set()
+            # Extract concepts from topics (format: Concept/Topic)
+            for topic in metadata.get('topics', []):
+                if '/' in topic:
+                    concept = topic.split('/', 1)[0]
+                    if valid_concepts and concept in valid_concepts:
+                        derived_concepts.add(concept)
+            # Extract concepts from terms (format: Concept/Term)
+            for term in metadata.get('terms', []):
+                if '/' in term:
+                    concept = term.split('/', 1)[0]
+                    if valid_concepts and concept in valid_concepts:
+                        derived_concepts.add(concept)
+            
+            if derived_concepts:
+                metadata['concepts'] = list(derived_concepts)
         
         # Extract topics
         topics_match = re.search(r'topics::\s*(.+)', response_text, re.IGNORECASE | re.MULTILINE)

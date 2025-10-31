@@ -1648,9 +1648,16 @@
             
             let html = text;
             
-            // First, protect citations from being processed
+            // First, protect citations from being processed (both [1] and (1) formats)
             // Use a unique placeholder pattern that won't conflict with markdown syntax
             const citationPlaceholders = [];
+            // Handle parentheses citations (1)
+            html = html.replace(/\((\d+)\)/g, (match, num) => {
+                const placeholder = `{{CITATION_${citationPlaceholders.length}}}`;
+                citationPlaceholders.push(match);
+                return placeholder;
+            });
+            // Handle square bracket citations [1]
             html = html.replace(/\[(\d+)\]/g, (match, num) => {
                 const placeholder = `{{CITATION_${citationPlaceholders.length}}}`;
                 citationPlaceholders.push(match);
@@ -1794,13 +1801,20 @@
             // Restore citations from placeholders and make them clickable
             citationPlaceholders.forEach((citation, index) => {
                 // Replace placeholder with clickable citation
-                const citationNum = citation.match(/\[(\d+)\]/);
+                // Try to match both formats: parentheses (1) and square brackets [1]
+                const citationNumParentheses = citation.match(/\((\d+)\)/);
+                const citationNumBrackets = citation.match(/\[(\d+)\]/);
+                const citationNum = citationNumParentheses || citationNumBrackets;
                 if (citationNum) {
                     const num = citationNum[1];
                     // Escape curly braces in regex
                     const placeholderPattern = `\\{\\{CITATION_${index}\\}\\}`;
+                    // Preserve original format (parentheses or brackets)
+                    const formattedCitation = citationNumParentheses 
+                        ? `(${num})` 
+                        : `[${num}]`;
                     html = html.replace(new RegExp(placeholderPattern, 'g'), 
-                        `<span class="citation" onclick="scrollToSource(${num})">[${num}]</span>`);
+                        `<span class="citation" onclick="scrollToSource(${num})">${formattedCitation}</span>`);
                 } else {
                     // Fallback: just restore the original citation
                     const placeholderPattern = `\\{\\{CITATION_${index}\\}\\}`;
@@ -1814,7 +1828,10 @@
         function addCitationClickHandlers(summary) {
             // This function is now mostly redundant since citations are handled in parseMarkdown
             // But keep it for any citations that weren't protected as placeholders
-            return summary.replace(/\[(\d+)\]/g, '<span class="citation" onclick="scrollToSource($1)">[$1]</span>');
+            // Handle both parentheses (1) and square brackets [1]
+            summary = summary.replace(/\((\d+)\)/g, '<span class="citation" onclick="scrollToSource($1)">($1)</span>');
+            summary = summary.replace(/\[(\d+)\]/g, '<span class="citation" onclick="scrollToSource($1)">[$1]</span>');
+            return summary;
         }
 
         function scrollToSource(sourceNumber) {

@@ -201,19 +201,61 @@ class SourceMetadataManager:
         title_elem = xml_root.find('.//DC.Title')
         title = title_elem.text.strip() if title_elem is not None and title_elem.text else "Unknown Title"
         
-        # Extract author
-        author_elem = xml_root.find('.//DC.Creator[@sub="Author"][@scheme="short-form"]')
-        if author_elem is None:
-            author_elem = xml_root.find('.//DC.Creator[@sub="Author"]')
-        author = author_elem.text.strip() if author_elem is not None and author_elem.text else "Unknown Author"
+        # Extract author - parse from short-form which often has "Author, Translated by X"
+        author = None
+        translator = None
         
-        # Generate source ID
+        # Try short-form scheme first (may contain "Author, Translated by X")
+        author_elem = xml_root.find('.//DC.Creator[@sub="Author"][@scheme="short-form"]')
+        if author_elem is not None and author_elem.text:
+            author_text = author_elem.text.strip()
+            
+            # Check if translator info is included (pattern: "Author, Translated by X")
+            if ', Translated by' in author_text:
+                parts = author_text.split(', Translated by', 1)
+                author = parts[0].strip()
+                translator = parts[1].strip() if len(parts) > 1 else None
+            elif 'Translated by' in author_text:
+                parts = author_text.split('Translated by', 1)
+                author = parts[0].strip().rstrip(',').strip()
+                translator = parts[1].strip() if len(parts) > 1 else None
+            else:
+                author = author_text
+        
+        # Fallback to file-as scheme if short-form didn't work
+        if author is None:
+            author_elem = xml_root.find('.//DC.Creator[@sub="Author"][@scheme="file-as"]')
+            if author_elem is not None and author_elem.text:
+                author_text = author_elem.text.strip()
+                # File-as format is usually "Last, First, Title (dates)" 
+                # Extract just the name part (before first comma or parentheses)
+                if '(' in author_text:
+                    author_text = author_text.split('(')[0].strip()
+                if ',' in author_text:
+                    # Take first part as surname, but we want a cleaner display name
+                    # So keep the whole name before the first comma
+                    author = author_text.split(',')[0].strip()
+                else:
+                    author = author_text
+        
+        # Fallback to any DC.Creator with Author sub
+        if author is None:
+            author_elem = xml_root.find('.//DC.Creator[@sub="Author"]')
+            if author_elem is not None and author_elem.text:
+                author = author_elem.text.strip()
+        
+        # Final fallback
+        if not author:
+            author = "Unknown Author"
+        
+        # Generate source ID (use full author text for ID generation, even if we clean it for display)
         source_id = self._generate_source_id(title, author)
         
         return SourceIdentification(
             source_id=source_id,
             title=title,
-            author_primary=author
+            author_primary=author,
+            translator=translator if translator else ""
         )
     
     def _extract_publication_from_xml(self, xml_root) -> PublicationInfo:

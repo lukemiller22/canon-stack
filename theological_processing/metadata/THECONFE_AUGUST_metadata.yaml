@@ -1,0 +1,51 @@
+identification:
+  source_id: THECONFE_AUGUST
+  title: The Confessions of Saint Augustine
+  subtitle: ''
+  original_title: ''
+  author_primary: St. Augustine
+  author_additional: []
+  translator: Edward B. Pusey, D. D.
+  editor: ''
+publication:
+  original_publication_year: 2001
+  original_publisher: 'Grand Rapids, MI: Christian Classics Ethereal Library'
+  original_place: ''
+  edition_notes: ''
+  source_format: ccel_xml
+  source_url: ''
+  public_domain_status: true
+  copyright_notes: ''
+theological_classification:
+  primary_genre: Spiritual Autobiography
+  secondary_genre: ''
+  theological_tradition: ''
+  denominational_affiliation: ''
+  historical_period: Contemporary
+  century: 21st
+  theological_movement: ''
+content:
+  language: English
+  original_language: English
+  length_words: null
+  length_pages: null
+  structure_type: monograph
+  chapter_count: 14
+  has_preface: false
+  has_introduction: false
+  has_appendices: false
+  has_bibliography: false
+  has_index: false
+theological_scope:
+  primary_concepts: []
+  theological_topics: []
+  target_audience: ''
+  reading_level: ''
+processing:
+  processor_version: '1.0'
+  processing_date: '2025-10-30T19:34:20.301874'
+  chunk_count: null
+  structure_confidence: 0.0
+  quality_score: 0.0
+  manual_review_required: false
+  processing_notes: Extracted from CCEL XML
