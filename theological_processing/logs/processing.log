@@ -4,3 +4,13 @@
 2025-10-29T11:12:39.078816 | ANNOTATED | ORTHODOX_CHESTE_chunks.jsonl → 224 chunks → ORTHODOX_CHESTE_annotated.jsonl
 2025-10-29T11:34:34.654502 | COMPLETE | ORTHODOX_CHESTE_annotated.jsonl → 224 chunks → ORTHODOX_CHESTE_complete.jsonl
 2025-10-29T11:37:24.169063 | DEPLOYED | ORTHODOX_CHESTE_complete.jsonl → 0 chunks → ORTHODOX_CHESTE_complete.jsonl
+2025-10-30T15:57:29.794741 | CHUNKED | confessions.xml → 534 chunks → THECONFE_D_chunks.jsonl
+2025-10-30T16:03:09.747220 | CHUNKED | confessions.xml → 534 chunks → THECONFE_AUGUST_chunks.jsonl
+2025-10-30T19:26:46.491621 | CHUNKED | confessions.xml → 573 chunks → THECONFE_AUGUST_chunks.jsonl
+2025-10-30T19:34:20.331840 | CHUNKED | confessions.xml → 536 chunks → THECONFE_AUGUST_chunks.jsonl
+2025-10-30T20:44:28.655873 | ANNOTATED | THECONFE_AUGUST_chunks.jsonl → 536 chunks → THECONFE_AUGUST_annotated.jsonl
+2025-10-30T21:00:51.486704 | COMPLETE | THECONFE_AUGUST_annotated.jsonl → 536 chunks → THECONFE_AUGUST_complete.jsonl
+2025-10-31T11:29:49.194417 | DEPLOYED | THECONFE_AUGUST_complete.jsonl → 0 chunks → THECONFE_AUGUST_complete.jsonl
+2025-11-02T16:50:58.840839 | ANNOTATED | THE_ABOLITION_OF_MAN_chunks.jsonl → 84 chunks → THE_ABOLITION_OF_MAN_annotated.jsonl
+2025-11-02T16:55:19.968735 | COMPLETE | THE_ABOLITION_OF_MAN_annotated.jsonl → 84 chunks → THE_ABOLITION_OF_MAN_complete.jsonl
+2025-11-02T16:57:01.662162 | DEPLOYED | THE_ABOLITION_OF_MAN_complete.jsonl → 0 chunks → THE_ABOLITION_OF_MAN_complete.jsonl

@@ -14,6 +14,19 @@ This directory contains the staged processing pipeline for theological texts.
 - **templates/** - Custom processing templates for different source types
 - **rejected/** - Files that failed processing
 
+## Metadata Fields
+
+The annotation stage automatically creates the following metadata fields:
+
+- **concepts** - Theological concepts from the fixed Concepts Index
+- **topics** - Topics in `[[Concept/Topic]]` format
+- **terms** - Terms in `[[Concept/Term]]` format
+- **discourse_elements** - Full discourse element strings like `[[Category/Element]] description`
+- **discourse_tags** - **Automatically extracted** tags like `["Symbolic", "Symbolic/Metaphor"]` for efficient filtering
+- **scripture_references** - Bible references in standardized format
+- **named_entities** - Entities in `[[Class/Entity]]` format
+- **structure_path** - Hierarchical location in breadcrumb format
+
 ## Usage
 
 ```bash

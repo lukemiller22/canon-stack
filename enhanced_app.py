@@ -220,22 +220,36 @@ def calculate_metadata_boost(chunk, analysis):
         concept_overlap = len(set(chunk_concepts) & set(suggested_concepts))
         boost += concept_overlap * 0.08
     
-    # Function type relevance
-    chunk_functions = metadata.get('discourse_elements', [])
-    if chunk_functions:
+    # Discourse element relevance - use discourse_tags if available (more efficient)
+    chunk_discourse_tags = metadata.get('discourse_tags', [])
+    # Fallback: extract from discourse_elements for backward compatibility
+    if not chunk_discourse_tags:
+        chunk_functions = metadata.get('discourse_elements', [])
+        if chunk_functions:
+            for func in chunk_functions:
+                # Extract tag from format "[[Category/Element]] description"
+                tag_match = re.search(r'\[\[([^\]]+)\]\]', func)
+                if tag_match:
+                    chunk_discourse_tags.append(tag_match.group(1))
+    
+    if chunk_discourse_tags:
         # Boost logical/argumentative content for doctrinal queries
         if analysis.get('query_type') == 'doctrinal':
-            logical_patterns = ['Logical/', 'Claim/', 'Argument/']
-            for func in chunk_functions:
-                if any(pattern in func for pattern in logical_patterns):
+            # Check if chunk has any logical discourse tags
+            for tag in chunk_discourse_tags:
+                tag_lower = tag.lower()
+                if tag_lower == 'logical' or tag_lower.startswith('logical/'):
                     boost += 0.05
+                    break
         
         # Boost historical/narrative content for historical queries
         if analysis.get('query_type') == 'historical':
-            historical_patterns = ['Historical/', 'Narrative/', 'Event/']
-            for func in chunk_functions:
-                if any(pattern in func for pattern in historical_patterns):
+            # Check if chunk has any historical/narrative discourse tags
+            for tag in chunk_discourse_tags:
+                tag_lower = tag.lower()
+                if any(historical_tag in tag_lower for historical_tag in ['historical', 'narrative', 'event']):
                     boost += 0.05
+                    break
     
     return min(boost, 0.3)  # Cap boost at 0.3
 
@@ -400,6 +414,283 @@ def index():
 def get_sources():
     """Get available sources for selection"""
     return jsonify(available_sources)
+
+@app.route('/api/filter-options')
+def get_filter_options():
+    """Get all available filter options from the dataset"""
+    try:
+        sources = set()
+        authors = set()
+        concepts = set()
+        topics = set()
+        terms = set()
+        discourse_elements = set()
+        discourse_namespaces = set()
+        scripture_references = set()
+        named_entities = set()
+        
+        for chunk in dataset:
+            # Sources and authors
+            if chunk.get('source'):
+                sources.add(chunk.get('source'))
+            if chunk.get('author'):
+                authors.add(chunk.get('author'))
+            
+            metadata = chunk.get('metadata', {})
+            
+            # Concepts, topics, terms
+            for concept in metadata.get('concepts', []):
+                concepts.add(concept)
+            
+            for topic in metadata.get('topics', []):
+                topics.add(topic)
+                # Extract concept namespace - strip brackets first
+                topic_clean = topic.replace('[[', '').replace(']]', '')
+                if '/' in topic_clean:
+                    concept_ns = topic_clean.split('/', 1)[0]
+                    concepts.add(concept_ns)
+            
+            for term in metadata.get('terms', []):
+                terms.add(term)
+                # Extract concept namespace - strip brackets first
+                term_clean = term.replace('[[', '').replace(']]', '')
+                if '/' in term_clean:
+                    concept_ns = term_clean.split('/', 1)[0]
+                    concepts.add(concept_ns)
+            
+            # Discourse tags (extracted tags) - prefer this field if available
+            discourse_tags = metadata.get('discourse_tags', [])
+            if not discourse_tags:
+                # Fallback: extract tags from discourse_elements
+                for de in metadata.get('discourse_elements', []):
+                    tag_match = re.search(r'\[\[([^\]]+)\]\]', de)
+                    if tag_match:
+                        discourse_tags.append(tag_match.group(1))
+            
+            # Add all discourse tags and extract namespaces
+            for tag in discourse_tags:
+                discourse_elements.add(tag)  # Store tags (not full strings) for filtering
+                # Extract namespace (e.g., "Logical" from "Logical/Claim")
+                if '/' in tag:
+                    namespace = tag.split('/', 1)[0]
+                    discourse_namespaces.add(namespace)
+                else:
+                    # Standalone namespace
+                    discourse_namespaces.add(tag)
+            
+            # Scripture references
+            for ref in metadata.get('scripture_references', []):
+                scripture_references.add(ref)
+            
+            # Named entities
+            for ne in metadata.get('named_entities', []):
+                named_entities.add(ne)
+        
+        # Build concept/topic/term suggestions (namespaced)
+        concept_suggestions = {}
+        for topic in topics:
+            # Strip brackets before extracting concept namespace
+            topic_clean = topic.replace('[[', '').replace(']]', '')
+            if '/' in topic_clean:
+                concept = topic_clean.split('/', 1)[0]
+                # Normalize concept key (strip brackets) to avoid duplicates
+                concept_key = concept.replace('[[', '').replace(']]', '')
+                if concept_key not in concept_suggestions:
+                    concept_suggestions[concept_key] = {'topics': [], 'terms': []}
+                concept_suggestions[concept_key]['topics'].append(topic)
+        for term in terms:
+            # Strip brackets before extracting concept namespace
+            term_clean = term.replace('[[', '').replace(']]', '')
+            if '/' in term_clean:
+                concept = term_clean.split('/', 1)[0]
+                # Normalize concept key (strip brackets) to avoid duplicates
+                concept_key = concept.replace('[[', '').replace(']]', '')
+                if concept_key not in concept_suggestions:
+                    concept_suggestions[concept_key] = {'topics': [], 'terms': []}
+                concept_suggestions[concept_key]['terms'].append(term)
+        
+        # Add standalone concepts (without topics/terms)
+        # Normalize concept keys to avoid duplicates with brackets
+        for concept in concepts:
+            concept_key = concept.replace('[[', '').replace(']]', '')
+            if concept_key not in concept_suggestions:
+                concept_suggestions[concept_key] = {'topics': [], 'terms': []}
+        
+        # Build discourse element suggestions (namespaced)
+        # discourse_elements now contains tags (not full strings)
+        discourse_suggestions = {}
+        for namespace in discourse_namespaces:
+            # Find all discourse tags that have this namespace
+            matching_tags = []
+            for tag in discourse_elements:
+                # Check if tag is exactly the namespace or starts with namespace/
+                if tag == namespace or tag.startswith(namespace + '/'):
+                    matching_tags.append(tag)
+            discourse_suggestions[namespace] = sorted(matching_tags)
+        
+        # Add standalone discourse tags (without namespace)
+        for tag in discourse_elements:
+            if '/' not in tag:
+                # This is a standalone namespace-only tag
+                if tag not in discourse_suggestions:
+                    discourse_suggestions[tag] = []
+        
+        return jsonify({
+            'sources': sorted(list(sources)),
+            'authors': sorted(list(authors)),
+            'concept_suggestions': {k: v for k, v in sorted(concept_suggestions.items())},
+            'discourse_suggestions': {k: sorted(v) for k, v in sorted(discourse_suggestions.items())},
+            'scripture_references': sorted(list(scripture_references)),
+            'named_entities': sorted(list(named_entities))
+        })
+    except Exception as e:
+        print(f"Error getting filter options: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/filter-chunks', methods=['POST'])
+def filter_chunks():
+    """Filter chunks based on selected filter criteria"""
+    try:
+        data = request.get_json()
+        filters = data.get('filters', {})
+        
+        selected_sources = set(filters.get('sources', []))
+        selected_authors = set(filters.get('authors', []))
+        selected_concepts = set(filters.get('concepts', []))
+        selected_topics = set(filters.get('topics', []))
+        selected_terms = set(filters.get('terms', []))
+        selected_discourse = set(filters.get('discourse_elements', []))
+        selected_scripture = set(filters.get('scripture_references', []))
+        selected_entities = set(filters.get('named_entities', []))
+        
+        filtered_chunks = []
+        
+        for chunk in dataset:
+            # Source filter
+            if selected_sources and chunk.get('source') not in selected_sources:
+                continue
+            
+            # Author filter
+            if selected_authors and chunk.get('author') not in selected_authors:
+                continue
+            
+            metadata = chunk.get('metadata', {})
+            
+            # Concept/Topic/Term filters (namespaced)
+            chunk_concepts = set(metadata.get('concepts', []))
+            chunk_topics = set(metadata.get('topics', []))
+            chunk_terms = set(metadata.get('terms', []))
+            
+            # Extract concept namespaces from topics and terms (strip brackets first)
+            for topic in chunk_topics:
+                topic_clean = topic.replace('[[', '').replace(']]', '')
+                if '/' in topic_clean:
+                    chunk_concepts.add(topic_clean.split('/', 1)[0])
+            for term in chunk_terms:
+                term_clean = term.replace('[[', '').replace(']]', '')
+                if '/' in term_clean:
+                    chunk_concepts.add(term_clean.split('/', 1)[0])
+            
+            # Normalize selected concepts (strip brackets) for matching
+            selected_concepts_normalized = {c.replace('[[', '').replace(']]', '') for c in selected_concepts}
+            chunk_concepts_normalized = {c.replace('[[', '').replace(']]', '') for c in chunk_concepts}
+            
+            # Check concept match (exact match or namespace match)
+            concept_match = False
+            if selected_concepts:
+                # Direct concept match (using normalized versions)
+                if chunk_concepts_normalized & selected_concepts_normalized:
+                    concept_match = True
+                # Namespace match (e.g., if filter is "Faith", match "Faith/Topic" or "[[Faith/Topic]]")
+                for selected_concept in selected_concepts_normalized:
+                    if any(topic.replace('[[', '').replace(']]', '').startswith(selected_concept + '/') for topic in chunk_topics):
+                        concept_match = True
+                    if any(term.replace('[[', '').replace(']]', '').startswith(selected_concept + '/') for term in chunk_terms):
+                        concept_match = True
+            else:
+                concept_match = True  # No concept filter = match all
+            
+            topic_match = not selected_topics or bool(chunk_topics & selected_topics)
+            term_match = not selected_terms or bool(chunk_terms & selected_terms)
+            
+            if not (concept_match and topic_match and term_match):
+                continue
+            
+            # Discourse element filter (with namespace support)
+            # Use discourse_tags if available, otherwise extract from discourse_elements
+            chunk_discourse_tags = set(metadata.get('discourse_tags', []))
+            
+            # Fallback: extract tags from discourse_elements if discourse_tags not available
+            if not chunk_discourse_tags:
+                discourse_elements = metadata.get('discourse_elements', [])
+                for de in discourse_elements:
+                    tag_match = re.search(r'\[\[([^\]]+)\]\]', de)
+                    if tag_match:
+                        chunk_discourse_tags.add(tag_match.group(1))
+            
+            discourse_match = False
+            if selected_discourse:
+                # selected_discourse contains tags (not full strings)
+                selected_tags = set(selected_discourse)
+                
+                # Direct tag match
+                if chunk_discourse_tags & selected_tags:
+                    discourse_match = True
+                
+                # Namespace match (e.g., if filter is "Semantic", match "Semantic/Concept")
+                if not discourse_match:
+                    for selected_tag in selected_tags:
+                        if '/' not in selected_tag:
+                            # If filter is namespace only, match any element with that namespace
+                            if any(tag == selected_tag or tag.startswith(selected_tag + '/') for tag in chunk_discourse_tags):
+                                discourse_match = True
+                        else:
+                            # Exact match for namespaced filters
+                            if selected_tag in chunk_discourse_tags:
+                                discourse_match = True
+            else:
+                discourse_match = True  # No discourse filter = match all
+            
+            if not discourse_match:
+                continue
+            
+            # Scripture reference filter
+            chunk_scripture = set(metadata.get('scripture_references', []))
+            if selected_scripture and not (chunk_scripture & selected_scripture):
+                continue
+            
+            # Named entity filter
+            chunk_entities = set(metadata.get('named_entities', []))
+            if selected_entities and not (chunk_entities & selected_entities):
+                continue
+            
+            # All filters passed, include this chunk
+            filtered_chunks.append(chunk)
+        
+        # Format response similar to search results
+        sources_used = []
+        for i, chunk in enumerate(filtered_chunks[:50], 1):  # Limit to 50 for display
+            source_info = {
+                "number": i,
+                "source": chunk.get('source', 'Unknown'),
+                "author": chunk.get('author', 'Unknown'),
+                "location": chunk.get('metadata', {}).get('structure_path', 'Unknown'),
+                "chunk_id": chunk.get('id', ''),
+                "_chunk_index": chunk.get('_chunk_index', i-1),
+                "metadata": chunk.get('metadata', {}),
+                "text": chunk.get('text', '')
+            }
+            sources_used.append(source_info)
+        
+        return jsonify({
+            "sources_used": sources_used,
+            "total_count": len(filtered_chunks),
+            "displayed_count": len(sources_used)
+        })
+        
+    except Exception as e:
+        print(f"Error filtering chunks: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/search', methods=['POST'])
 def search():

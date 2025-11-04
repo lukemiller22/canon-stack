@@ -1,0 +1,1208 @@
+#!/usr/bin/env python3
+"""
+Document Analyzer Agent
+=======================
+
+An AI-powered agent that analyzes documents (PDF, DOCX, ePub, HTML, XML, URLs)
+and generates optimized chunking scripts for theological text processing.
+
+Features:
+- Supports multiple file formats (PDF, DOCX, ePub, HTML, XML, URLs)
+- AI-powered structure analysis
+- Generates custom chunking strategies
+- Integrates with existing theological processing pipeline
+- Provides cost estimates before processing
+
+Usage:
+    python document_analyzer_agent.py analyze path/to/document.pdf
+    python document_analyzer_agent.py generate-script path/to/document.pdf
+    python document_analyzer_agent.py process path/to/document.pdf --auto-approve
+"""
+
+import os
+import json
+import re
+from pathlib import Path
+from typing import Dict, Any, List, Optional, Tuple
+from dataclasses import dataclass, asdict
+from datetime import datetime
+from anthropic import Anthropic
+import argparse
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv is optional
+
+# Third-party libraries for file parsing (install as needed)
+try:
+    import pypdf
+    PYPDF_AVAILABLE = True
+except ImportError:
+    PYPDF_AVAILABLE = False
+
+try:
+    from docx import Document
+    DOCX_AVAILABLE = True
+except ImportError:
+    DOCX_AVAILABLE = False
+
+try:
+    import ebooklib
+    from ebooklib import epub
+    from bs4 import BeautifulSoup
+    EPUB_AVAILABLE = True
+except ImportError:
+    EPUB_AVAILABLE = False
+
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+
+
+@dataclass
+class DocumentStructure:
+    """Represents the analyzed structure of a document."""
+    file_path: str
+    file_type: str
+    total_characters: int
+    estimated_tokens: int
+    has_hierarchy: bool
+    hierarchy_levels: List[str]
+    section_count: int
+    has_footnotes: bool
+    has_citations: bool
+    has_images: bool
+    recommended_chunk_size: int
+    recommended_overlap: int
+    special_features: List[str]
+    chunking_strategy: str
+    cost_estimate: Dict[str, float]
+    
+
+@dataclass
+class ChunkingStrategy:
+    """Represents the chunking strategy for a document."""
+    method: str  # 'semantic', 'fixed-size', 'structural', 'hybrid'
+    chunk_size: int
+    overlap: int
+    split_on: List[str]  # e.g., ['heading', 'paragraph', 'sentence']
+    preserve_context: bool
+    special_handling: Dict[str, Any]
+
+
+class DocumentAnalyzerAgent:
+    """AI agent for analyzing documents and generating chunking strategies."""
+    
+    def __init__(self, api_key: Optional[str] = None):
+        """Initialize the analyzer agent."""
+        self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+        if not self.api_key:
+            raise ValueError("ANTHROPIC_API_KEY not found. Set it in environment or .env file.")
+        
+        self.client = Anthropic(api_key=self.api_key)
+        # Model name - using same as pipeline_manager.py for consistency
+        # Note: Verify this matches your Anthropic API model version
+        self.model = "claude-sonnet-4-20250514"
+        
+    def analyze_file(self, file_path: str) -> DocumentStructure:
+        """
+        Analyze a document and determine optimal chunking strategy.
+        
+        Args:
+            file_path: Path to the document file or URL
+            
+        Returns:
+            DocumentStructure with analysis results
+        """
+        print(f"🔍 Analyzing document: {file_path}")
+        
+        # Extract text and metadata
+        file_type, text_content, metadata = self._extract_content(file_path)
+        
+        # Clean text (minimal: BOM, line breaks)
+        text_content = self._clean_text(text_content)
+        
+        # Check file size and warn if very large
+        if len(text_content) > 10_000_000:
+            print(f"⚠️  Warning: File is very large ({len(text_content):,} characters)")
+            print(f"   Processing may take a long time and cost significant API credits")
+            response = input("Continue? (y/n): ")
+            if response.lower() != 'y':
+                raise ValueError("Processing cancelled by user")
+        
+        # Get AI analysis with detailed markers
+        structure_analysis = self._analyze_with_ai(text_content, file_type, metadata)
+        
+        # Store full analysis for script generation
+        # (will be used by generate_chunking_script)
+        
+        # Calculate costs
+        cost_estimate = self._estimate_costs(structure_analysis)
+        
+        # Build DocumentStructure (include marker info in special_features)
+        doc_structure = DocumentStructure(
+            file_path=file_path,
+            file_type=file_type,
+            total_characters=len(text_content),
+            estimated_tokens=len(text_content) // 4,  # Rough estimate
+            has_hierarchy=structure_analysis.get('has_hierarchy', False),
+            hierarchy_levels=structure_analysis.get('hierarchy_levels', []),
+            section_count=structure_analysis.get('section_count', 1),
+            has_footnotes=structure_analysis.get('has_footnotes', False),
+            has_citations=structure_analysis.get('has_citations', False),
+            has_images=structure_analysis.get('has_images', False),
+            recommended_chunk_size=structure_analysis.get('chunk_size', 1200),
+            recommended_overlap=structure_analysis.get('overlap', 200),
+            special_features=structure_analysis.get('special_features', []),
+            chunking_strategy=structure_analysis.get('strategy', 'hybrid'),
+            cost_estimate=cost_estimate
+        )
+        
+        # Store full analysis with markers for later use
+        doc_structure._full_analysis = structure_analysis  # Store for script generation
+        
+        print("✅ Analysis complete!")
+        self._print_analysis_summary(doc_structure)
+        
+        # Save detailed analysis to JSON file
+        analysis_file = self._save_analysis(doc_structure, file_path, structure_analysis)
+        if analysis_file:
+            print(f"💾 Analysis saved to: {analysis_file}")
+        
+        return doc_structure
+    
+    def generate_chunking_script(
+        self, 
+        file_path: str, 
+        output_path: Optional[str] = None
+    ) -> str:
+        """
+        Generate a custom Python script for chunking this specific document.
+        
+        Args:
+            file_path: Path to the document
+            output_path: Where to save the generated script
+            
+        Returns:
+            Path to the generated script
+        """
+        print(f"🔨 Generating chunking script for: {file_path}")
+        
+        # Analyze document first (this saves analysis and stores markers)
+        doc_structure = self.analyze_file(file_path)
+        
+        # Generate script using AI with exact markers
+        script_content = self._generate_script_with_ai(doc_structure)
+        
+        # Save script
+        if output_path is None:
+            file_stem = Path(file_path).stem
+            output_path = f"chunk_{file_stem}.py"
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(script_content)
+        
+        print(f"✅ Script generated: {output_path}")
+        print(f"💡 Run with: python {output_path}")
+        
+        return output_path
+    
+    def process_document(
+        self, 
+        file_path: str, 
+        pipeline_base_dir: str = "theological_processing",
+        auto_approve: bool = False
+    ) -> Dict[str, Any]:
+        """
+        End-to-end processing: analyze, chunk, and integrate with pipeline.
+        
+        Args:
+            file_path: Path to document
+            pipeline_base_dir: Base directory of the theological processing pipeline
+            auto_approve: If True, automatically approve chunks (skip review)
+            
+        Returns:
+            Processing results dictionary
+        """
+        print(f"🚀 Processing document: {file_path}")
+        
+        # Step 1: Analyze
+        doc_structure = self.analyze_file(file_path)
+        
+        # Step 2: Extract and chunk
+        chunks = self._create_chunks(file_path, doc_structure)
+        
+        # Step 3: Save to pipeline
+        output_file = self._save_to_pipeline(chunks, file_path, pipeline_base_dir)
+        
+        # Step 4: Auto-approve if requested
+        if auto_approve:
+            approval_file = f"{output_file}.approved"
+            Path(approval_file).touch()
+            print(f"✅ Auto-approved: {approval_file}")
+        else:
+            print(f"⚠️  Review required: Check {output_file}")
+            print(f"   Approve with: touch {output_file}.approved")
+        
+        return {
+            'input_file': file_path,
+            'output_file': output_file,
+            'chunk_count': len(chunks),
+            'auto_approved': auto_approve,
+            'structure': asdict(doc_structure)
+        }
+    
+    def _extract_content(self, file_path: str) -> Tuple[str, str, Dict[str, Any]]:
+        """
+        Extract text content and metadata from various file formats.
+        
+        Returns:
+            (file_type, text_content, metadata)
+        """
+        path = Path(file_path)
+        
+        # Handle URLs
+        if file_path.startswith(('http://', 'https://')):
+            return self._extract_from_url(file_path)
+        
+        # Handle local files by extension
+        ext = path.suffix.lower()
+        
+        if ext == '.pdf':
+            return self._extract_from_pdf(file_path)
+        elif ext in ['.docx', '.doc']:
+            return self._extract_from_docx(file_path)
+        elif ext == '.epub':
+            return self._extract_from_epub(file_path)
+        elif ext in ['.html', '.htm']:
+            return self._extract_from_html(file_path)
+        elif ext == '.xml':
+            return self._extract_from_xml(file_path)
+        elif ext in ['.txt', '.md']:
+            return self._extract_from_text(file_path)
+        else:
+            raise ValueError(f"Unsupported file type: {ext}")
+    
+    def _extract_from_pdf(self, file_path: str) -> Tuple[str, str, Dict]:
+        """Extract text from PDF."""
+        if not PYPDF_AVAILABLE:
+            raise ImportError("pypdf not installed. Install with: pip install pypdf")
+        
+        text = []
+        metadata = {'pages': 0, 'has_toc': False}
+        
+        with open(file_path, 'rb') as f:
+            reader = pypdf.PdfReader(f)
+            metadata['pages'] = len(reader.pages)
+            
+            # Check for table of contents
+            if reader.outline:
+                metadata['has_toc'] = True
+            
+            # Extract text from all pages
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text.append(page_text)
+        
+        return 'pdf', '\n\n'.join(text), metadata
+    
+    def _extract_from_docx(self, file_path: str) -> Tuple[str, str, Dict]:
+        """Extract text from DOCX."""
+        if not DOCX_AVAILABLE:
+            raise ImportError("python-docx not installed. Install with: pip install python-docx")
+        
+        doc = Document(file_path)
+        
+        text = []
+        metadata = {
+            'paragraphs': len(doc.paragraphs),
+            'has_headings': False,
+            'sections': len(doc.sections)
+        }
+        
+        for para in doc.paragraphs:
+            if para.style.name.startswith('Heading'):
+                metadata['has_headings'] = True
+            text.append(para.text)
+        
+        return 'docx', '\n\n'.join(text), metadata
+    
+    def _extract_from_epub(self, file_path: str) -> Tuple[str, str, Dict]:
+        """Extract text from ePub."""
+        if not EPUB_AVAILABLE:
+            raise ImportError("ebooklib not installed. Install with: pip install ebooklib beautifulsoup4")
+        
+        book = epub.read_epub(file_path)
+        
+        text = []
+        metadata = {'chapters': 0, 'has_toc': False}
+        
+        # Check for TOC
+        if book.toc:
+            metadata['has_toc'] = True
+        
+        # Extract text from all documents
+        for item in book.get_items():
+            if item.get_type() == ebooklib.ITEM_DOCUMENT:
+                soup = BeautifulSoup(item.get_content(), 'html.parser')
+                text.append(soup.get_text())
+                metadata['chapters'] += 1
+        
+        return 'epub', '\n\n'.join(text), metadata
+    
+    def _extract_from_html(self, file_path: str) -> Tuple[str, str, Dict]:
+        """Extract text from HTML file."""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        
+        if not EPUB_AVAILABLE:
+            # Fallback: strip tags manually
+            text = re.sub(r'<[^>]+>', '', html_content)
+            metadata = {'method': 'basic'}
+        else:
+            soup = BeautifulSoup(html_content, 'html.parser')
+            text = soup.get_text()
+            metadata = {
+                'method': 'beautifulsoup',
+                'has_headings': bool(soup.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']))
+            }
+        
+        return 'html', text, metadata
+    
+    def _extract_from_xml(self, file_path: str) -> Tuple[str, str, Dict]:
+        """Extract text from XML file."""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            xml_content = f.read()
+        
+        # Basic XML text extraction (remove tags)
+        text = re.sub(r'<[^>]+>', '', xml_content)
+        
+        metadata = {
+            'has_structure': '<div' in xml_content.lower() or '<section' in xml_content.lower()
+        }
+        
+        return 'xml', text, metadata
+    
+    def _extract_from_text(self, file_path: str) -> Tuple[str, str, Dict]:
+        """Extract text from plain text or markdown file."""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            text = f.read()
+        
+        ext = Path(file_path).suffix.lower()
+        metadata = {
+            'format': 'markdown' if ext == '.md' else 'plain_text',
+            'has_headers': bool(re.search(r'^#{1,6}\s', text, re.MULTILINE)) if ext == '.md' else False
+        }
+        
+        return ext[1:], text, metadata
+    
+    def _extract_from_url(self, url: str) -> Tuple[str, str, Dict]:
+        """Extract text from URL."""
+        if not REQUESTS_AVAILABLE:
+            raise ImportError("requests not installed. Install with: pip install requests")
+        
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        
+        if not EPUB_AVAILABLE:
+            # Fallback: strip tags manually
+            text = re.sub(r'<[^>]+>', '', response.text)
+            metadata = {'method': 'basic', 'url': url}
+        else:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Remove script and style elements
+            for element in soup(['script', 'style', 'nav', 'header', 'footer']):
+                element.decompose()
+            
+            text = soup.get_text()
+            metadata = {
+                'method': 'beautifulsoup',
+                'url': url,
+                'has_headings': bool(soup.find(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']))
+            }
+        
+        return 'html', text, metadata
+    
+    def _analyze_with_ai(
+        self, 
+        text_content: str, 
+        file_type: str, 
+        metadata: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Use Claude to analyze document structure and identify exact markers for chunking.
+        """
+        # Use larger sample for better analysis (first 30k characters for marker detection)
+        sample_text = text_content[:30000]
+        total_length = len(text_content)
+        
+        analysis_prompt = f"""Analyze this {file_type} document in detail and identify exact markers for chunking.
+
+Document metadata: {json.dumps(metadata, indent=2)}
+Document length: {total_length:,} characters
+
+Document sample (first 30k characters):
+{sample_text}
+
+Your task: Identify exact text markers and patterns that can be used for reliable chunking.
+
+Provide your analysis in JSON format with these fields:
+{{
+  "has_hierarchy": true/false,
+  "hierarchy_levels": ["chapter", "section", "subsection"],
+  "section_count": estimated number of major sections,
+  "has_footnotes": true/false,
+  "has_citations": true/false,
+  "has_images": true/false,
+  "chunk_size": recommended chunk size in characters (typically 1000-1500),
+  "overlap": recommended overlap in characters (typically 150-250),
+  "strategy": "semantic" | "fixed-size" | "structural" | "hybrid",
+  "special_features": ["scripture references", "greek/hebrew", "extended quotes", etc],
+  "split_recommendations": ["Split on chapter breaks", "Preserve footnotes with text", etc],
+  "reasoning": "Brief explanation of your recommendations",
+  
+  "content_start_markers": ["exact phrase 1", "exact phrase 2"],
+  "content_end_markers": ["exact phrase 1", "exact phrase 2"],
+  "boilerplate_patterns": {{
+    "beginning": ["Title Page", "Contents", "Epigraph", etc],
+    "ending": ["About the Author", "Other Books by", "Credits", "Copyright", etc]
+  }},
+  "chapter_markers": [
+    {{
+      "chapter_number": 1,
+      "title": "Chapter Title",
+      "start_phrases": ["exact starting phrase 1", "exact starting phrase 2"],
+      "start_patterns": ["pattern if needed"],
+      "position_hint": "near beginning/middle/end"
+    }}
+  ],
+  "author_markers": ["exact author name variants as they appear in document"],
+  "title_markers": ["exact title variants as they appear in document"]
+}}
+
+CRITICAL: Provide EXACT text phrases that appear in the document, not generic patterns.
+These will be used as hardcoded markers in a chunking script.
+
+Consider:
+- Look for unique phrases at chapter starts (first 1-2 sentences)
+- Identify boilerplate sections by their headings
+- Find content boundaries by looking for substantive text vs metadata
+- Chapter markers should be distinctive phrases (not just "Chapter 1")
+- Provide multiple markers per chapter for redundancy"""
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=4000,  # Increased for detailed analysis
+            messages=[{
+                "role": "user",
+                "content": analysis_prompt
+            }]
+        )
+        
+        # Parse JSON response
+        response_text = response.content[0].text
+        
+        # Extract JSON from markdown code blocks if present
+        json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', response_text, re.DOTALL)
+        if json_match:
+            json_str = json_match.group(1)
+        else:
+            json_str = response_text
+        
+        # Parse JSON with error handling and fallback
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError as e:
+            print(f"⚠️  Warning: Failed to parse AI response as JSON. Error: {e}")
+            print(f"   Response preview: {response_text[:500]}...")
+            print("   Using fallback analysis structure")
+            # Return fallback structure with reasonable defaults
+            return {
+                'has_hierarchy': metadata.get('has_headings', False) or metadata.get('has_toc', False),
+                'hierarchy_levels': [],
+                'section_count': max(1, len(text_content) // 50000),  # Rough estimate
+                'has_footnotes': False,
+                'has_citations': False,
+                'has_images': False,
+                'chunk_size': 1200,
+                'overlap': 200,
+                'strategy': 'hybrid',
+                'special_features': [],
+                'split_recommendations': [],
+                'reasoning': 'Fallback analysis - AI response parsing failed'
+            }
+    
+    def _generate_script_with_ai(self, doc_structure: DocumentStructure) -> str:
+        """
+        Generate a custom chunking script using Claude with exact markers.
+        """
+        # Get full analysis with markers
+        full_analysis = getattr(doc_structure, '_full_analysis', {})
+        
+        script_prompt = f"""Generate a complete, runnable Python script to chunk this document optimally.
+
+Document Analysis:
+{json.dumps(asdict(doc_structure), indent=2)}
+
+Detailed Markers from Analysis:
+{json.dumps(full_analysis, indent=2)}
+
+The script MUST:
+1. Read the document from: {doc_structure.file_path}
+2. Remove boilerplate content using exact markers from analysis:
+   - Beginning boilerplate: {full_analysis.get('boilerplate_patterns', {}).get('beginning', [])}
+   - Ending boilerplate: {full_analysis.get('boilerplate_patterns', {}).get('ending', [])}
+   - Content start markers: {full_analysis.get('content_start_markers', [])}
+   - Content end markers: {full_analysis.get('content_end_markers', [])}
+
+3. Detect chapters using exact markers:
+{json.dumps(full_analysis.get('chapter_markers', []), indent=2)}
+
+4. Use chunk size: {doc_structure.recommended_chunk_size} characters
+5. Use overlap: {doc_structure.recommended_overlap} characters
+6. Break chunks at sentence boundaries (periods, exclamation marks, question marks)
+7. NEVER break chunks across chapter boundaries
+8. Extract author from: {full_analysis.get('author_markers', [])}
+9. Extract title from: {full_analysis.get('title_markers', [])}
+10. Output JSONL format compatible with theological_processing pipeline
+
+Output format for each chunk:
+{{
+    "id": "SOURCEID_N",
+    "text": "chunk text here",
+    "source": "Document Title",
+    "author": "Author Name",
+    "structure_path": ["Chapter Title"],
+    "chunk_index": N,
+    "processing_stage": "chunked"
+}}
+
+CRITICAL REQUIREMENTS:
+- Use HARDCODED exact markers from the analysis (don't try to detect them)
+- Remove chapter titles and numbers from chunk text
+- Assign correct structure_path based on chapter markers
+- Include detailed comments showing where each marker was found
+- Make markers configurable at the top of the script (easy to edit)
+- Include fallback logic if markers aren't found
+
+Generate the complete script with clear structure and comments."""
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=8000,  # Increased for detailed script with markers
+            messages=[{
+                "role": "user",
+                "content": script_prompt
+            }]
+        )
+        
+        script_text = response.content[0].text
+        
+        # Extract Python code from markdown blocks if present
+        code_match = re.search(r'```(?:python)?\s*(.+?)\s*```', script_text, re.DOTALL)
+        if code_match:
+            return code_match.group(1)
+        
+        return script_text
+    
+    def _create_chunks(
+        self, 
+        file_path: str, 
+        doc_structure: DocumentStructure
+    ) -> List[Dict[str, Any]]:
+        """
+        Create chunks from the document based on the analysis.
+        """
+        file_type, text_content, metadata = self._extract_content(file_path)
+        
+        # Clean text (minimal: BOM, line breaks)
+        text_content = self._clean_text(text_content)
+        
+        # Extract metadata
+        author = self._extract_author(text_content, metadata)
+        source_title = self._extract_source_title(text_content, file_path)
+        
+        # Simple chunking: target 1500 chars, break at sentence boundaries
+        # No chapter detection, no boilerplate removal - that happens during review
+        target_chunk_size = 1500
+        
+        chunks = []
+        start = 0
+        chunk_index = 0
+        
+        # Get source information
+        source_name = Path(file_path).stem
+        source_id = re.sub(r'[^A-Z0-9]', '_', source_name.upper())
+        
+        while start < len(text_content):
+            # Target end position
+            target_end = start + target_chunk_size
+            
+            # Find best sentence boundary near target (allow ±30% flexibility)
+            search_window = int(target_chunk_size * 0.3)  # ±450 chars
+            search_start = max(start, target_end - search_window)
+            search_end = min(len(text_content), target_end + search_window)
+            
+            # Find last sentence ending in search window
+            best_end = target_end
+            search_text = text_content[search_start:search_end]
+            
+            # Look for sentence endings: . ! ? followed by space or newline
+            sentence_endings = ['. ', '.\n', '! ', '!\n', '? ', '?\n']
+            for sent_end in sentence_endings:
+                pos = search_text.rfind(sent_end)
+                if pos != -1:
+                    candidate = search_start + pos + len(sent_end)
+                    # Use closest to target
+                    if abs(candidate - target_end) < abs(best_end - target_end):
+                        best_end = candidate
+            
+            # If no sentence boundary found in window, just use target
+            if best_end == target_end and best_end >= len(text_content):
+                # Take remaining text
+                end = len(text_content)
+            else:
+                end = min(best_end, len(text_content))
+            
+            chunk_text = text_content[start:end].strip()
+            
+            if chunk_text and len(chunk_text) > 50:  # Skip tiny chunks
+                chunks.append({
+                    "id": f"{source_id}_{chunk_index}",
+                    "text": chunk_text,
+                    "source": source_title,
+                    "author": author,
+                    "structure_path": ["Document"],  # Will be updated during human review
+                    "chunk_index": chunk_index,
+                    "processing_stage": "chunked",
+                    "processing_timestamp": datetime.now().isoformat()
+                })
+                
+                chunk_index += 1
+            
+            # Move to next chunk - start at next sentence boundary (NO OVERLAP)
+            if end >= len(text_content):
+                break
+            
+            # Find next sentence start (no overlap)
+            next_search_end = min(end + 200, len(text_content))
+            next_search = text_content[end:next_search_end]
+            
+            # Look for sentence start: . ! ? followed by space/newline and capital letter
+            sentence_start_pattern = r'[.!?][\s\n]+([A-Z"\'"''])'
+            match = re.search(sentence_start_pattern, next_search)
+            
+            if match:
+                # Start at the capital letter/quote
+                start = end + match.start(1)
+            else:
+                # Fallback: find next word boundary
+                space_pos = text_content.find(' ', end, next_search_end)
+                if space_pos != -1:
+                    start = space_pos + 1
+                else:
+                    # No boundary found, advance by small amount
+                    start = end + 1
+            
+            # Safety check
+            if start <= end:
+                start = end + 1
+            if start >= len(text_content):
+                break
+        
+        return chunks
+    
+    def _save_to_pipeline(
+        self, 
+        chunks: List[Dict[str, Any]], 
+        original_file: str,
+        pipeline_base_dir: str
+    ) -> str:
+        """
+        Save chunks to the theological processing pipeline.
+        """
+        base_path = Path(pipeline_base_dir)
+        chunked_dir = base_path / '02_chunked'
+        chunked_dir.mkdir(parents=True, exist_ok=True)
+        
+        source_name = Path(original_file).stem
+        source_id = re.sub(r'[^A-Z0-9]', '_', source_name.upper())
+        output_file = chunked_dir / f"{source_id}_chunks.jsonl"
+        
+        with open(output_file, 'w', encoding='utf-8') as f:
+            for chunk in chunks:
+                f.write(json.dumps(chunk, ensure_ascii=False) + '\n')
+        
+        print(f"✅ Saved {len(chunks)} chunks to: {output_file}")
+        
+        return str(output_file)
+    
+    def _estimate_costs(self, structure_analysis: Dict[str, Any]) -> Dict[str, float]:
+        """
+        Estimate processing costs.
+        """
+        # Rough token estimates
+        analysis_tokens = 2000
+        annotation_tokens_per_chunk = 2000
+        embedding_tokens_per_chunk = 1500
+        
+        estimated_chunks = structure_analysis.get('section_count', 10) * 5
+        
+        # Claude costs (rough estimates for Sonnet)
+        analysis_cost = (analysis_tokens / 1_000_000) * 3.00
+        annotation_cost = (estimated_chunks * annotation_tokens_per_chunk / 1_000_000) * 3.00
+        
+        # OpenAI embedding costs
+        embedding_cost = (estimated_chunks * embedding_tokens_per_chunk / 1_000_000) * 0.13
+        
+        return {
+            'analysis_cost_usd': round(analysis_cost, 4),
+            'annotation_cost_usd': round(annotation_cost, 4),
+            'embedding_cost_usd': round(embedding_cost, 4),
+            'total_cost_usd': round(analysis_cost + annotation_cost + embedding_cost, 4),
+            'estimated_chunks': estimated_chunks
+        }
+    
+    def _clean_text(self, text: str) -> str:
+        """
+        Minimal text cleaning: BOM removal and line break normalization.
+        
+        Args:
+            text: Raw text content
+            
+        Returns:
+            Cleaned text
+        """
+        # Remove BOM (Byte Order Mark)
+        text = text.lstrip('\ufeff')
+        
+        # Normalize line breaks (CRLF and CR to LF)
+        text = text.replace('\r\n', '\n').replace('\r', '\n')
+        
+        return text
+    
+    def _detect_chapters(self, text: str) -> List[Tuple[int, str]]:
+        """
+        Detect chapter titles and numbers in the text. Returns list of (position, chapter_title) tuples.
+        
+        NOTE: This is a legacy method. The new process uses AI-detected markers instead.
+        This is kept for backward compatibility but should not be used for new documents.
+        
+        Args:
+            text: Full text content
+            
+        Returns:
+            List of (position, chapter_title) tuples
+        """
+        # This method is deprecated - AI analysis now provides exact markers
+        # Return empty list - chapters should come from AI analysis
+        return []
+    
+    def _extract_author(self, text: str, metadata: Dict[str, Any]) -> str:
+        """
+        Extract author name from text or metadata.
+        
+        Args:
+            text: Full text content
+            metadata: Extracted metadata
+            
+        Returns:
+            Author name
+        """
+        # Try metadata first
+        if metadata.get('author'):
+            return metadata['author']
+        
+        # Look for common author name patterns in text
+        # Pattern: "by Author Name" or "Author Name" near the beginning
+        # Common formats: "First M. Last", "First Last", etc.
+        author_patterns = [
+            r'by\s+([A-Z][a-z]+(?:\s+[A-Z]\.?\s*)+[A-Z][a-z]+)',  # "by First M. Last"
+            r'by\s+([A-Z][a-z]+\s+[A-Z][a-z]+)',  # "by First Last"
+            r'^([A-Z][a-z]+(?:\s+[A-Z]\.?\s*)+[A-Z][a-z]+)\s*$',  # Standalone name line
+        ]
+        
+        # Search in first 5000 chars (typically where author info appears)
+        search_text = text[:5000]
+        for pattern in author_patterns:
+            match = re.search(pattern, search_text, re.MULTILINE | re.IGNORECASE)
+            if match:
+                author_name = match.group(1).strip()
+                # Filter out common false positives
+                if not any(skip in author_name.lower() for skip in ['title', 'page', 'copyright', 'contents']):
+                    return author_name
+        
+        return "Unknown"
+    
+    def _extract_source_title(self, text: str, file_path: str) -> str:
+        """
+        Extract source title from text or filename.
+        
+        Args:
+            text: Full text content
+            file_path: Path to the file
+            
+        Returns:
+            Source title
+        """
+        # Look for title patterns in text (often appears early, before content)
+        # Common patterns: title on its own line, title followed by subtitle, etc.
+        # Try to find the main title in the first 5000 characters
+        title_lines = []
+        for line in text[:5000].split('\n'):
+            line = line.strip()
+            # Skip empty lines and very short lines
+            if len(line) < 5 or len(line) > 200:
+                continue
+            # Title often appears as a standalone line, possibly in caps or title case
+            if line and not line.startswith(('http://', 'www.', 'ISBN', 'Copyright', 'About')):
+                title_lines.append(line)
+                if len(title_lines) >= 3:  # Get first few likely title lines
+                    break
+        
+        # If we found candidate lines, use the first substantial one
+        if title_lines:
+            # Filter out obvious non-titles
+            for candidate in title_lines:
+                if not any(skip in candidate.lower() for skip in ['page', 'contents', 'epigraph', 'copyright']):
+                    # Extract title (might have subtitle after "or" or ":" or newline)
+                    title_match = re.match(r'^([^:\n]+?)(?:\s+or\s+.+?)?(?:\s*[:]\s*.+?)?$', candidate, re.IGNORECASE)
+                    if title_match:
+                        return title_match.group(1).strip()
+                    return candidate.strip()
+        
+        # Fallback to filename with title case
+        name = Path(file_path).stem
+        return name.replace('_', ' ').replace('-', ' ').title()
+    
+    def _remove_chapter_titles(self, text: str, chapters: List[Tuple[int, str]]) -> str:
+        """
+        Remove chapter titles from text.
+        
+        Args:
+            text: Full text content
+            chapters: List of (position, title) tuples
+            
+        Returns:
+            Text with chapter titles removed
+        """
+        if not chapters:
+            return text
+        
+        # Remove chapters in reverse order to preserve positions
+        result = text
+        for pos, title in reversed(chapters):
+            # Find the chapter title pattern and remove it
+            # Look for pattern: whitespace, chapter title, whitespace
+            pattern = r'\n\s*\n+\s*' + re.escape(title.upper()) + r'\s*\n+\s*\n'
+            result = re.sub(pattern, '\n\n', result, flags=re.IGNORECASE | re.MULTILINE, count=1)
+        
+        return result
+    
+    def _find_chapter_for_position(self, position: int, chapters: List[Tuple[int, str]], text: str) -> Optional[str]:
+        """
+        Find which chapter a position belongs to.
+        
+        Args:
+            position: Character position in text
+            chapters: List of (position, title) tuples
+            text: Full text content
+            
+        Returns:
+            Chapter title or None
+        """
+        if not chapters:
+            return None
+        
+        # Find the last chapter that starts before this position
+        current_chapter = None
+        for chapter_pos, chapter_title in chapters:
+            if chapter_pos <= position:
+                current_chapter = chapter_title
+            else:
+                break
+        
+        return current_chapter
+    
+    def _find_chapters_in_cleaned_text(self, text: str) -> List[Tuple[int, str]]:
+        """
+        Find chapter boundaries in cleaned text by looking for content markers.
+        This works after chapter titles/numbers are removed.
+        
+        NOTE: This is a legacy method. The new process uses AI-detected markers.
+        This is kept for backward compatibility but should not be used for new documents.
+        
+        Args:
+            text: Cleaned text content
+            
+        Returns:
+            List of (position, chapter_title) tuples
+        """
+        # This method is deprecated - AI analysis now provides exact markers
+        # Return empty list - chapters should come from AI analysis
+        return []
+    
+    def _remove_boilerplate(self, text: str) -> Tuple[str, int]:
+        """
+        Remove boilerplate content from beginning and end of document.
+        Uses a conservative approach - only removes if we find clear markers.
+        
+        Args:
+            text: Full text content
+            
+        Returns:
+            Tuple of (cleaned_text, offset) where offset is how many chars were removed from start
+        """
+        result = text
+        original_length = len(text)
+        
+        # Find start of actual content - look for first substantive sentence
+        # Skip past title page, table of contents, etc.
+        content_markers = [
+            r'I doubt whether',
+            r'So he sent the word',
+            r'Great art Thou',
+        ]
+        
+        start_pos = 0
+        for marker in content_markers:
+            match = re.search(marker, result, re.IGNORECASE)
+            if match:
+                # Go back to find paragraph break before this
+                search_start = max(0, match.start() - 300)
+                para_break = result.rfind('\n\n', search_start, match.start())
+                if para_break != -1:
+                    start_pos = para_break + 2
+                    break
+                else:
+                    start_pos = search_start
+                    break
+        
+        # Find end of actual content - look for "About the Author" etc.
+        end_pos = len(result)
+        end_markers = [
+            r'\n\n\n+About the Author',
+            r'\n\n\n+Other Books by',
+            r'\n\n\n+Credits\s*$',
+            r'\n\n\n+Copyright\s*$',
+            r'\n\n\n+HarperCollins',
+        ]
+        
+        for marker in end_markers:
+            match = re.search(marker, result, re.IGNORECASE)
+            if match:
+                end_pos = min(end_pos, match.start())
+        
+        # Only slice if we found clear boundaries and won't remove too much
+        if start_pos > 0 and end_pos < len(result) and (end_pos - start_pos) > 1000:
+            result = result[start_pos:end_pos]
+            offset = start_pos
+        else:
+            # Don't remove if we're not confident
+            offset = 0
+        
+        # Remove standalone boilerplate lines (not blocks)
+        lines_to_remove = [
+            r'^Title Page\s*$',
+            r'^Contents\s*$',
+            r'^Epigraph\s*$',
+            r'^Notes\s*$',
+        ]
+        
+        for pattern in lines_to_remove:
+            result = re.sub(pattern, '', result, flags=re.IGNORECASE | re.MULTILINE)
+        
+        # Clean up excessive newlines (but keep some structure)
+        result = re.sub(r'\n{5,}', '\n\n\n', result)
+        
+        return result.strip(), offset
+    
+    def _remove_chapter_numbers(self, text: str, chapters: List[Tuple[int, str]]) -> str:
+        """
+        Remove chapter number markers (like "\n\n\n\n\n2\n\n") from text.
+        
+        Args:
+            text: Full text content
+            chapters: List of (position, title) tuples
+            
+        Returns:
+            Text with chapter numbers removed
+        """
+        if not chapters:
+            return text
+        
+        result = text
+        
+        # Remove patterns like "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n2\n\n"
+        # Match: lots of newlines, a digit, more newlines
+        chapter_number_pattern = r'\n{3,}\s*([123])\s*\n{2,}'
+        result = re.sub(chapter_number_pattern, '\n\n', result)
+        
+        return result
+    
+    def _find_next_chapter_boundary(self, position: int, chapters: List[Tuple[int, str]], text: str) -> Optional[int]:
+        """
+        Find the next chapter boundary after a given position.
+        
+        Args:
+            position: Current character position
+            chapters: List of (position, title) tuples
+            text: Full text content
+            
+        Returns:
+            Position of next chapter boundary, or None if none found
+        """
+        if not chapters:
+            return None
+        
+        # Find the next chapter that starts after this position
+        for chapter_pos, chapter_title in chapters:
+            if chapter_pos > position:
+                return chapter_pos
+        
+        return None
+    
+    def _save_analysis(
+        self, 
+        doc_structure: DocumentStructure, 
+        file_path: str,
+        full_analysis: Dict[str, Any]
+    ) -> Optional[str]:
+        """
+        Save detailed analysis to JSON file.
+        
+        Args:
+            doc_structure: DocumentStructure object
+            file_path: Path to source document
+            full_analysis: Full AI analysis with markers
+            
+        Returns:
+            Path to saved analysis file, or None if failed
+        """
+        try:
+            source_name = Path(file_path).stem
+            source_id = re.sub(r'[^A-Z0-9]', '_', source_name.upper())
+            analysis_file = f"{source_id}_analysis.json"
+            
+            analysis_data = {
+                'document_structure': asdict(doc_structure),
+                'full_analysis': full_analysis,
+                'markers': {
+                    'content_start': full_analysis.get('content_start_markers', []),
+                    'content_end': full_analysis.get('content_end_markers', []),
+                    'boilerplate': full_analysis.get('boilerplate_patterns', {}),
+                    'chapters': full_analysis.get('chapter_markers', []),
+                    'author': full_analysis.get('author_markers', []),
+                    'title': full_analysis.get('title_markers', [])
+                },
+                'generated_at': datetime.now().isoformat()
+            }
+            
+            with open(analysis_file, 'w', encoding='utf-8') as f:
+                json.dump(analysis_data, f, indent=2, ensure_ascii=False)
+            
+            return analysis_file
+        except Exception as e:
+            print(f"⚠️  Warning: Failed to save analysis: {e}")
+            return None
+    
+    def _print_analysis_summary(self, doc_structure: DocumentStructure):
+        """Print a formatted summary of the analysis."""
+        print("\n" + "="*60)
+        print("DOCUMENT ANALYSIS SUMMARY")
+        print("="*60)
+        print(f"File: {doc_structure.file_path}")
+        print(f"Type: {doc_structure.file_type}")
+        print(f"Size: {doc_structure.total_characters:,} characters (~{doc_structure.estimated_tokens:,} tokens)")
+        print(f"\nStructure:")
+        print(f"  Has hierarchy: {doc_structure.has_hierarchy}")
+        if doc_structure.hierarchy_levels:
+            print(f"  Levels: {', '.join(doc_structure.hierarchy_levels)}")
+        print(f"  Sections: {doc_structure.section_count}")
+        print(f"\nFeatures:")
+        print(f"  Footnotes: {doc_structure.has_footnotes}")
+        print(f"  Citations: {doc_structure.has_citations}")
+        print(f"  Images: {doc_structure.has_images}")
+        if doc_structure.special_features:
+            print(f"  Special: {', '.join(doc_structure.special_features)}")
+        print(f"\nRecommended Strategy:")
+        print(f"  Method: {doc_structure.chunking_strategy}")
+        print(f"  Chunk size: {doc_structure.recommended_chunk_size} characters")
+        print(f"  Overlap: {doc_structure.recommended_overlap} characters")
+        print(f"\nCost Estimate:")
+        for key, value in doc_structure.cost_estimate.items():
+            if key.endswith('_usd'):
+                label = key.replace('_usd', '').replace('_', ' ').title()
+                print(f"  {label}: ${value:.4f}")
+            else:
+                print(f"  {key.replace('_', ' ').title()}: {value}")
+        print("="*60 + "\n")
+
+
+def main():
+    """CLI interface for the document analyzer agent."""
+    parser = argparse.ArgumentParser(
+        description="AI-powered document analyzer for theological text processing"
+    )
+    
+    parser.add_argument(
+        'command',
+        choices=['analyze', 'generate-script', 'process'],
+        help="Command to execute"
+    )
+    
+    parser.add_argument(
+        'file_path',
+        help="Path to document file or URL"
+    )
+    
+    parser.add_argument(
+        '--output',
+        help="Output path for generated script"
+    )
+    
+    parser.add_argument(
+        '--pipeline-dir',
+        default='theological_processing',
+        help="Base directory of the theological processing pipeline"
+    )
+    
+    parser.add_argument(
+        '--auto-approve',
+        action='store_true',
+        help="Automatically approve chunks (skip manual review)"
+    )
+    
+    args = parser.parse_args()
+    
+    # Initialize agent
+    agent = DocumentAnalyzerAgent()
+    
+    # Execute command
+    if args.command == 'analyze':
+        agent.analyze_file(args.file_path)
+    
+    elif args.command == 'generate-script':
+        script_path = agent.generate_chunking_script(args.file_path, args.output)
+        print(f"\n✅ Script ready: {script_path}")
+    
+    elif args.command == 'process':
+        result = agent.process_document(
+            args.file_path, 
+            args.pipeline_dir,
+            args.auto_approve
+        )
+        print(f"\n✅ Processing complete!")
+        print(f"   Output: {result['output_file']}")
+        print(f"   Chunks: {result['chunk_count']}")
+
+
+if __name__ == "__main__":
+    main()

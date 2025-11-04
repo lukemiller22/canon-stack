@@ -1,0 +1,211 @@
+{
+  "document_structure": {
+    "file_path": "theological_processing/01_sources/the_abolition_of_man.epub",
+    "file_type": "epub",
+    "total_characters": 118520,
+    "estimated_tokens": 29630,
+    "has_hierarchy": true,
+    "hierarchy_levels": [
+      "chapter",
+      "section"
+    ],
+    "section_count": 16,
+    "has_footnotes": true,
+    "has_citations": true,
+    "has_images": false,
+    "recommended_chunk_size": 1200,
+    "recommended_overlap": 200,
+    "special_features": [
+      "classical references",
+      "latin phrases",
+      "philosophical terminology",
+      "educational commentary"
+    ],
+    "chunking_strategy": "hybrid",
+    "cost_estimate": {
+      "analysis_cost_usd": 0.006,
+      "annotation_cost_usd": 0.48,
+      "embedding_cost_usd": 0.0156,
+      "total_cost_usd": 0.5016,
+      "estimated_chunks": 80
+    }
+  },
+  "full_analysis": {
+    "has_hierarchy": true,
+    "hierarchy_levels": [
+      "chapter",
+      "section"
+    ],
+    "section_count": 16,
+    "has_footnotes": true,
+    "has_citations": true,
+    "has_images": false,
+    "chunk_size": 1200,
+    "overlap": 200,
+    "strategy": "hybrid",
+    "special_features": [
+      "classical references",
+      "latin phrases",
+      "philosophical terminology",
+      "educational commentary"
+    ],
+    "split_recommendations": [
+      "Split on chapter breaks",
+      "Preserve footnotes with context",
+      "Keep classical references intact",
+      "Maintain paragraph integrity"
+    ],
+    "reasoning": "This is a philosophical work with clear chapter structure, extensive citations, and complex arguments that require semantic coherence. Hybrid approach preserves structural boundaries while maintaining argumentative flow.",
+    "content_start_markers": [
+      "I doubt whether we are sufficiently attentive to the importance of elementary text books",
+      "So he sent the word to slay"
+    ],
+    "content_end_markers": [
+      "About the Publisher",
+      "Copyright"
+    ],
+    "boilerplate_patterns": {
+      "beginning": [
+        "The Abolition of Man",
+        "Title Page",
+        "Epigraph",
+        "Contents",
+        "C. S. Lewis"
+      ],
+      "ending": [
+        "About the Author",
+        "Other Books by C. S. Lewis",
+        "Credits",
+        "Copyright",
+        "About the Publisher"
+      ]
+    },
+    "chapter_markers": [
+      {
+        "chapter_number": 1,
+        "title": "Men Without Chests",
+        "start_phrases": [
+          "MEN WITHOUT CHESTS",
+          "So he sent the word to slay",
+          "I doubt whether we are sufficiently attentive to the importance of elementary text books"
+        ],
+        "start_patterns": [
+          "^\\s*1\\s*$",
+          "^\\s*MEN WITHOUT CHESTS\\s*$"
+        ],
+        "position_hint": "after contents"
+      },
+      {
+        "chapter_number": 2,
+        "title": "The Way",
+        "start_phrases": [
+          "THE WAY",
+          "It is upon the Trunk that a gentleman works",
+          "The practical result of education in the spirit of The Green Book must be the destruction of the society which accepts it"
+        ],
+        "start_patterns": [
+          "^\\s*2\\s*$",
+          "^\\s*THE WAY\\s*$"
+        ],
+        "position_hint": "middle"
+      },
+      {
+        "chapter_number": 3,
+        "title": "The Abolition of Man",
+        "start_phrases": [
+          "THE ABOLITION OF MAN",
+          "3"
+        ],
+        "start_patterns": [
+          "^\\s*3\\s*$",
+          "^\\s*THE ABOLITION OF MAN\\s*$"
+        ],
+        "position_hint": "end of main content"
+      }
+    ],
+    "author_markers": [
+      "C. S. Lewis"
+    ],
+    "title_markers": [
+      "The Abolition of Man",
+      "Reflections on Education with Special Reference to the Teaching of English in the Upper Forms of Schools"
+    ]
+  },
+  "markers": {
+    "content_start": [
+      "I doubt whether we are sufficiently attentive to the importance of elementary text books",
+      "So he sent the word to slay"
+    ],
+    "content_end": [
+      "About the Publisher",
+      "Copyright"
+    ],
+    "boilerplate": {
+      "beginning": [
+        "The Abolition of Man",
+        "Title Page",
+        "Epigraph",
+        "Contents",
+        "C. S. Lewis"
+      ],
+      "ending": [
+        "About the Author",
+        "Other Books by C. S. Lewis",
+        "Credits",
+        "Copyright",
+        "About the Publisher"
+      ]
+    },
+    "chapters": [
+      {
+        "chapter_number": 1,
+        "title": "Men Without Chests",
+        "start_phrases": [
+          "MEN WITHOUT CHESTS",
+          "So he sent the word to slay",
+          "I doubt whether we are sufficiently attentive to the importance of elementary text books"
+        ],
+        "start_patterns": [
+          "^\\s*1\\s*$",
+          "^\\s*MEN WITHOUT CHESTS\\s*$"
+        ],
+        "position_hint": "after contents"
+      },
+      {
+        "chapter_number": 2,
+        "title": "The Way",
+        "start_phrases": [
+          "THE WAY",
+          "It is upon the Trunk that a gentleman works",
+          "The practical result of education in the spirit of The Green Book must be the destruction of the society which accepts it"
+        ],
+        "start_patterns": [
+          "^\\s*2\\s*$",
+          "^\\s*THE WAY\\s*$"
+        ],
+        "position_hint": "middle"
+      },
+      {
+        "chapter_number": 3,
+        "title": "The Abolition of Man",
+        "start_phrases": [
+          "THE ABOLITION OF MAN",
+          "3"
+        ],
+        "start_patterns": [
+          "^\\s*3\\s*$",
+          "^\\s*THE ABOLITION OF MAN\\s*$"
+        ],
+        "position_hint": "end of main content"
+      }
+    ],
+    "author": [
+      "C. S. Lewis"
+    ],
+    "title": [
+      "The Abolition of Man",
+      "Reflections on Education with Special Reference to the Teaching of English in the Upper Forms of Schools"
+    ]
+  },
+  "generated_at": "2025-11-01T16:15:01.143604"
+}

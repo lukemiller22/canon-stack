@@ -654,6 +654,28 @@ named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
         
         return prompt
     
+    def _extract_discourse_tags(self, discourse_elements: List[str]) -> List[str]:
+        """Extract unique discourse tags from discourse_elements strings.
+        
+        Args:
+            discourse_elements: List of discourse element strings like
+                ["[[Symbolic/Metaphor]] description", "[[Symbolic]]", ...]
+                
+        Returns:
+            List of unique tags like ["Symbolic", "Symbolic/Metaphor", ...]
+        """
+        tags = set()
+        
+        for element in discourse_elements:
+            # Extract tag from brackets (e.g., "[[Logical/Claim]] description" -> "Logical/Claim")
+            match = re.search(r'\[\[([^\]]+)\]\]', element)
+            if match:
+                tag = match.group(1)
+                tags.add(tag)
+        
+        # Sort for consistency
+        return sorted(list(tags))
+    
     def _parse_annotation_response(self, response_text: str, valid_discourse_elements: Optional[set] = None, valid_concepts: Optional[set] = None) -> Dict[str, Any]:
         """Parse the AI response into structured metadata."""
         metadata = {
@@ -661,6 +683,7 @@ named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
             'topics': [],
             'terms': [],
             'discourse_elements': [],
+            'discourse_tags': [],  # New field: extracted tags for filtering
             'scripture_references': [],
             'structure_path': '',
             'named_entities': []
@@ -734,6 +757,9 @@ named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
                             desc = element_match.group(2).strip()
                             metadata['discourse_elements'].append(f"[[{element_full}]] {desc}")
                         # If invalid, skip it (don't add to metadata)
+        
+        # Extract discourse_tags from discourse_elements (for efficient filtering)
+        metadata['discourse_tags'] = self._extract_discourse_tags(metadata['discourse_elements'])
         
         # Extract scripture references - stop at next field (structure-path, named-entities, or any new field)
         # Use non-greedy match that stops at next field or end of string
@@ -870,6 +896,7 @@ named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
                         'topics': metadata['topics'],
                         'terms': metadata['terms'],
                         'discourse_elements': metadata['discourse_elements'],
+                        'discourse_tags': metadata['discourse_tags'],  # Extracted tags for filtering
                         'scripture_references': metadata['scripture_references'],
                         'structure_path': structure_path_str,
                         'named_entities': metadata['named_entities']
@@ -906,6 +933,7 @@ named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
                         'topics': [],
                         'terms': [],
                         'discourse_elements': [],
+                        'discourse_tags': [],  # Empty tags on error
                         'scripture_references': [],
                         'structure_path': structure_path_str,
                         'named_entities': []
@@ -932,6 +960,7 @@ named-entities:: [[Person/Name]], [[Work/Title]] (if any)"""
                     'topics': ["# TODO: Add topics in [[Concept/Topic]] format"],
                     'terms': ["# TODO: Add discoverable terms"],
                     'discourse_elements': ["# TODO: Add [[Category/Element]] Description"],
+                    'discourse_tags': [],  # Will be extracted automatically when discourse_elements are added
                     'scripture_references': ["# TODO: Add Bible references if any"],
                     'named_entities': ["# TODO: Add [[Class/Entity]] format"]
                 },

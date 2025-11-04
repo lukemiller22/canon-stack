@@ -156,6 +156,20 @@ For "What are the logical arguments for the Trinity?":
     "reasoning": "The query asks for logical arguments, so I'm prioritizing discourse_elements with Logical/Claim to find sources with argumentative content about the Trinity."
 }}
 
+For "What passages from Augustine's Confessions talk about John 14:6?":
+{{
+    "query_type": "exegetical",
+    "theological_concepts": ["Jesus Christ", "Incarnation", "Scripture"],
+    "search_strategy": "Search for chunks about John 14:6 using vector similarity, then filter by Augustine as author and scripture_references containing John 14:6",
+    "recommended_filters": {{
+        "authors": ["St. Augustine", "Augustine"],
+        "scripture_references": ["John 14:6"],
+        "topics": ["Jesus Christ/Mediator", "Incarnation/Word Made Flesh"],
+        "concepts": ["Jesus Christ", "Scripture"]
+    }},
+    "reasoning": "The query specifically asks about John 14:6 in Augustine's Confessions, so I'm filtering by scripture_references containing John 14:6 and by Augustine as the author to find relevant passages."
+}}
+
 Respond with only the JSON object, no other text.
 """
 
@@ -200,6 +214,14 @@ def search_with_filters(query: str, analysis: Dict[str, Any]) -> List[Dict[str, 
     # Search results
     search_results = []
     recommended_filters = analysis.get("recommended_filters", {})
+    
+    # Debug logging for filter extraction
+    if recommended_filters:
+        print(f"DEBUG: Recommended filters from query analysis: {json.dumps(recommended_filters, indent=2)}")
+        if 'scripture_references' in recommended_filters:
+            print(f"DEBUG: Scripture references filter: {recommended_filters['scripture_references']}")
+    else:
+        print("DEBUG: No recommended filters found in query analysis")
     
     for chunk in dataset:
         chunk_text = chunk.get("text", "").lower()
@@ -249,17 +271,77 @@ def search_with_filters(query: str, analysis: Dict[str, Any]) -> List[Dict[str, 
                     if metadata_field and metadata_field in chunk_metadata:
                         chunk_values = chunk_metadata[metadata_field]
                         
-                        # Handle discourse_elements specially (they're strings like "[[Category/Element]] description")
-                        if metadata_field == 'discourse_elements' and isinstance(chunk_values, list):
-                            for chunk_val in chunk_values:
-                                # Extract category/element from format "[[Category/Element]] description"
-                                element_match = re.search(r'\[\[([^\]]+)\]\]', chunk_val)
-                                if element_match:
-                                    element = element_match.group(1)
-                                    for filter_val in filter_values:
-                                        if filter_val.lower() in element.lower():
+                        # Handle discourse_elements specially - use discourse_tags if available (more efficient)
+                        if metadata_field == 'discourse_elements':
+                            # First try discourse_tags (direct tag matching - faster and more reliable)
+                            discourse_tags = chunk_metadata.get('discourse_tags', [])
+                            if discourse_tags and isinstance(discourse_tags, list):
+                                for filter_val in filter_values:
+                                    filter_lower = filter_val.lower()
+                                    # Exact match or namespace match (e.g., "Symbolic" matches "Symbolic" and "Symbolic/Metaphor")
+                                    for tag in discourse_tags:
+                                        tag_lower = tag.lower()
+                                        if tag_lower == filter_lower or (not '/' in filter_lower and tag_lower.startswith(filter_lower + '/')):
                                             filter_match_score += 1
                                             break
+                                    if filter_match_score > 0:  # Already matched, no need to continue
+                                        break
+                            # Fallback: extract from discourse_elements strings (for backward compatibility)
+                            else:
+                                if isinstance(chunk_values, list):
+                                    for chunk_val in chunk_values:
+                                        # Extract category/element from format "[[Category/Element]] description"
+                                        element_match = re.search(r'\[\[([^\]]+)\]\]', chunk_val)
+                                        if element_match:
+                                            element = element_match.group(1)
+                                            for filter_val in filter_values:
+                                                filter_lower = filter_val.lower()
+                                                element_lower = element.lower()
+                                                if filter_lower == element_lower or (not '/' in filter_lower and element_lower.startswith(filter_lower + '/')):
+                                                    filter_match_score += 1
+                                                    break
+                        # Handle scripture_references with exact or normalized matching
+                        elif metadata_field == 'scripture_references':
+                            if isinstance(chunk_values, list):
+                                for filter_val in filter_values:
+                                    filter_lower = filter_val.lower().strip()
+                                    # Normalize scripture references (remove extra spaces, handle variations)
+                                    filter_normalized = re.sub(r'\s+', ' ', filter_lower)
+                                    matched = False
+                                    for chunk_val in chunk_values:
+                                        chunk_val_str = str(chunk_val).lower().strip()
+                                        chunk_normalized = re.sub(r'\s+', ' ', chunk_val_str)
+                                        # Debug logging for scripture references
+                                        if 'john 14:6' in filter_normalized or 'john 14:6' in chunk_normalized:
+                                            print(f"DEBUG scripture_references: Filter='{filter_normalized}', Chunk='{chunk_normalized}', Match={filter_normalized == chunk_normalized}")
+                                        # Exact match (preferred)
+                                        if filter_normalized == chunk_normalized:
+                                            filter_match_score += 1
+                                            matched = True
+                                            if 'john 14:6' in filter_normalized:
+                                                print(f"DEBUG: Exact match found for {filter_normalized}")
+                                            break
+                                        # If filter is a verse (has ':'), match exact verse or parent chapter
+                                        elif ':' in filter_normalized:
+                                            filter_chapter = filter_normalized.split(':')[0]
+                                            # Match if chunk starts with same chapter (e.g., "John 10:1" matches "John 10" or "John 10:1-7")
+                                            if chunk_normalized.startswith(filter_chapter):
+                                                filter_match_score += 1
+                                                matched = True
+                                                if 'john 14:6' in filter_normalized:
+                                                    print(f"DEBUG: Chapter match found - Filter chapter: {filter_chapter}, Chunk: {chunk_normalized}")
+                                                break
+                                        # If filter is a chapter (no ':'), match any verse in that chapter
+                                        elif ':' in chunk_normalized:
+                                            chunk_chapter = chunk_normalized.split(':')[0]
+                                            if chunk_chapter == filter_normalized:
+                                                filter_match_score += 1
+                                                matched = True
+                                                if 'john 14' in filter_normalized:
+                                                    print(f"DEBUG: Chapter-to-verse match found - Filter: {filter_normalized}, Chunk: {chunk_normalized}")
+                                                break
+                                    if matched:  # Already matched, no need to check other filter values
+                                        break
                         elif isinstance(chunk_values, list):
                             # Regular list matching
                             for chunk_val in chunk_values:
@@ -278,8 +360,13 @@ def search_with_filters(query: str, analysis: Dict[str, Any]) -> List[Dict[str, 
             filter_match_score = 0.5
         
         # Calculate combined score
-        # Weight exact matches heavily, then vector similarity, then filters
-        combined_score = (exact_match_score * 2.0) + (vector_similarity_score * 1.5) + (filter_match_score * 0.5)
+        # Weight exact matches heavily, then vector similarity, then filters (increased from 0.5 to 2.0)
+        # This ensures chunks with perfect filter matches rank higher
+        combined_score = (exact_match_score * 2.0) + (vector_similarity_score * 1.5) + (filter_match_score * 2.0)
+        
+        # Boost chunks that match any filters (prioritize filter matches)
+        if filter_match_score > 0:
+            combined_score += 1.0  # Additional boost for filter matches
         
         # Only include chunks with some relevance
         if combined_score > 0.1 or exact_match_score > 0:

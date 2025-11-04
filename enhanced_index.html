@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Theological Research Assistant</title>
+    <title>CanonStack Scribe</title>
     <style>
         * {
             margin: 0;
@@ -327,6 +327,172 @@
             font-weight: 600;
             color: #333;
             flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover {
+            background: #357abd;
+        }
+
+        .filter-tray {
+            background: #f8f8f8;
+            border-bottom: 1px solid #d0d0d0;
+            padding: 12px;
+            flex-shrink: 0;
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: visible;
+            position: relative;
+        }
+
+        .filter-section {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+            color: #555;
+        }
+
+        .autocomplete-input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+
+        .autocomplete-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+            margin-top: 2px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:hover {
+            background: #f0f0f0;
+        }
+
+        .autocomplete-item.concept-header {
+            font-weight: 600;
+            background: #e8f4f8;
+            color: #2d5aa0;
+        }
+
+        .autocomplete-item.concept-related {
+            padding-left: 24px;
+            color: #666;
+        }
+
+        .selected-filters {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #4a90e2;
+            color: white;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .filter-tag .remove-btn {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .filter-tag .remove-btn:hover {
+            opacity: 1;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #d0d0d0;
+        }
+
+        .filter-actions .search-btn {
+            flex: 1;
         }
 
         .panel-content {
@@ -709,8 +875,8 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1>AI Theological Research Assistant</h1>
-                <p>Intelligent search and synthesis of theological texts</p>
+                <h1>CanonStack Scribe</h1>
+                <p>Your theological research stack</p>
             </div>
         </div>
 
@@ -811,7 +977,53 @@
                     </div>
 
                     <div class="panel">
-                        <div class="panel-header">Sources & Citations</div>
+                        <div class="panel-header">
+                            Sources & Citations
+                            <button class="filter-btn" id="filterBtn" onclick="toggleFilterTray()" title="Toggle Filters">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 4h12M4 8h8M6 12h4"/>
+                                </svg>
+                                Filters
+                            </button>
+                        </div>
+                        <div class="filter-tray" id="filterTray" style="display: none;">
+                            <div class="filter-section">
+                                <label class="filter-label">Source</label>
+                                <div class="checkbox-group" id="sourceFilters"></div>
+                            </div>
+                            <div class="filter-section">
+                                <label class="filter-label">Author</label>
+                                <div class="checkbox-group" id="authorFilters"></div>
+                            </div>
+                            <div class="filter-section">
+                                <label class="filter-label">Concept/Topic/Term</label>
+                                <input type="text" class="autocomplete-input" id="conceptFilterInput" placeholder="Type to search concepts, topics, or terms..." oninput="handleConceptAutocomplete(event)" onkeydown="handleAutocompleteKeydown(event, 'concept')">
+                                <div class="autocomplete-dropdown" id="conceptAutocomplete"></div>
+                                <div class="selected-filters" id="selectedConcepts"></div>
+                            </div>
+                            <div class="filter-section">
+                                <label class="filter-label">Discourse Elements</label>
+                                <input type="text" class="autocomplete-input" id="discourseFilterInput" placeholder="Type to search discourse elements..." oninput="handleDiscourseAutocomplete(event)" onkeydown="handleAutocompleteKeydown(event, 'discourse')">
+                                <div class="autocomplete-dropdown" id="discourseAutocomplete"></div>
+                                <div class="selected-filters" id="selectedDiscourse"></div>
+                            </div>
+                            <div class="filter-section">
+                                <label class="filter-label">Scripture References</label>
+                                <input type="text" class="autocomplete-input" id="scriptureFilterInput" placeholder="Type to search scripture references..." oninput="handleScriptureAutocomplete(event)" onkeydown="handleAutocompleteKeydown(event, 'scripture')">
+                                <div class="autocomplete-dropdown" id="scriptureAutocomplete"></div>
+                                <div class="selected-filters" id="selectedScripture"></div>
+                            </div>
+                            <div class="filter-section">
+                                <label class="filter-label">Named Entities</label>
+                                <input type="text" class="autocomplete-input" id="entityFilterInput" placeholder="Type to search named entities..." oninput="handleEntityAutocomplete(event)" onkeydown="handleAutocompleteKeydown(event, 'entity')">
+                                <div class="autocomplete-dropdown" id="entityAutocomplete"></div>
+                                <div class="selected-filters" id="selectedEntities"></div>
+                            </div>
+                            <div class="filter-actions">
+                                <button class="search-btn" onclick="applyFilters()">Apply Filters</button>
+                                <button class="search-btn" onclick="clearFilters()" style="background: #6c757d;">Clear All</button>
+                            </div>
+                        </div>
                         <div class="panel-content" id="draftSourcesContent"></div>
                     </div>
 
@@ -877,6 +1089,58 @@
         let currentDraftCitations = null;
         let draftAutosaveTimer = null;
         let currentDraftId = null; // Track which draft is currently being edited
+        
+        // Clean up old drafts that have full chunks stored (to avoid quota issues)
+        // Migrate old format to new format (only store chunk_ids, not full chunks)
+        let needsDraftMigration = false;
+        for (let draft of draftHistory) {
+            if (draft.citations && draft.citations.chunks && Array.isArray(draft.citations.chunks) && draft.citations.chunks.length > 0) {
+                // This draft has full chunks stored - migrate to new format
+                draft.citations = {
+                    sources_used: draft.citations.sources_used || [],
+                    chunk_ids: draft.citations.chunks.map(c => {
+                        if (typeof c === 'object' && c !== null) {
+                            return c.id || c.get?.('id') || null;
+                        }
+                        return null;
+                    }).filter(id => id !== null)
+                };
+                needsDraftMigration = true;
+            }
+        }
+        if (needsDraftMigration) {
+            try {
+                localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                console.log('Migrated old draft format to new format (removed full chunks)');
+            } catch (e) {
+                console.warn('Could not migrate drafts:', e);
+            }
+        }
+        
+        // Clean up old search history that has full chunks stored (to avoid quota issues)
+        // Migrate old format to new format (only store chunk_ids, not full chunks)
+        let needsSearchMigration = false;
+        for (let search of searchHistory) {
+            if (search.chunks && Array.isArray(search.chunks) && search.chunks.length > 0 && !search.chunk_ids) {
+                // This search has full chunks stored - migrate to new format
+                search.chunk_ids = search.chunks.map(c => {
+                    if (typeof c === 'object' && c !== null) {
+                        return c.id || c.get?.('id') || null;
+                    }
+                    return null;
+                }).filter(id => id !== null);
+                delete search.chunks; // Remove full chunks to save space
+                needsSearchMigration = true;
+            }
+        }
+        if (needsSearchMigration) {
+            try {
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                console.log('Migrated old search format to new format (removed full chunks)');
+            } catch (e) {
+                console.warn('Could not migrate search history:', e);
+            }
+        }
 
         // Initialize the interface
         document.addEventListener('DOMContentLoaded', function() {
@@ -1006,17 +1270,42 @@
                 sources: currentSearchResult.sources_used,
                 reasoning: currentSearchResult.reasoning_transparency,
                 sourceSelection: Array.from(selectedSources),
-                chunks: currentSearchResult.chunks || [] // Save chunks so text is available when loading
+                // Store only chunk IDs to avoid localStorage quota issues
+                // Don't store full chunks (they contain embeddings and are huge)
+                chunk_ids: currentSearchResult.chunks ? currentSearchResult.chunks.map(c => c.id || c.get?.('id')) : []
             };
             
             searchHistory.unshift(searchEntry);
             
-            // Keep only last 50 searches
-            if (searchHistory.length > 50) {
-                searchHistory = searchHistory.slice(0, 50);
+            // Keep only last 20 searches to avoid quota issues
+            if (searchHistory.length > 20) {
+                searchHistory = searchHistory.slice(0, 20);
             }
             
-            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            // Try to save, with error handling for quota issues
+            try {
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            } catch (e) {
+                if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
+                    // If quota exceeded, try removing oldest searches
+                    console.warn('localStorage quota exceeded, removing oldest searches');
+                    while (searchHistory.length > 10) {
+                        searchHistory.pop(); // Remove oldest
+                    }
+                    try {
+                        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                        alert('Search saved, but some older searches were removed due to storage limits.');
+                    } catch (e2) {
+                        // Still failed - try with even fewer
+                        searchHistory = searchHistory.slice(0, 5);
+                        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                        alert('Search saved, but many older searches were removed due to storage limits.');
+                    }
+                } else {
+                    throw e; // Re-throw if it's a different error
+                }
+            }
+            
             displaySearchHistory();
             document.getElementById('saveSearchBtn').disabled = true;
         }
@@ -1052,11 +1341,13 @@
             document.getElementById('sourceStack').value = selectedSources.size === availableSources.length ? 'all' : 'custom';
             
             // Display the saved results
+            // Note: Full chunks are no longer stored to avoid quota issues
+            // Only summary, sources, and reasoning are available
             displaySearchResults({
                 summary: entry.summary,
                 sources_used: entry.sources,
                 reasoning_transparency: entry.reasoning,
-                chunks: entry.chunks || [] // Use saved chunks, or empty array if not available (for backwards compatibility)
+                chunks: entry.chunks || [] // Old format - check if chunks exist for backwards compatibility
             });
             // Ensure only the new layout is visible
             document.getElementById('layoutContainer').style.display = 'flex';
@@ -1079,97 +1370,161 @@
         }
 
         function saveDraft() {
-            const textarea = document.getElementById('draftTextarea');
-            const draftText = textarea.value.trim();
-            
-            if (!draftText) {
-                alert('Please write some content before saving the draft.');
-                return;
-            }
-            
-            // Check if we should update existing draft or create new one
-            let draftEntry;
-            let isUpdate = false;
-            
-            if (currentDraftId) {
-                // Update existing draft
-                const existingIndex = draftHistory.findIndex(d => d.id === currentDraftId);
-                if (existingIndex !== -1) {
-                    draftEntry = draftHistory[existingIndex];
-                    draftEntry.title = draftText.substring(0, 50) + (draftText.length > 50 ? '...' : '');
-                    draftEntry.content = draftText;
-                    draftEntry.date = new Date().toLocaleDateString();
-                    draftEntry.wordCount = draftText.split(/\s+/).length;
-                    draftEntry.citations = currentDraftCitations ? {
-                        sources_used: currentDraftCitations.sources_used || [],
-                        chunks: currentDraftCitations.chunks || []
-                    } : null;
-                    // Move to top
-                    draftHistory.splice(existingIndex, 1);
-                    draftHistory.unshift(draftEntry);
-                    isUpdate = true;
-                } else {
-                    currentDraftId = null; // Draft was deleted, create new
+            try {
+                const textarea = document.getElementById('draftTextarea');
+                if (!textarea) {
+                    console.error('Draft textarea not found');
+                    alert('Error: Could not find draft textarea.');
+                    return;
                 }
+                
+                const draftText = textarea.value.trim();
+                
+                if (!draftText) {
+                    alert('Please write some content before saving the draft.');
+                    return;
+                }
+                
+                // Check if we should update existing draft or create new one
+                let draftEntry;
+                let isUpdate = false;
+                
+                if (currentDraftId) {
+                    // Update existing draft
+                    const existingIndex = draftHistory.findIndex(d => d.id === currentDraftId);
+                    if (existingIndex !== -1) {
+                        draftEntry = draftHistory[existingIndex];
+                        draftEntry.title = draftText.substring(0, 50) + (draftText.length > 50 ? '...' : '');
+                        draftEntry.content = draftText;
+                        draftEntry.date = new Date().toLocaleDateString();
+                        draftEntry.wordCount = draftText.split(/\s+/).length;
+                        // Store only minimal citation data to avoid localStorage quota issues
+                        // Don't store full chunks (they contain embeddings and are huge)
+                        draftEntry.citations = currentDraftCitations ? {
+                            sources_used: currentDraftCitations.sources_used || [],
+                            // Store only chunk IDs, not full chunk objects
+                            chunk_ids: currentDraftCitations.chunks ? currentDraftCitations.chunks.map(c => c.id || c.get?.('id')) : []
+                        } : null;
+                        // Move to top
+                        draftHistory.splice(existingIndex, 1);
+                        draftHistory.unshift(draftEntry);
+                        isUpdate = true;
+                    } else {
+                        currentDraftId = null; // Draft was deleted, create new
+                    }
+                }
+                
+                if (!isUpdate) {
+                    // Create new draft
+                    draftEntry = {
+                        id: Date.now(),
+                        title: draftText.substring(0, 50) + (draftText.length > 50 ? '...' : ''),
+                        content: draftText,
+                        date: new Date().toLocaleDateString(),
+                        wordCount: draftText.split(/\s+/).length,
+                        // Store only minimal citation data to avoid localStorage quota issues
+                        // Don't store full chunks (they contain embeddings and are huge)
+                        citations: currentDraftCitations ? {
+                            sources_used: currentDraftCitations.sources_used || [],
+                            // Store only chunk IDs, not full chunk objects
+                            chunk_ids: currentDraftCitations.chunks ? currentDraftCitations.chunks.map(c => c.id || c.get?.('id')) : []
+                        } : null
+                    };
+                    draftHistory.unshift(draftEntry);
+                    currentDraftId = draftEntry.id;
+                }
+                
+                // Limit to fewer drafts to avoid localStorage quota issues
+                if (draftHistory.length > 20) {
+                    draftHistory = draftHistory.slice(0, 20); // Keep only last 20 drafts
+                }
+                
+                // Try to save, with error handling for quota issues
+                try {
+                    localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
+                        // If quota exceeded, try removing oldest drafts
+                        console.warn('localStorage quota exceeded, removing oldest drafts');
+                        while (draftHistory.length > 10) {
+                            draftHistory.pop(); // Remove oldest
+                        }
+                        try {
+                            localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                            alert('Draft saved, but some older drafts were removed due to storage limits.');
+                        } catch (e2) {
+                            // Still failed - try with even fewer
+                            draftHistory = draftHistory.slice(0, 5);
+                            localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                            alert('Draft saved, but many older drafts were removed due to storage limits.');
+                        }
+                    } else {
+                        throw e; // Re-throw if it's a different error
+                    }
+                }
+                
+                // Ensure draftHistoryList element exists before calling displayDraftHistory
+                const historyList = document.getElementById('draftHistoryList');
+                if (historyList) {
+                    displayDraftHistory();
+                } else {
+                    console.warn('draftHistoryList element not found, but draft was saved to localStorage');
+                }
+                
+                // Update autosave snapshot
+                persistDraftAutosave();
+                
+                // Show feedback
+                const btn = document.getElementById('saveDraftBtn');
+                if (btn) {
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Saved!';
+                    btn.style.background = '#d4edda';
+                    btn.style.color = '#155724';
+                    
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '#4a90e2';
+                        btn.style.color = 'white';
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Error saving draft:', error);
+                alert('Error saving draft: ' + error.message);
             }
-            
-            if (!isUpdate) {
-                // Create new draft
-                draftEntry = {
-                    id: Date.now(),
-                    title: draftText.substring(0, 50) + (draftText.length > 50 ? '...' : ''),
-                    content: draftText,
-                    date: new Date().toLocaleDateString(),
-                    wordCount: draftText.split(/\s+/).length,
-                    citations: currentDraftCitations ? {
-                        sources_used: currentDraftCitations.sources_used || [],
-                        chunks: currentDraftCitations.chunks || []
-                    } : null
-                };
-                draftHistory.unshift(draftEntry);
-                currentDraftId = draftEntry.id;
-            }
-            
-            if (draftHistory.length > 50) {
-                draftHistory = draftHistory.slice(0, 50); // Keep only last 50 drafts
-            }
-            
-            localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
-            displayDraftHistory();
-            // Update autosave snapshot
-            persistDraftAutosave();
-            
-            // Show feedback
-            const btn = document.getElementById('saveDraftBtn');
-            const originalText = btn.textContent;
-            btn.textContent = 'Saved!';
-            btn.style.background = '#d4edda';
-            btn.style.color = '#155724';
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '#4a90e2';
-                btn.style.color = 'white';
-            }, 1000);
         }
 
         function displayDraftHistory() {
-            const historyList = document.getElementById('draftHistoryList');
-            
-            if (draftHistory.length === 0) {
-                historyList.innerHTML = '<div class="no-results">No saved drafts yet</div>';
-                return;
+            try {
+                const historyList = document.getElementById('draftHistoryList');
+                if (!historyList) {
+                    console.warn('draftHistoryList element not found');
+                    return;
+                }
+                
+                if (!draftHistory || draftHistory.length === 0) {
+                    historyList.innerHTML = '<div class="no-results">No saved drafts yet</div>';
+                    return;
+                }
+                
+                historyList.innerHTML = draftHistory.map(draft => {
+                    const title = (draft.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const date = draft.date || 'Unknown date';
+                    const wordCount = draft.wordCount || 0;
+                    const sourceCount = draft.citations && draft.citations.sources_used ? draft.citations.sources_used.length : 0;
+                    return `
+                        <div class="history-item">
+                            <div onclick="loadDraft(${draft.id})" style="flex: 1; cursor: pointer;">
+                                <div class="history-title">${title}</div>
+                                <div class="history-meta">${date} • ${wordCount} words${sourceCount > 0 ? ` • ${sourceCount} sources` : ''}</div>
+                            </div>
+                            <button class="delete-draft-btn" onclick="event.stopPropagation(); deleteDraft(${draft.id})" title="Delete draft">×</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error displaying draft history:', error);
             }
-            
-            historyList.innerHTML = draftHistory.map(draft => `
-                <div class="history-item">
-                    <div onclick="loadDraft(${draft.id})" style="flex: 1; cursor: pointer;">
-                        <div class="history-title">${draft.title}</div>
-                        <div class="history-meta">${draft.date} • ${draft.wordCount} words${draft.citations && draft.citations.sources_used ? ` • ${draft.citations.sources_used.length} sources` : ''}</div>
-                    </div>
-                    <button class="delete-draft-btn" onclick="event.stopPropagation(); deleteDraft(${draft.id})" title="Delete draft">×</button>
-                </div>
-            `).join('');
         }
 
         function loadDraft(draftId) {
@@ -1180,7 +1535,12 @@
             currentDraftId = draftId; // Set current draft ID so we can update it
             
             if (draft.citations) {
-                currentDraftCitations = draft.citations;
+                // Citations now store only sources_used and chunk_ids, not full chunks
+                // Display what we have (sources_used), but full chunks won't be available
+                currentDraftCitations = {
+                    sources_used: draft.citations.sources_used || [],
+                    chunks: [] // Full chunks not stored to avoid quota issues
+                };
                 displayDraftSearchResults(currentDraftCitations);
             } else {
                 currentDraftCitations = null;
@@ -1317,12 +1677,24 @@
                 return;
             }
             
-            // Extract context around cursor (5 sentences)
-            const context = extractContextAroundCursor(text, cursorPos);
+            // Extract context around cursor (5 sentences) and get position info
+            const contextResult = extractContextAroundCursor(text, cursorPos);
             
-            if (!context.trim()) {
+            if (!contextResult.context || !contextResult.context.trim()) {
                 alert('Could not extract enough context around cursor position.');
                 return;
+            }
+            
+            // Highlight the context text in the textarea
+            if (contextResult.startPos !== undefined && contextResult.endPos !== undefined) {
+                // Set selection to highlight the context
+                textarea.focus();
+                textarea.setSelectionRange(contextResult.startPos, contextResult.endPos);
+                
+                // Store the highlight info so we can clear it later if needed
+                textarea.dataset.highlightedContext = 'true';
+                textarea.dataset.highlightStart = contextResult.startPos;
+                textarea.dataset.highlightEnd = contextResult.endPos;
             }
             
             // Show loading
@@ -1336,7 +1708,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    context_text: context,
+                    context_text: contextResult.context,
                     selected_sources: Array.from(selectedSources)
                 })
             })
@@ -1358,18 +1730,41 @@
         }
 
         function extractContextAroundCursor(text, cursorPos) {
-            // Split text into sentences
-            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            // Find sentence boundaries using regex
+            const sentenceRegex = /[.!?]+(?:\s+|$)/g;
+            const sentences = [];
+            const sentencePositions = [];
+            let lastIndex = 0;
+            let match;
             
-            if (sentences.length === 0) return '';
+            // Find all sentence boundaries
+            while ((match = sentenceRegex.exec(text)) !== null) {
+                const sentenceEnd = match.index + match[0].length;
+                sentences.push(text.substring(lastIndex, sentenceEnd));
+                sentencePositions.push({
+                    start: lastIndex,
+                    end: sentenceEnd
+                });
+                lastIndex = sentenceEnd;
+            }
+            
+            // Add the last sentence if there's text after the last punctuation
+            if (lastIndex < text.length) {
+                sentences.push(text.substring(lastIndex));
+                sentencePositions.push({
+                    start: lastIndex,
+                    end: text.length
+                });
+            }
+            
+            if (sentences.length === 0) {
+                return { context: '', startPos: 0, endPos: 0 };
+            }
             
             // Find which sentence the cursor is in
             let currentSentenceIndex = 0;
-            let charCount = 0;
-            
-            for (let i = 0; i < sentences.length; i++) {
-                charCount += sentences[i].length + 1; // +1 for the punctuation
-                if (charCount >= cursorPos) {
+            for (let i = 0; i < sentencePositions.length; i++) {
+                if (cursorPos >= sentencePositions[i].start && cursorPos <= sentencePositions[i].end) {
                     currentSentenceIndex = i;
                     break;
                 }
@@ -1379,7 +1774,25 @@
             const startIndex = Math.max(0, currentSentenceIndex - 2);
             const endIndex = Math.min(sentences.length, currentSentenceIndex + 3);
             
-            return sentences.slice(startIndex, endIndex).join('. ').trim();
+            const startPos = sentencePositions[startIndex].start;
+            const endPos = sentencePositions[endIndex - 1].end;
+            
+            // Extract context and trim for API, but keep original positions for highlighting
+            let contextText = text.substring(startPos, endPos);
+            // Trim whitespace but track how much we trimmed for accurate highlighting
+            const originalLength = contextText.length;
+            const trimmedText = contextText.trim();
+            const trimmedStart = contextText.length - contextText.replace(/^\s+/, '').length;
+            const trimmedEnd = originalLength - trimmedStart - trimmedText.length;
+            const actualStartPos = startPos + trimmedStart;
+            const actualEndPos = endPos - trimmedEnd;
+            contextText = trimmedText;
+            
+            return {
+                context: contextText,
+                startPos: actualStartPos,
+                endPos: actualEndPos
+            };
         }
 
         function displayDraftSearchResults(data) {
@@ -1457,6 +1870,545 @@
             sourcesContent.innerHTML = sourcesHtml;
             scheduleDraftAutosave();
         }
+
+        // Filter functionality
+        let filterOptions = null;
+        let selectedFilters = {
+            sources: [],
+            authors: [],
+            concepts: [],
+            topics: [],
+            terms: [],
+            discourse_elements: [],
+            scripture_references: [],
+            named_entities: []
+        };
+
+        async function loadFilterOptions() {
+            try {
+                const response = await fetch('/api/filter-options');
+                if (response.ok) {
+                    filterOptions = await response.json();
+                    populateFilters();
+                } else {
+                    console.error('Failed to load filter options');
+                }
+            } catch (error) {
+                console.error('Error loading filter options:', error);
+            }
+        }
+
+        function populateFilters() {
+            if (!filterOptions) return;
+
+            // Populate source checkboxes
+            const sourceContainer = document.getElementById('sourceFilters');
+            sourceContainer.innerHTML = filterOptions.sources.map(source => `
+                <div class="checkbox-item">
+                    <input type="checkbox" id="source-${source.replace(/[^a-zA-Z0-9]/g, '_')}" value="${source}" onchange="updateSourceFilter('${source}', this.checked)">
+                    <label for="source-${source.replace(/[^a-zA-Z0-9]/g, '_')}">${source}</label>
+                </div>
+            `).join('');
+
+            // Populate author checkboxes
+            const authorContainer = document.getElementById('authorFilters');
+            authorContainer.innerHTML = filterOptions.authors.map(author => `
+                <div class="checkbox-item">
+                    <input type="checkbox" id="author-${author.replace(/[^a-zA-Z0-9]/g, '_')}" value="${author}" onchange="updateAuthorFilter('${author}', this.checked)">
+                    <label for="author-${author.replace(/[^a-zA-Z0-9]/g, '_')}">${author}</label>
+                </div>
+            `).join('');
+        }
+
+        function updateSourceFilter(source, checked) {
+            if (checked) {
+                if (!selectedFilters.sources.includes(source)) {
+                    selectedFilters.sources.push(source);
+                }
+            } else {
+                selectedFilters.sources = selectedFilters.sources.filter(s => s !== source);
+            }
+        }
+
+        function updateAuthorFilter(author, checked) {
+            if (checked) {
+                if (!selectedFilters.authors.includes(author)) {
+                    selectedFilters.authors.push(author);
+                }
+            } else {
+                selectedFilters.authors = selectedFilters.authors.filter(a => a !== author);
+            }
+        }
+
+        function toggleFilterTray() {
+            const tray = document.getElementById('filterTray');
+            const isVisible = tray.style.display !== 'none';
+            tray.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible && !filterOptions) {
+                loadFilterOptions();
+            }
+        }
+
+        function handleConceptAutocomplete(event) {
+            const input = event.target.value.toLowerCase();
+            const dropdown = document.getElementById('conceptAutocomplete');
+            const inputEl = event.target;
+            
+            if (!filterOptions || !input) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            const matches = [];
+            
+            // Search concepts, topics, and terms
+            for (const [concept, related] of Object.entries(filterOptions.concept_suggestions)) {
+                const conceptLower = concept.toLowerCase();
+                if (conceptLower.includes(input)) {
+                    matches.push({ type: 'concept', value: concept, display: concept, related: related });
+                }
+                
+                // Also check related topics and terms
+                for (const topic of related.topics || []) {
+                    if (topic.toLowerCase().includes(input)) {
+                        matches.push({ type: 'topic', value: topic, display: topic, concept: concept });
+                    }
+                }
+                for (const term of related.terms || []) {
+                    if (term.toLowerCase().includes(input)) {
+                        matches.push({ type: 'term', value: term, display: term, concept: concept });
+                    }
+                }
+            }
+
+            // Sort: concepts first, then topics/terms grouped by concept
+            matches.sort((a, b) => {
+                if (a.type === 'concept' && b.type !== 'concept') return -1;
+                if (a.type !== 'concept' && b.type === 'concept') return 1;
+                if (a.type === 'concept') return a.value.localeCompare(b.value);
+                if (a.concept === b.concept) return a.value.localeCompare(b.value);
+                return a.concept.localeCompare(b.concept);
+            });
+
+            // Build dropdown HTML
+            let html = '';
+            let lastConcept = null;
+            for (const match of matches.slice(0, 20)) { // Limit to 20 results
+                // Clean display text - remove [[ and ]]
+                const displayText = match.display.replace(/^\[\[/, '').replace(/\]\]$/, '');
+                const conceptDisplay = match.concept ? match.concept.replace(/^\[\[/, '').replace(/\]\]$/, '') : '';
+                
+                if (match.type === 'concept') {
+                    if (lastConcept !== null) html += '</div>';
+                    html += `<div class="autocomplete-item concept-header" data-value="${match.value.replace(/"/g, '&quot;')}" data-type="concept">${displayText}</div>`;
+                    lastConcept = match.value;
+                } else {
+                    if (lastConcept !== match.concept) {
+                        if (lastConcept !== null) html += '</div>';
+                        html += `<div class="autocomplete-item concept-header">${conceptDisplay}</div>`;
+                        lastConcept = match.concept;
+                    }
+                    html += `<div class="autocomplete-item concept-related" data-value="${match.value.replace(/"/g, '&quot;')}" data-type="${match.type}">${displayText}</div>`;
+                }
+            }
+            if (lastConcept !== null) html += '</div>';
+
+            dropdown.innerHTML = html;
+            
+            // Position dropdown below input field
+            // Find input's position relative to filter-section
+            const filterSection = inputEl.closest('.filter-section');
+            const label = filterSection.querySelector('.filter-label');
+            const labelHeight = label ? label.offsetHeight + 6 : 0; // 6px is margin-bottom
+            const inputTop = labelHeight;
+            
+            dropdown.style.position = 'absolute';
+            dropdown.style.top = (inputTop + inputEl.offsetHeight + 2) + 'px';
+            dropdown.style.left = '0px';
+            dropdown.style.width = inputEl.offsetWidth + 'px';
+            
+            dropdown.classList.add('show');
+            
+            // Add event listeners to dropdown items
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = item.getAttribute('data-value');
+                    const type = item.getAttribute('data-type');
+                    
+                    // Skip header items (they don't have data-value or have empty data-type)
+                    if (value) {
+                        selectConceptFilter(value, type || 'concept');
+                    }
+                });
+            });
+        }
+
+        function handleDiscourseAutocomplete(event) {
+            const input = event.target.value.toLowerCase();
+            const dropdown = document.getElementById('discourseAutocomplete');
+            const inputEl = event.target;
+            
+            if (!filterOptions || !input) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            const matches = [];
+            
+            // Search both namespaces and specific elements
+            // discourse_suggestions now contains tags (not full strings)
+            for (const [namespace, tags] of Object.entries(filterOptions.discourse_suggestions)) {
+                const nsLower = namespace.toLowerCase();
+                const namespaceMatches = nsLower.includes(input);
+                
+                // Check if namespace matches
+                if (namespaceMatches) {
+                    matches.push({ type: 'namespace', value: namespace, display: namespace });
+                }
+                
+                // Check specific tags within this namespace
+                for (const tag of tags || []) {
+                    // tag is already just the tag (e.g., "Logical/Claim"), not a full string
+                    if (tag.toLowerCase().includes(input)) {
+                        matches.push({ type: 'element', value: tag, display: tag, namespace: namespace });
+                    }
+                }
+            }
+
+            // Sort: namespaces first, then elements grouped by namespace
+            matches.sort((a, b) => {
+                if (a.type === 'namespace' && b.type !== 'namespace') return -1;
+                if (a.type !== 'namespace' && b.type === 'namespace') return 1;
+                if (a.type === 'namespace') return a.value.localeCompare(b.value);
+                if (a.namespace === b.namespace) return a.value.localeCompare(b.value);
+                return a.namespace.localeCompare(b.namespace);
+            });
+
+            let html = '';
+            let lastNamespace = null;
+            for (const match of matches.slice(0, 20)) {
+                // Tags are already clean (no brackets), just use them as-is
+                const displayText = match.display;
+                const namespaceDisplay = match.namespace || '';
+                
+                if (match.type === 'namespace') {
+                    if (lastNamespace !== null) html += '</div>';
+                    html += `<div class="autocomplete-item concept-header" data-value="${match.value.replace(/"/g, '&quot;')}" data-filter-type="discourse">${displayText}</div>`;
+                    lastNamespace = match.value;
+                } else {
+                    if (lastNamespace !== match.namespace) {
+                        if (lastNamespace !== null) html += '</div>';
+                        html += `<div class="autocomplete-item concept-header">${namespaceDisplay}</div>`;
+                        lastNamespace = match.namespace;
+                    }
+                    html += `<div class="autocomplete-item concept-related" data-value="${match.value.replace(/"/g, '&quot;')}" data-filter-type="discourse">${displayText}</div>`;
+                }
+            }
+            if (lastNamespace !== null) html += '</div>';
+
+            dropdown.innerHTML = html;
+            
+            // Position dropdown below input field
+            dropdown.style.position = 'absolute';
+            dropdown.style.top = inputEl.offsetHeight + 2 + 'px';
+            dropdown.style.left = '0px';
+            dropdown.style.width = inputEl.offsetWidth + 'px';
+            
+            dropdown.classList.add('show');
+            
+            // Add event listeners to dropdown items
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = item.getAttribute('data-value');
+                    const filterType = item.getAttribute('data-filter-type');
+                    
+                    if (filterType === 'discourse') {
+                        selectDiscourseFilter(value);
+                    }
+                });
+            });
+        }
+
+        function handleScriptureAutocomplete(event) {
+            const input = event.target.value.toLowerCase();
+            const dropdown = document.getElementById('scriptureAutocomplete');
+            const inputEl = event.target;
+            
+            if (!filterOptions || !input) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            const matches = filterOptions.scripture_references
+                .filter(ref => ref.toLowerCase().includes(input))
+                .slice(0, 20);
+
+            dropdown.innerHTML = matches.map(ref => {
+                const displayText = ref.replace(/^\[\[/, '').replace(/\]\]$/, '');
+                return `<div class="autocomplete-item" data-value="${ref.replace(/"/g, '&quot;')}" data-filter-type="scripture">${displayText}</div>`;
+            }).join('');
+            
+            // Position dropdown below input field
+            dropdown.style.position = 'absolute';
+            dropdown.style.top = inputEl.offsetHeight + 2 + 'px';
+            dropdown.style.left = '0px';
+            dropdown.style.width = inputEl.offsetWidth + 'px';
+            
+            dropdown.classList.add('show');
+            
+            // Add event listeners to dropdown items
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = item.getAttribute('data-value');
+                    selectScriptureFilter(value);
+                });
+            });
+        }
+
+        function handleEntityAutocomplete(event) {
+            const input = event.target.value.toLowerCase();
+            const dropdown = document.getElementById('entityAutocomplete');
+            const inputEl = event.target;
+            
+            if (!filterOptions || !input) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            const matches = filterOptions.named_entities
+                .filter(entity => entity.toLowerCase().includes(input))
+                .slice(0, 20);
+
+            dropdown.innerHTML = matches.map(entity => {
+                const displayText = entity.replace(/^\[\[/, '').replace(/\]\]$/, '');
+                return `<div class="autocomplete-item" data-value="${entity.replace(/"/g, '&quot;')}" data-filter-type="entity">${displayText}</div>`;
+            }).join('');
+            
+            // Position dropdown below input field
+            dropdown.style.position = 'absolute';
+            dropdown.style.top = inputEl.offsetHeight + 2 + 'px';
+            dropdown.style.left = '0px';
+            dropdown.style.width = inputEl.offsetWidth + 'px';
+            
+            dropdown.classList.add('show');
+            
+            // Add event listeners to dropdown items
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = item.getAttribute('data-value');
+                    const type = item.getAttribute('data-type');
+                    const filterType = item.getAttribute('data-filter-type');
+                    
+                    if (filterType === 'discourse') {
+                        selectDiscourseFilter(value);
+                    } else if (filterType === 'scripture') {
+                        selectScriptureFilter(value);
+                    } else if (filterType === 'entity') {
+                        selectEntityFilter(value);
+                    } else {
+                        // Concept/Topic/Term
+                        selectConceptFilter(value, type);
+                    }
+                });
+            });
+        }
+
+        function selectConceptFilter(value, type) {
+            if (type === 'topic') {
+                if (!selectedFilters.topics.includes(value)) {
+                    selectedFilters.topics.push(value);
+                }
+            } else if (type === 'term') {
+                if (!selectedFilters.terms.includes(value)) {
+                    selectedFilters.terms.push(value);
+                }
+            } else {
+                // Concept
+                if (!selectedFilters.concepts.includes(value)) {
+                    selectedFilters.concepts.push(value);
+                }
+            }
+            updateSelectedFilters();
+            document.getElementById('conceptFilterInput').value = '';
+            document.getElementById('conceptAutocomplete').classList.remove('show');
+        }
+
+        function selectDiscourseFilter(value) {
+            if (!selectedFilters.discourse_elements.includes(value)) {
+                selectedFilters.discourse_elements.push(value);
+            }
+            updateSelectedFilters();
+            document.getElementById('discourseFilterInput').value = '';
+            document.getElementById('discourseAutocomplete').classList.remove('show');
+        }
+
+        function selectScriptureFilter(value) {
+            if (!selectedFilters.scripture_references.includes(value)) {
+                selectedFilters.scripture_references.push(value);
+            }
+            updateSelectedFilters();
+            document.getElementById('scriptureFilterInput').value = '';
+            document.getElementById('scriptureAutocomplete').classList.remove('show');
+        }
+
+        function selectEntityFilter(value) {
+            if (!selectedFilters.named_entities.includes(value)) {
+                selectedFilters.named_entities.push(value);
+            }
+            updateSelectedFilters();
+            document.getElementById('entityFilterInput').value = '';
+            document.getElementById('entityAutocomplete').classList.remove('show');
+        }
+
+        function updateSelectedFilters() {
+            // Update concept/topic/term tags
+            const container = document.getElementById('selectedConcepts');
+            let html = '';
+            selectedFilters.concepts.forEach(concept => {
+                html += `<span class="filter-tag">${concept} <span class="remove-btn" onclick="removeConceptFilter('concept', '${concept.replace(/'/g, "\\'")}')">×</span></span>`;
+            });
+            selectedFilters.topics.forEach(topic => {
+                html += `<span class="filter-tag">${topic} <span class="remove-btn" onclick="removeConceptFilter('topic', '${topic.replace(/'/g, "\\'")}')">×</span></span>`;
+            });
+            selectedFilters.terms.forEach(term => {
+                html += `<span class="filter-tag">${term} <span class="remove-btn" onclick="removeConceptFilter('term', '${term.replace(/'/g, "\\'")}')">×</span></span>`;
+            });
+            container.innerHTML = html;
+
+            // Update discourse tags
+            const discourseContainer = document.getElementById('selectedDiscourse');
+            html = '';
+            selectedFilters.discourse_elements.forEach(de => {
+                html += `<span class="filter-tag">${de} <span class="remove-btn" onclick="removeFilter('discourse_elements', '${de.replace(/'/g, "\\'")}')">×</span></span>`;
+            });
+            discourseContainer.innerHTML = html;
+
+            // Update scripture tags
+            const scriptureContainer = document.getElementById('selectedScripture');
+            html = '';
+            selectedFilters.scripture_references.forEach(ref => {
+                html += `<span class="filter-tag">${ref} <span class="remove-btn" onclick="removeFilter('scripture_references', '${ref.replace(/'/g, "\\'")}')">×</span></span>`;
+            });
+            scriptureContainer.innerHTML = html;
+
+            // Update entity tags
+            const entityContainer = document.getElementById('selectedEntities');
+            html = '';
+            selectedFilters.named_entities.forEach(entity => {
+                html += `<span class="filter-tag">${entity} <span class="remove-btn" onclick="removeFilter('named_entities', '${entity.replace(/'/g, "\\'")}')">×</span></span>`;
+            });
+            entityContainer.innerHTML = html;
+        }
+
+        function removeConceptFilter(type, value) {
+            if (type === 'concept') {
+                selectedFilters.concepts = selectedFilters.concepts.filter(c => c !== value);
+            } else if (type === 'topic') {
+                selectedFilters.topics = selectedFilters.topics.filter(t => t !== value);
+            } else if (type === 'term') {
+                selectedFilters.terms = selectedFilters.terms.filter(t => t !== value);
+            }
+            updateSelectedFilters();
+        }
+
+        function removeFilter(type, value) {
+            if (selectedFilters[type]) {
+                selectedFilters[type] = selectedFilters[type].filter(v => v !== value);
+                updateSelectedFilters();
+            }
+        }
+
+        function handleAutocompleteKeydown(event, type) {
+            if (event.key === 'Escape') {
+                const dropdowns = ['conceptAutocomplete', 'discourseAutocomplete', 'scriptureAutocomplete', 'entityAutocomplete'];
+                dropdowns.forEach(id => document.getElementById(id).classList.remove('show'));
+            }
+        }
+
+        async function applyFilters() {
+            const loading = document.getElementById('draftSourcesContent');
+            loading.innerHTML = '<div class="loading"><div class="spinner"></div> Filtering chunks...</div>';
+
+            try {
+                const response = await fetch('/api/filter-chunks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filters: selectedFilters })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Format data for display
+                    displayDraftSearchResults({
+                        sources_used: data.sources_used,
+                        chunks: data.sources_used.map(s => ({
+                            text: s.text,
+                            metadata: s.metadata,
+                            source: s.source,
+                            author: s.author
+                        }))
+                    });
+                } else {
+                    loading.innerHTML = '<div class="error">Error applying filters</div>';
+                }
+            } catch (error) {
+                console.error('Error applying filters:', error);
+                loading.innerHTML = '<div class="error">Error applying filters</div>';
+            }
+        }
+
+        function clearFilters() {
+            selectedFilters = {
+                sources: [],
+                authors: [],
+                concepts: [],
+                topics: [],
+                terms: [],
+                discourse_elements: [],
+                scripture_references: [],
+                named_entities: []
+            };
+            
+            // Clear checkboxes
+            document.querySelectorAll('#sourceFilters input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#authorFilters input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            // Clear autocomplete inputs
+            document.getElementById('conceptFilterInput').value = '';
+            document.getElementById('discourseFilterInput').value = '';
+            document.getElementById('scriptureFilterInput').value = '';
+            document.getElementById('entityFilterInput').value = '';
+            
+            // Clear dropdowns
+            ['conceptAutocomplete', 'discourseAutocomplete', 'scriptureAutocomplete', 'entityAutocomplete'].forEach(id => {
+                document.getElementById(id).classList.remove('show');
+            });
+            
+            // Clear selected tags
+            updateSelectedFilters();
+            
+            // Clear results
+            document.getElementById('draftSourcesContent').innerHTML = '<div class="no-results">No filters applied</div>';
+        }
+
+        // Close autocomplete dropdowns when clicking outside
+        document.addEventListener('click', (event) => {
+            // Don't close if clicking inside autocomplete dropdown
+            if (event.target.closest('.autocomplete-dropdown')) {
+                return;
+            }
+            // Close all dropdowns if clicking outside filter sections
+            if (!event.target.closest('.filter-section')) {
+                ['conceptAutocomplete', 'discourseAutocomplete', 'scriptureAutocomplete', 'entityAutocomplete'].forEach(id => {
+                    document.getElementById(id).classList.remove('show');
+                });
+            }
+        });
 
         function copyToClipboard(event) {
             const btn = event.target;

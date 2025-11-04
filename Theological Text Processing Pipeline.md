@@ -77,13 +77,16 @@ touch 03_annotated/ORTHODOXY_CHEST_annotated.jsonl.approved
     "concepts": ["Faith", "Theology", "Authority"],
     "topics": ["Faith/Personal vs Systematic", "Theology/Apologetic Method"],
     "terms": ["Christian Faith", "apologetics", "autobiography"],
-    "discourse_elements": ["Logical/Claim: This book is an attempt to answer the challenge"],
+    "discourse_elements": ["[[Logical/Claim]] This book is an attempt to answer the challenge"],
+    "discourse_tags": ["Logical", "Logical/Claim"],
     "scripture_references": [],
     "named_entities": ["Person/John Henry Newman", "Work/Heretics"]
   },
   "processing_stage": "annotated"
 }
 ```
+
+**Note**: The `discourse_tags` field is automatically extracted from `discourse_elements` during annotation. It contains just the tags (e.g., `"Symbolic"`, `"Symbolic/Metaphor"`) for efficient filtering, while `discourse_elements` retains the full descriptions.
 
 ### Stage 3: Annotated → Complete
 **Input**: Approved annotations  
@@ -109,7 +112,8 @@ python pipeline_manager.py --stage vectorize --source ORTHODOXY_CHEST_annotated.
     "concepts": ["Faith", "Theology", "Authority"],
     "topics": ["Faith/Personal vs Systematic"],
     "terms": ["Christian Faith", "apologetics"],
-    "discourse_elements": ["Logical/Claim: This book is an attempt to answer the challenge"],
+    "discourse_elements": ["[[Logical/Claim]] This book is an attempt to answer the challenge"],
+    "discourse_tags": ["Logical", "Logical/Claim"],
     "scripture_references": [],
     "named_entities": ["Person/John Henry Newman"]
   },
@@ -145,6 +149,7 @@ touch 02_chunked/ORTHODOXY_CHEST_chunks.jsonl.approved
 - Are concepts from the fixed Concepts Index?
 - Are topics in correct `[[Concept/Topic]]` format?
 - Are discourse elements properly categorized?
+- Are discourse tags automatically extracted? (This happens automatically during annotation)
 - Are named entities in correct `[[Class/Entity]]` format?
 
 **Approval Process**:
