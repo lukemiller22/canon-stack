@@ -180,7 +180,7 @@
             margin-bottom: 8px;
             display: flex;
             gap: 12px;
-            align-items: center;
+            align-items: flex-start;
             flex-wrap: wrap;
         }
 
@@ -188,16 +188,33 @@
             display: flex;
             gap: 8px;
             flex: 1;
-            align-items: center;
+            align-items: flex-start;
+        }
+        
+        .search-section .search-btn {
+            align-self: flex-start;
+            margin-top: 0;
+        }
+        
+        .toolbar-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: stretch;
         }
 
         .search-input {
             flex: 1;
-            padding: 6px 10px;
+            padding: 10px 12px;
             border: 1px solid #c0c0c0;
             border-radius: 3px;
             font-size: 14px;
             min-width: 200px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 200px;
         }
 
         .search-input:focus {
@@ -249,16 +266,23 @@
 
         .history-controls {
             display: flex;
+            flex-direction: column;
             gap: 6px;
-            align-items: center;
+            align-items: stretch;
+            justify-content: flex-start;
+        }
+        
+        .history-controls .history-btn {
+            align-self: stretch;
         }
 
         .history-btn {
-            padding: 4px 8px;
+            padding: 6px 12px;
             background: #f8f8f8;
             border: 1px solid #c0c0c0;
             border-radius: 3px;
             font-size: 12px;
+            font-weight: 500;
             cursor: pointer;
             color: #555;
         }
@@ -330,6 +354,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            min-height: 32px; /* Ensure consistent height */
+            height: 32px; /* Fixed height to match Search History header */
         }
 
         .filter-btn {
@@ -342,6 +368,8 @@
             border: none;
             border-radius: 3px;
             font-size: 11px;
+            margin: 0;
+            vertical-align: middle;
             font-weight: 500;
             cursor: pointer;
         }
@@ -527,8 +555,14 @@
 
         .reasoning-text {
             color: #666;
-            font-size: 13px;
-            line-height: 1.3;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            background: #fafafa;
+            padding: 8px;
+            border-radius: 3px;
+            border: 1px solid #e8e8e8;
         }
 
         .summary {
@@ -851,8 +885,17 @@
         }
 
         .search-history-list {
-            max-height: 400px;
+            flex: 1;
             overflow-y: auto;
+            min-height: 0;
+        }
+        
+        #searchHistorySection {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .clear-history-btn {
@@ -863,7 +906,8 @@
             border-radius: 3px;
             font-size: 12px;
             cursor: pointer;
-            margin-top: 6px;
+            margin: 0;
+            vertical-align: middle;
         }
 
         .clear-history-btn:hover {
@@ -882,24 +926,16 @@
 
         <div class="toolbar">
             <div class="search-section">
-                <input 
-                    type="text" 
+                <textarea 
                     class="search-input" 
                     id="queryInput" 
-                    placeholder="Enter your theological question or research topic..."
-                />
+                    placeholder="Enter your theological question or research topic... (You can paste paragraphs from sermons, longer queries, etc.)"
+                    rows="3"
+                ></textarea>
+            </div>
+            
+            <div class="toolbar-buttons">
                 <button class="search-btn" id="searchBtn" onclick="performSearch()">Research</button>
-            </div>
-            
-            <div class="source-selector">
-                <label>Sources:</label>
-                <select class="source-dropdown" id="sourceStack">
-                    <option value="all">All Sources</option>
-                    <option value="custom">Custom Selection</option>
-                </select>
-            </div>
-            
-            <div class="history-controls">
                 <button class="history-btn" id="saveSearchBtn" onclick="saveCurrentSearch()" disabled>Save</button>
             </div>
         </div>
@@ -910,70 +946,16 @@
         </div>
 
         <div class="layout-container" id="layoutContainer" style="display: flex;">
-            <div class="layout-sidebar">
-                <div class="layout-icon active" id="researchIcon" onclick="switchLayout('research')" title="Research Mode">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="8" cy="8" r="6"></circle>
-                        <path d="m14 14-3-3"></path>
-                    </svg>
-                </div>
-                <div class="layout-icon" id="draftIcon" onclick="switchLayout('draft')" title="Draft Mode">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"></path>
-                        <path d="M7 7h4M7 11h2M7 9h3"></path>
-                    </svg>
-                </div>
-            </div>
-            
             <div class="main-layout">
                 <!-- Research Layout -->
                 <div class="main-content" id="researchLayout" style="display: grid;">
                     <div class="panel">
                         <div class="panel-header">Research Summary</div>
-                        <div class="panel-content" id="researchContent"></div>
-                    </div>
-
-                    <div class="panel">
-                        <div class="panel-header">Sources & Citations</div>
-                        <div class="panel-content" id="sourcesContent"></div>
-                    </div>
-
-                    <div class="panel history-panel">
-                        <div class="panel-header">
-                            Search History
-                            <button class="clear-history-btn" onclick="clearSearchHistory()">Clear All</button>
-                        </div>
-                        <div class="panel-content">
-                            <div id="sourceSelectionSection" style="display: none;">
-                                <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px;">Select Sources:</div>
-                                <div id="sourcesList"></div>
-                                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
-                                    <button class="history-btn" onclick="selectAllSources()">All</button>
-                                    <button class="history-btn" onclick="selectNoSources()">None</button>
-                                    <button class="history-btn" onclick="applySourceSelection()">Apply</button>
-                                </div>
-                            </div>
-                            <div id="searchHistorySection">
-                                <div class="search-history-list" id="searchHistoryList">
-                                    <div class="no-results">No saved searches yet</div>
-                                </div>
+                        <div class="panel-content" id="researchContent">
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px;">
+                                <button class="search-btn" id="generateSummaryBtn" onclick="generateSummary()" style="padding: 12px 24px; font-size: 14px;">Get AI Summary</button>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Draft Layout -->
-                <div class="main-content" id="draftLayout" style="display: none;">
-                    <div class="draft-panel">
-                        <div class="draft-header">
-                            <div class="draft-title">Draft</div>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="search-btn" id="newDraftBtn" onclick="newDraft()">New Draft</button>
-                                <button class="search-btn" id="findCitationsBtn" onclick="findCitationsForDraft()">Find Citations</button>
-                                <button class="search-btn" id="saveDraftBtn" onclick="saveDraft()">Save Draft</button>
-                            </div>
-                        </div>
-                        <textarea class="draft-textarea" id="draftTextarea" placeholder="Start writing your theological draft here..."></textarea>
                     </div>
 
                     <div class="panel">
@@ -1024,17 +1006,30 @@
                                 <button class="search-btn" onclick="clearFilters()" style="background: #6c757d;">Clear All</button>
                             </div>
                         </div>
-                        <div class="panel-content" id="draftSourcesContent"></div>
+                        <div class="panel-content" id="sourcesContent"></div>
                     </div>
 
                     <div class="panel history-panel">
                         <div class="panel-header">
-                            Draft History
-                            <button class="clear-history-btn" onclick="clearDraftHistory()">Clear All</button>
+                            Search History
+                            <div style="display: flex; gap: 8px;">
+                                <button class="clear-history-btn" onclick="clearSearchHistory()">Clear All</button>
+                            </div>
                         </div>
-                        <div class="panel-content">
-                            <div class="search-history-list" id="draftHistoryList">
-                                <div class="no-results">No saved drafts yet</div>
+                        <div class="panel-content" style="display: flex; flex-direction: column; min-height: 0;">
+                            <div id="sourceSelectionSection" style="display: none;">
+                                <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px;">Select Sources:</div>
+                                <div id="sourcesList"></div>
+                                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+                                    <button class="history-btn" onclick="selectAllSources()">All</button>
+                                    <button class="history-btn" onclick="selectNoSources()">None</button>
+                                    <button class="history-btn" onclick="applySourceSelection()">Apply</button>
+                                </div>
+                            </div>
+                            <div id="searchHistorySection" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+                                <div class="search-history-list" id="searchHistoryList" style="flex: 1; overflow-y: auto; min-height: 0;">
+                                    <div class="no-results">No saved searches yet</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1056,9 +1051,11 @@
             <div class="panel history-panel" id="historyPanel" style="display: none;">
                 <div class="panel-header">
                     Search History
-                    <button class="clear-history-btn" onclick="clearSearchHistory()">Clear All</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="clear-history-btn" onclick="clearSearchHistory()">Clear All</button>
+                    </div>
                 </div>
-                <div class="panel-content">
+                <div class="panel-content" style="display: flex; flex-direction: column; min-height: 0;">
                     <div id="sourceSelectionSection" style="display: none;">
                         <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px;">Select Sources:</div>
                         <div id="sourcesList"></div>
@@ -1068,8 +1065,8 @@
                             <button class="history-btn" onclick="applySourceSelection()">Apply</button>
                         </div>
                     </div>
-                    <div id="searchHistorySection">
-                        <div class="search-history-list" id="searchHistoryList">
+                    <div id="searchHistorySection" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+                        <div class="search-history-list" id="searchHistoryList" style="flex: 1; overflow-y: auto; min-height: 0;">
                             <div class="no-results">No saved searches yet</div>
                         </div>
                     </div>
@@ -1085,27 +1082,39 @@
         let searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
         let draftHistory = JSON.parse(localStorage.getItem('draftHistory') || '[]');
         let currentSearchResult = null;
+        let currentSearchId = null; // Track the ID of the current saved search
         let currentLayout = 'research';
         let currentDraftCitations = null;
         let draftAutosaveTimer = null;
         let currentDraftId = null; // Track which draft is currently being edited
         
         // Clean up old drafts that have full chunks stored (to avoid quota issues)
-        // Migrate old format to new format (only store chunk_ids, not full chunks)
+        // Migrate old format to new format (only store lightweight chunks, not full chunks with embeddings)
         let needsDraftMigration = false;
         for (let draft of draftHistory) {
-            if (draft.citations && draft.citations.chunks && Array.isArray(draft.citations.chunks) && draft.citations.chunks.length > 0) {
-                // This draft has full chunks stored - migrate to new format
-                draft.citations = {
-                    sources_used: draft.citations.sources_used || [],
-                    chunk_ids: draft.citations.chunks.map(c => {
-                        if (typeof c === 'object' && c !== null) {
-                            return c.id || c.get?.('id') || null;
-                        }
-                        return null;
-                    }).filter(id => id !== null)
-                };
-                needsDraftMigration = true;
+            if (draft.citations) {
+                // If it has chunk_ids but no chunks, that's the old format - skip (can't restore)
+                if (draft.citations.chunk_ids && !draft.citations.chunks) {
+                    // Old format with only IDs - can't restore chunks, but keep the draft
+                    continue;
+                }
+                // If it has full chunks with embeddings, migrate to lightweight format
+                if (draft.citations.chunks && Array.isArray(draft.citations.chunks) && draft.citations.chunks.length > 0) {
+                    const firstChunk = draft.citations.chunks[0];
+                    // Check if chunks have embeddings (old format)
+                    if (firstChunk.embedding || (firstChunk.similarity_score !== undefined)) {
+                        // Migrate to lightweight format
+                        draft.citations.chunks = draft.citations.chunks.map(c => ({
+                            id: c.id || c.get?.('id'),
+                            text: c.text || '',
+                            metadata: c.metadata || {},
+                            source: c.source || '',
+                            author: c.author || '',
+                            structure_path: c.metadata?.structure_path || ''
+                        }));
+                        needsDraftMigration = true;
+                    }
+                }
             }
         }
         if (needsDraftMigration) {
@@ -1118,25 +1127,70 @@
         }
         
         // Clean up old search history that has full chunks stored (to avoid quota issues)
-        // Migrate old format to new format (only store chunk_ids, not full chunks)
+        // Migrate old format to new format (only store lightweight chunks, not full chunks with embeddings)
         let needsSearchMigration = false;
+        let needsSimilarityMigration = false;
+        
         for (let search of searchHistory) {
-            if (search.chunks && Array.isArray(search.chunks) && search.chunks.length > 0 && !search.chunk_ids) {
-                // This search has full chunks stored - migrate to new format
-                search.chunk_ids = search.chunks.map(c => {
-                    if (typeof c === 'object' && c !== null) {
-                        return c.id || c.get?.('id') || null;
+            if (search.chunks && Array.isArray(search.chunks) && search.chunks.length > 0) {
+                const firstChunk = search.chunks[0];
+                // Check if chunks have embeddings (old format with full chunks)
+                if (firstChunk.embedding || (firstChunk.similarity_score !== undefined)) {
+                    // Migrate to lightweight format
+                    search.chunks = search.chunks.map(c => ({
+                        id: c.id || c.get?.('id'),
+                        text: c.text || '',
+                        metadata: c.metadata || {},
+                        source: c.source || '',
+                        author: c.author || '',
+                        structure_path: c.metadata?.structure_path || '',
+                        _chunk_index: c._chunk_index
+                    }));
+                    needsSearchMigration = true;
+                }
+            } else if (search.chunk_ids && !search.chunks) {
+                // Old format with only IDs - can't restore chunks, but keep the search
+                // Add empty chunks array for consistency
+                search.chunks = [];
+            }
+            
+            // Migrate similarity scores: clamp negative values to 0.0
+            if (search.sources && Array.isArray(search.sources)) {
+                for (const source of search.sources) {
+                    // Update similarity_score field if it exists and is negative
+                    if (source.similarity_score !== undefined && source.similarity_score < 0) {
+                        source.similarity_score = Math.max(0.0, Math.min(1.0, source.similarity_score));
+                        needsSimilarityMigration = true;
                     }
-                    return null;
-                }).filter(id => id !== null);
-                delete search.chunks; // Remove full chunks to save space
-                needsSearchMigration = true;
+                    
+                    // Update similarity score in relevance_explanation text
+                    if (source.relevance_explanation) {
+                        const similarityMatch = source.relevance_explanation.match(/\(similarity:\s*([-\d.]+)\)/);
+                        if (similarityMatch) {
+                            const oldSimilarity = parseFloat(similarityMatch[1]);
+                            if (oldSimilarity < 0) {
+                                const newSimilarity = Math.max(0.0, Math.min(1.0, oldSimilarity));
+                                source.relevance_explanation = source.relevance_explanation.replace(
+                                    /\(similarity:\s*[-\d.]+\)/,
+                                    `(similarity: ${newSimilarity.toFixed(3)})`
+                                );
+                                needsSimilarityMigration = true;
+                            }
+                        }
+                    }
+                }
             }
         }
-        if (needsSearchMigration) {
+        
+        if (needsSearchMigration || needsSimilarityMigration) {
             try {
                 localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
-                console.log('Migrated old search format to new format (removed full chunks)');
+                if (needsSearchMigration) {
+                    console.log('Migrated old search format to new format (removed full chunks)');
+                }
+                if (needsSimilarityMigration) {
+                    console.log('Migrated similarity scores: clamped negative values to 0.0');
+                }
             } catch (e) {
                 console.warn('Could not migrate search history:', e);
             }
@@ -1147,38 +1201,45 @@
             loadAvailableSources();
             displaySearchHistory();
             displayDraftHistory();
-            // Ensure the new layout is visible on load
+            // Ensure the layout is visible on load
             try {
                 document.getElementById('layoutContainer').style.display = 'flex';
-                switchLayout('research');
+                document.getElementById('researchLayout').style.display = 'grid';
             } catch (e) {
                 console.warn('Layout init warning:', e);
             }
-            // Draft layout starts empty - no autosave restoration
             
-            // Handle Enter key in search input
-            document.getElementById('queryInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
+            // Handle Enter key in search textarea (Ctrl+Enter or Cmd+Enter to submit)
+            document.getElementById('queryInput').addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
                     performSearch();
                 }
             });
             
-            // Autosave on draft input (debounced)
-            const draftTA = document.getElementById('draftTextarea');
-            draftTA.addEventListener('input', () => {
-                scheduleDraftAutosave();
-            });
+            // Draft functionality removed - autosave disabled
+            // const draftTA = document.getElementById('draftTextarea');
+            // if (draftTA) {
+            //     draftTA.addEventListener('input', () => {
+            //         scheduleDraftAutosave();
+            //     });
+            // }
 
-            // Handle source stack selection
-            document.getElementById('sourceStack').addEventListener('change', function() {
-                if (this.value === 'custom') {
-                    showSourceSelection();
-                } else {
-                    hideSourceSelection();
-                    selectedSources.clear();
-                    availableSources.forEach(source => selectedSources.add(source.id));
+            // Source dropdown removed - sources can be filtered via Filters button in Sources & Citations panel
+        });
+
+        // Auto-backup on page visibility change (safety net)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is being hidden (tab switch, minimize, close, etc.)
+                // Force immediate backup without debouncing
+                if (searchHistory.length > 0) {
+                    downloadSearchHistoryBackup();
                 }
-            });
+                if (draftHistory.length > 0) {
+                    downloadDraftHistoryBackup();
+                }
+            }
         });
 
         function loadAvailableSources() {
@@ -1254,25 +1315,35 @@
         }
 
         function applySourceSelection() {
-            document.getElementById('sourceStack').value = selectedSources.size === availableSources.length ? 'all' : 'custom';
-            hideSourceSelection();
+            // Source dropdown removed - no need to update dropdown value
         }
 
 
         function saveCurrentSearch() {
             if (!currentSearchResult) return;
             
+            const searchId = Date.now();
+            currentSearchId = searchId; // Track this search ID
+            
             const searchEntry = {
-                id: Date.now(),
+                id: searchId,
                 query: document.getElementById('queryInput').value.trim(),
                 timestamp: new Date().toISOString(),
-                summary: currentSearchResult.summary,
+                summary: currentSearchResult.summary || null, // Include summary if it exists
                 sources: currentSearchResult.sources_used,
                 reasoning: currentSearchResult.reasoning_transparency,
                 sourceSelection: Array.from(selectedSources),
-                // Store only chunk IDs to avoid localStorage quota issues
-                // Don't store full chunks (they contain embeddings and are huge)
-                chunk_ids: currentSearchResult.chunks ? currentSearchResult.chunks.map(c => c.id || c.get?.('id')) : []
+                query_analysis: currentSearchResult.query_analysis || {}, // Store query analysis for future use
+                // Store lightweight chunk data (text, metadata, source, author) but NOT embeddings
+                chunks: currentSearchResult.chunks ? currentSearchResult.chunks.map(c => ({
+                    id: c.id || c.get?.('id'),
+                    text: c.text || '',
+                    metadata: c.metadata || {},
+                    source: c.source || '',
+                    author: c.author || '',
+                    structure_path: c.metadata?.structure_path || '',
+                    _chunk_index: c._chunk_index
+                })) : []
             };
             
             searchHistory.unshift(searchEntry);
@@ -1285,6 +1356,7 @@
             // Try to save, with error handling for quota issues
             try {
                 localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                autoBackupSearchHistory();
             } catch (e) {
                 if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
                     // If quota exceeded, try removing oldest searches
@@ -1294,11 +1366,13 @@
                     }
                     try {
                         localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                        autoBackupSearchHistory();
                         alert('Search saved, but some older searches were removed due to storage limits.');
                     } catch (e2) {
                         // Still failed - try with even fewer
                         searchHistory = searchHistory.slice(0, 5);
                         localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                        autoBackupSearchHistory();
                         alert('Search saved, but many older searches were removed due to storage limits.');
                     }
                 } else {
@@ -1319,11 +1393,14 @@
             }
             
             historyList.innerHTML = searchHistory.map(entry => `
-                <div class="history-item" onclick="loadSearchFromHistory(${entry.id})">
-                    <div class="history-query">${entry.query}</div>
-                    <div class="history-meta">
-                        ${new Date(entry.timestamp).toLocaleDateString()} • ${entry.sources.length} sources
+                <div class="history-item">
+                    <div onclick="loadSearchFromHistory(${entry.id})" style="flex: 1; cursor: pointer;">
+                        <div class="history-query">${entry.query}</div>
+                        <div class="history-meta">
+                            ${new Date(entry.timestamp).toLocaleDateString()} • ${entry.sources.length} sources
+                        </div>
                     </div>
+                    <button class="delete-draft-btn" onclick="event.stopPropagation(); deleteSearch(${entry.id})" title="Delete search">×</button>
                 </div>
             `).join('');
         }
@@ -1332,33 +1409,52 @@
             const entry = searchHistory.find(s => s.id === searchId);
             if (!entry) return;
             
+            // Track this search ID so we can update it if summary is generated
+            currentSearchId = searchId;
+            
             // Restore the search
             document.getElementById('queryInput').value = entry.query;
             
             // Restore source selection
             selectedSources.clear();
             entry.sourceSelection.forEach(sourceId => selectedSources.add(sourceId));
-            document.getElementById('sourceStack').value = selectedSources.size === availableSources.length ? 'all' : 'custom';
+            // Source dropdown removed - no need to update dropdown value
             
-            // Display the saved results
-            // Note: Full chunks are no longer stored to avoid quota issues
-            // Only summary, sources, and reasoning are available
-            displaySearchResults({
-                summary: entry.summary,
+            // Prepare search result object with all necessary data for filtering
+            const searchResult = {
+                query: entry.query,
+                summary: entry.summary || null, // Include summary if it exists
                 sources_used: entry.sources,
                 reasoning_transparency: entry.reasoning,
-                chunks: entry.chunks || [] // Old format - check if chunks exist for backwards compatibility
-            });
+                chunks: entry.chunks || [], // Now contains lightweight chunk data with text
+                query_analysis: entry.query_analysis || {}
+            };
+            
+            // Set current search result BEFORE displaying so filters can work
+            currentSearchResult = searchResult;
+            
+            // Display the saved results (this will show summary if it exists)
+            displaySearchResults(searchResult);
+            
             // Ensure only the new layout is visible
             document.getElementById('layoutContainer').style.display = 'flex';
             document.getElementById('researchLayout').style.display = 'grid';
-            document.getElementById('draftLayout').style.display = 'none';
             // Hide legacy container to avoid double panels
             const legacyMain = document.getElementById('mainContent');
             if (legacyMain) legacyMain.style.display = 'none';
             
             document.getElementById('saveSearchBtn').disabled = true;
-            currentSearchResult = entry;
+        }
+
+        function deleteSearch(searchId) {
+            // Remove from history
+            const index = searchHistory.findIndex(s => s.id === searchId);
+            if (index !== -1) {
+                searchHistory.splice(index, 1);
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                autoBackupSearchHistory();
+                displaySearchHistory();
+            }
         }
 
         function clearSearchHistory() {
@@ -1372,6 +1468,7 @@
         function saveDraft() {
             try {
                 const textarea = document.getElementById('draftTextarea');
+                if (!textarea) return; // Draft layout removed
                 if (!textarea) {
                     console.error('Draft textarea not found');
                     alert('Error: Could not find draft textarea.');
@@ -1398,12 +1495,18 @@
                         draftEntry.content = draftText;
                         draftEntry.date = new Date().toLocaleDateString();
                         draftEntry.wordCount = draftText.split(/\s+/).length;
-                        // Store only minimal citation data to avoid localStorage quota issues
-                        // Don't store full chunks (they contain embeddings and are huge)
+                        // Store lightweight chunk data (text, metadata, source, author) but NOT embeddings
                         draftEntry.citations = currentDraftCitations ? {
                             sources_used: currentDraftCitations.sources_used || [],
-                            // Store only chunk IDs, not full chunk objects
-                            chunk_ids: currentDraftCitations.chunks ? currentDraftCitations.chunks.map(c => c.id || c.get?.('id')) : []
+                            // Store lightweight chunk data: text, id, metadata, source, author (but NOT embeddings)
+                            chunks: currentDraftCitations.chunks ? currentDraftCitations.chunks.map(c => ({
+                                id: c.id || c.get?.('id'),
+                                text: c.text || '',
+                                metadata: c.metadata || {},
+                                source: c.source || '',
+                                author: c.author || '',
+                                structure_path: c.metadata?.structure_path || ''
+                            })) : []
                         } : null;
                         // Move to top
                         draftHistory.splice(existingIndex, 1);
@@ -1422,12 +1525,18 @@
                         content: draftText,
                         date: new Date().toLocaleDateString(),
                         wordCount: draftText.split(/\s+/).length,
-                        // Store only minimal citation data to avoid localStorage quota issues
-                        // Don't store full chunks (they contain embeddings and are huge)
+                        // Store lightweight chunk data (text, metadata, source, author) but NOT embeddings
                         citations: currentDraftCitations ? {
                             sources_used: currentDraftCitations.sources_used || [],
-                            // Store only chunk IDs, not full chunk objects
-                            chunk_ids: currentDraftCitations.chunks ? currentDraftCitations.chunks.map(c => c.id || c.get?.('id')) : []
+                            // Store lightweight chunk data: text, id, metadata, source, author (but NOT embeddings)
+                            chunks: currentDraftCitations.chunks ? currentDraftCitations.chunks.map(c => ({
+                                id: c.id || c.get?.('id'),
+                                text: c.text || '',
+                                metadata: c.metadata || {},
+                                source: c.source || '',
+                                author: c.author || '',
+                                structure_path: c.metadata?.structure_path || ''
+                            })) : []
                         } : null
                     };
                     draftHistory.unshift(draftEntry);
@@ -1442,6 +1551,7 @@
                 // Try to save, with error handling for quota issues
                 try {
                     localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                    autoBackupDraftHistory();
                 } catch (e) {
                     if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
                         // If quota exceeded, try removing oldest drafts
@@ -1451,11 +1561,13 @@
                         }
                         try {
                             localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                            autoBackupDraftHistory();
                             alert('Draft saved, but some older drafts were removed due to storage limits.');
                         } catch (e2) {
                             // Still failed - try with even fewer
                             draftHistory = draftHistory.slice(0, 5);
                             localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                            autoBackupDraftHistory();
                             alert('Draft saved, but many older drafts were removed due to storage limits.');
                         }
                     } else {
@@ -1478,7 +1590,7 @@
                 const btn = document.getElementById('saveDraftBtn');
                 if (btn) {
                     const originalText = btn.textContent;
-                    btn.textContent = 'Saved!';
+                    btn.textContent = isUpdate ? 'Updated!' : 'Saved!';
                     btn.style.background = '#d4edda';
                     btn.style.color = '#155724';
                     
@@ -1531,26 +1643,26 @@
             const draft = draftHistory.find(d => d.id === draftId);
             if (!draft) return;
             
-            document.getElementById('draftTextarea').value = draft.content;
+            const draftTA = document.getElementById('draftTextarea');
+            if (!draftTA) return; // Draft layout removed
+            draftTA.value = draft.content;
             currentDraftId = draftId; // Set current draft ID so we can update it
             
             if (draft.citations) {
-                // Citations now store only sources_used and chunk_ids, not full chunks
-                // Display what we have (sources_used), but full chunks won't be available
+                // Restore citations with lightweight chunk data
                 currentDraftCitations = {
                     sources_used: draft.citations.sources_used || [],
-                    chunks: [] // Full chunks not stored to avoid quota issues
+                    chunks: draft.citations.chunks || [] // Now contains lightweight chunk data (text, metadata, etc.)
                 };
                 displayDraftSearchResults(currentDraftCitations);
             } else {
                 currentDraftCitations = null;
-                document.getElementById('draftSourcesContent').innerHTML = '';
+                const draftSources = document.getElementById('draftSourcesContent');
+            if (!draftSources) return; // Draft layout removed
+            draftSources.innerHTML = '';
             }
             
-            // Switch to draft layout if not already there
-            if (currentLayout !== 'draft') {
-                switchLayout('draft');
-            }
+            // Draft functionality removed - keeping function stub for compatibility
             scheduleDraftAutosave();
         }
 
@@ -1560,14 +1672,19 @@
             if (index !== -1) {
                 draftHistory.splice(index, 1);
                 localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                autoBackupDraftHistory();
                 displayDraftHistory();
                 
                 // If this was the current draft being edited, clear it
                 if (currentDraftId === draftId) {
-                    document.getElementById('draftTextarea').value = '';
+                    const draftTA = document.getElementById('draftTextarea');
+            if (!draftTA) return; // Draft layout removed
+            draftTA.value = '';
                     currentDraftId = null;
                     currentDraftCitations = null;
-                    document.getElementById('draftSourcesContent').innerHTML = '';
+                    const draftSources = document.getElementById('draftSourcesContent');
+            if (!draftSources) return; // Draft layout removed
+            draftSources.innerHTML = '';
                     localStorage.removeItem('draftAutosave');
                 }
             }
@@ -1575,18 +1692,19 @@
 
         function newDraft() {
             // Clear current draft state
-            document.getElementById('draftTextarea').value = '';
+            const draftTA = document.getElementById('draftTextarea');
+            if (!draftTA) return; // Draft layout removed
+            draftTA.value = '';
             currentDraftId = null;
             currentDraftCitations = null;
-            document.getElementById('draftSourcesContent').innerHTML = '';
+            const draftSources = document.getElementById('draftSourcesContent');
+            if (!draftSources) return; // Draft layout removed
+            draftSources.innerHTML = '';
             
             // Clear autosave
             localStorage.removeItem('draftAutosave');
             
-            // Switch to draft layout if not already there
-            if (currentLayout !== 'draft') {
-                switchLayout('draft');
-            }
+            // Draft functionality removed - keeping function stub for compatibility
         }
 
         function clearDraftHistory() {
@@ -1596,6 +1714,100 @@
                 displayDraftHistory();
             }
         }
+
+        // Auto-backup functionality
+        let searchHistoryBackupTimer = null;
+        let draftHistoryBackupTimer = null;
+        let lastSearchBackupTime = 0;
+        let lastDraftBackupTime = 0;
+        const BACKUP_DEBOUNCE_MS = 60000; // Only backup once per minute max
+
+        function autoBackupSearchHistory() {
+            if (searchHistory.length === 0) return; // Don't backup empty history
+            
+            const now = Date.now();
+            if (now - lastSearchBackupTime < BACKUP_DEBOUNCE_MS) {
+                // Schedule backup for later
+                if (searchHistoryBackupTimer) clearTimeout(searchHistoryBackupTimer);
+                searchHistoryBackupTimer = setTimeout(() => {
+                    downloadSearchHistoryBackup();
+                }, BACKUP_DEBOUNCE_MS - (now - lastSearchBackupTime));
+                return;
+            }
+            
+            downloadSearchHistoryBackup();
+        }
+
+        function autoBackupDraftHistory() {
+            if (draftHistory.length === 0) return; // Don't backup empty history
+            
+            const now = Date.now();
+            if (now - lastDraftBackupTime < BACKUP_DEBOUNCE_MS) {
+                // Schedule backup for later
+                if (draftHistoryBackupTimer) clearTimeout(draftHistoryBackupTimer);
+                draftHistoryBackupTimer = setTimeout(() => {
+                    downloadDraftHistoryBackup();
+                }, BACKUP_DEBOUNCE_MS - (now - lastDraftBackupTime));
+                return;
+            }
+            
+            downloadDraftHistoryBackup();
+        }
+
+        function downloadSearchHistoryBackup() {
+            try {
+                // Send backup to server instead of downloading
+                fetch('/api/backup/search-history', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ history: searchHistory })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(`Backup saved: ${data.filename}`);
+                        lastSearchBackupTime = Date.now();
+                    } else {
+                        console.error('Backup failed:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error backing up search history:', error);
+                });
+            } catch (e) {
+                console.error('Error auto-backing up search history:', e);
+            }
+        }
+
+        function downloadDraftHistoryBackup() {
+            try {
+                // Send backup to server instead of downloading
+                fetch('/api/backup/draft-history', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ history: draftHistory })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(`Backup saved: ${data.filename}`);
+                        lastDraftBackupTime = Date.now();
+                    } else {
+                        console.error('Backup failed:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error backing up draft history:', error);
+                });
+            } catch (e) {
+                console.error('Error auto-backing up draft history:', e);
+            }
+        }
+
 
         function scheduleDraftAutosave() {
             if (draftAutosaveTimer) clearTimeout(draftAutosaveTimer);
@@ -1630,10 +1842,19 @@
                     draft.wordCount = content.split(/\s+/).length;
                     draft.citations = currentDraftCitations ? {
                         sources_used: currentDraftCitations.sources_used || [],
-                        chunks: currentDraftCitations.chunks || []
+                        // Store lightweight chunk data: text, id, metadata, source, author (but NOT embeddings)
+                        chunks: currentDraftCitations.chunks ? currentDraftCitations.chunks.map(c => ({
+                            id: c.id || c.get?.('id'),
+                            text: c.text || '',
+                            metadata: c.metadata || {},
+                            source: c.source || '',
+                            author: c.author || '',
+                            structure_path: c.metadata?.structure_path || ''
+                        })) : []
                     } : null;
                     // Keep in place (don't move to top on autosave)
                     localStorage.setItem('draftHistory', JSON.stringify(draftHistory));
+                    autoBackupDraftHistory();
                 } else {
                     currentDraftId = null; // Draft was deleted
                 }
@@ -1720,7 +1941,9 @@
             })
             .catch(error => {
                 console.error('Context search error:', error);
-                document.getElementById('draftSourcesContent').innerHTML = `
+                const draftSources = document.getElementById('draftSourcesContent');
+            if (!draftSources) return; // Draft layout removed
+            draftSources.innerHTML = `
                     <div class="error">Error: ${error.message}</div>
                 `;
             })
@@ -1797,6 +2020,7 @@
 
         function displayDraftSearchResults(data) {
             const sourcesContent = document.getElementById('draftSourcesContent');
+            if (!sourcesContent) return; // Draft layout removed
             
             // Store sources for citation handling
             currentSources = data.sources_used || [];
@@ -1852,10 +2076,14 @@
                             </div>
                             <div class="source-meta">
                                 <strong>Author:</strong> ${source.author || 'Unknown'}<br>
-                                <strong>Location:</strong> ${source.location || 'Unknown'}
+                                <strong>Location:</strong> ${(source.location || 'Unknown').replace(/^\[\[/, '').replace(/\]\]$/, '')}
                             </div>
                             <div class="source-text">${chunkText || 'Text not available'}</div>
-                            ${source.relevance ? `<div class="source-relevance"><strong>Relevance:</strong> ${source.relevance}</div>` : ''}
+                            ${source.relevance_explanation ? `
+                                <div class="source-relevance">
+                                    <strong>Why this source:</strong> ${source.relevance_explanation}
+                                </div>
+                            ` : source.relevance ? `<div class="source-relevance"><strong>Relevance:</strong> ${source.relevance}</div>` : ''}
                             <div class="copy-options">
                                 <button class="copy-btn" data-text="${encodedText}" onclick="copyToClipboard(event)">Copy Text</button>
                                 <button class="copy-btn" data-text="${encodedCitation}" onclick="copyToClipboard(event)">Copy Citation</button>
@@ -2331,35 +2559,189 @@
         }
 
         async function applyFilters() {
-            const loading = document.getElementById('draftSourcesContent');
-            loading.innerHTML = '<div class="loading"><div class="spinner"></div> Filtering chunks...</div>';
+            const sourcesContent = document.getElementById('sourcesContent');
+            if (!sourcesContent) return;
+            
+            // Show loading state
+            sourcesContent.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; padding: 20px;"><div class="spinner"></div><span style="margin-left: 10px;">Filtering results...</span></div>';
 
             try {
-                const response = await fetch('/api/filter-chunks', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ filters: selectedFilters })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    // Format data for display
-                    displayDraftSearchResults({
-                        sources_used: data.sources_used,
-                        chunks: data.sources_used.map(s => ({
-                            text: s.text,
-                            metadata: s.metadata,
-                            source: s.source,
-                            author: s.author
-                        }))
+                // If we have current search results, filter them client-side
+                if (currentSearchResult && currentSearchResult.chunks && currentSearchResult.chunks.length > 0) {
+                    const filteredChunks = filterChunksClientSide(currentSearchResult.chunks, selectedFilters);
+                    
+                    // Format filtered results for display
+                    const filteredSources = [];
+                    filteredChunks.forEach((chunk, index) => {
+                        const chunkObj = typeof chunk === 'object' && chunk !== null ? chunk : {};
+                        const metadata = chunkObj.metadata || {};
+                        const sourceEntry = {
+                            number: index + 1,
+                            source: chunkObj.source || 'Unknown Source',
+                            author: chunkObj.author || 'Unknown Author',
+                            location: metadata.structure_path || 'Unknown',
+                            chunk_id: chunkObj.id || '',
+                            _chunk_index: chunkObj._chunk_index !== undefined ? chunkObj._chunk_index : index,
+                            metadata: metadata,
+                            text: chunkObj.text || '',
+                            similarity_score: chunkObj.similarity_score || 0,
+                            final_score: chunkObj.final_score || 0
+                        };
+                        filteredSources.push(sourceEntry);
                     });
+                    
+                    // Update current search result with filtered data
+                    const filteredResult = {
+                        ...currentSearchResult,
+                        sources_used: filteredSources,
+                        chunks: filteredChunks
+                    };
+                    
+                    // Display filtered results
+                    displaySearchResults(filteredResult);
                 } else {
-                    loading.innerHTML = '<div class="error">Error applying filters</div>';
+                    // No current search results - filter entire dataset via backend
+                    const response = await fetch('/api/filter-chunks', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ filters: selectedFilters })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Format data for display
+                        const formattedResult = {
+                            sources_used: data.sources_used,
+                            chunks: data.sources_used.map(s => ({
+                                text: s.text,
+                                metadata: s.metadata,
+                                source: s.source,
+                                author: s.author,
+                                id: s.chunk_id,
+                                _chunk_index: s._chunk_index
+                            })),
+                            query: 'Filtered Results',
+                            query_analysis: {},
+                            reasoning_transparency: `Filtered ${data.total_count} chunks`
+                        };
+                        displaySearchResults(formattedResult);
+                    } else {
+                        sourcesContent.innerHTML = '<div class="error">Error applying filters</div>';
+                    }
                 }
             } catch (error) {
                 console.error('Error applying filters:', error);
-                loading.innerHTML = '<div class="error">Error applying filters</div>';
+                sourcesContent.innerHTML = '<div class="error">Error applying filters: ' + error.message + '</div>';
             }
+        }
+
+        function filterChunksClientSide(chunks, filters) {
+            if (!chunks || chunks.length === 0) return [];
+            
+            // Convert chunks to array if needed (they might be objects)
+            const chunksArray = Array.isArray(chunks) ? chunks : Object.values(chunks);
+            
+            return chunksArray.filter(chunk => {
+                const chunkObj = typeof chunk === 'object' && chunk !== null ? chunk : {};
+                const metadata = chunkObj.metadata || {};
+                
+                // Source filter
+                if (filters.sources && filters.sources.length > 0) {
+                    if (!filters.sources.includes(chunkObj.source)) {
+                        return false;
+                    }
+                }
+                
+                // Author filter
+                if (filters.authors && filters.authors.length > 0) {
+                    if (!filters.authors.includes(chunkObj.author)) {
+                        return false;
+                    }
+                }
+                
+                // Concept/Topic/Term filters
+                const chunkConcepts = new Set(metadata.concepts || []);
+                const chunkTopics = new Set(metadata.topics || []);
+                const chunkTerms = new Set(metadata.terms || []);
+                
+                // Extract concept namespaces from topics and terms
+                chunkTopics.forEach(topic => {
+                    const clean = topic.replace(/[\[\]]/g, '');
+                    if (clean.includes('/')) {
+                        chunkConcepts.add(clean.split('/')[0]);
+                    }
+                });
+                chunkTerms.forEach(term => {
+                    const clean = term.replace(/[\[\]]/g, '');
+                    if (clean.includes('/')) {
+                        chunkConcepts.add(clean.split('/')[0]);
+                    }
+                });
+                
+                if (filters.concepts && filters.concepts.length > 0) {
+                    const filterConcepts = new Set(filters.concepts.map(c => c.replace(/[\[\]]/g, '')));
+                    const chunkConceptsNormalized = new Set([...chunkConcepts].map(c => c.replace(/[\[\]]/g, '')));
+                    if (![...filterConcepts].some(fc => [...chunkConceptsNormalized].some(cc => cc === fc || cc.startsWith(fc + '/')))) {
+                        return false;
+                    }
+                }
+                
+                if (filters.topics && filters.topics.length > 0) {
+                    const filterTopics = new Set(filters.topics.map(t => t.replace(/[\[\]]/g, '')));
+                    const chunkTopicsNormalized = new Set([...chunkTopics].map(t => t.replace(/[\[\]]/g, '')));
+                    if (![...filterTopics].some(ft => [...chunkTopicsNormalized].some(ct => ct === ft))) {
+                        return false;
+                    }
+                }
+                
+                if (filters.terms && filters.terms.length > 0) {
+                    const filterTerms = new Set(filters.terms.map(t => t.replace(/[\[\]]/g, '')));
+                    const chunkTermsNormalized = new Set([...chunkTerms].map(t => t.replace(/[\[\]]/g, '')));
+                    if (![...filterTerms].some(ft => [...chunkTermsNormalized].some(ct => ct === ft))) {
+                        return false;
+                    }
+                }
+                
+                // Discourse elements filter
+                const chunkDiscourseTags = new Set(metadata.discourse_tags || []);
+                if (!chunkDiscourseTags.size && metadata.discourse_elements) {
+                    metadata.discourse_elements.forEach(de => {
+                        const match = de.match(/\[\[([^\]]+)\]\]/);
+                        if (match) chunkDiscourseTags.add(match[1]);
+                    });
+                }
+                
+                if (filters.discourse_elements && filters.discourse_elements.length > 0) {
+                    const filterDiscourse = new Set(filters.discourse_elements);
+                    if (![...filterDiscourse].some(fd => {
+                        if (fd.includes('/')) {
+                            return chunkDiscourseTags.has(fd);
+                        } else {
+                            return [...chunkDiscourseTags].some(cd => cd === fd || cd.startsWith(fd + '/'));
+                        }
+                    })) {
+                        return false;
+                    }
+                }
+                
+                // Scripture references filter
+                if (filters.scripture_references && filters.scripture_references.length > 0) {
+                    const chunkScripture = new Set(metadata.scripture_references || []);
+                    if (![...chunkScripture].some(cs => filters.scripture_references.includes(cs))) {
+                        return false;
+                    }
+                }
+                
+                // Named entities filter
+                if (filters.named_entities && filters.named_entities.length > 0) {
+                    const chunkEntities = new Set(metadata.named_entities || []);
+                    if (![...chunkEntities].some(ce => filters.named_entities.includes(ce))) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
         }
 
         function clearFilters() {
@@ -2373,6 +2755,19 @@
                 scripture_references: [],
                 named_entities: []
             };
+            
+            // Clear UI
+            updateSelectedFilters();
+            
+            // If we have current search results, restore them without filters
+            if (currentSearchResult && currentSearchResult.chunks) {
+                displaySearchResults(currentSearchResult);
+            } else {
+                const sourcesContent = document.getElementById('sourcesContent');
+                if (sourcesContent) {
+                    sourcesContent.innerHTML = '<div class="no-results">No filters applied</div>';
+                }
+            }
             
             // Clear checkboxes
             document.querySelectorAll('#sourceFilters input[type="checkbox"]').forEach(cb => cb.checked = false);
@@ -2393,7 +2788,9 @@
             updateSelectedFilters();
             
             // Clear results
-            document.getElementById('draftSourcesContent').innerHTML = '<div class="no-results">No filters applied</div>';
+            const draftSources = document.getElementById('draftSourcesContent');
+            if (!draftSources) return; // Draft layout removed
+            draftSources.innerHTML = '<div class="no-results">No filters applied</div>';
         }
 
         // Close autocomplete dropdowns when clicking outside
@@ -2446,13 +2843,30 @@
 
             const searchBtn = document.getElementById('searchBtn');
             const loading = document.getElementById('loading');
-            const mainContent = document.getElementById('mainContent');
+            const generateSummaryBtn = document.getElementById('generateSummaryBtn');
 
             // Show loading state
             searchBtn.disabled = true;
             loading.style.display = 'block';
-            document.getElementById('layoutContainer').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'none';
+            
+            // Keep layout visible but show loading in panels
+            document.getElementById('layoutContainer').style.display = 'flex';
+            
+            // Show loading in Research Summary panel
+            document.getElementById('researchContent').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px;">
+                    <div class="spinner"></div>
+                    <span style="margin-left: 10px;">Analyzing query and searching sources...</span>
+                </div>
+            `;
+            
+            // Show loading in Sources & Citations panel
+            document.getElementById('sourcesContent').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; padding: 40px;">
+                    <div class="spinner"></div>
+                    <span style="margin-left: 10px;">Searching...</span>
+                </div>
+            `;
 
             // Prepare request data
             const requestData = {
@@ -2460,8 +2874,8 @@
                 sources: Array.from(selectedSources)
             };
 
-            // Make API request
-            fetch('/search', {
+            // Make API request to search-only endpoint
+            fetch('/api/search-only', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -2475,27 +2889,194 @@
                 }
                 
                 currentSearchResult = data;
+                currentSearchId = null; // Reset - this is a new search, not from history
                 displaySearchResults(data);
                 document.getElementById('saveSearchBtn').disabled = false;
+                
+                // Enable the generate summary button
+                const btn = document.getElementById('generateSummaryBtn');
+                if (btn) btn.disabled = false;
             })
             .catch(error => {
                 console.error('Search error:', error);
-                document.getElementById('researchContent').innerHTML = `
+                document.getElementById('sourcesContent').innerHTML = `
                     <div class="error">Error: ${error.message}</div>
                 `;
-                mainContent.style.display = 'grid';
             })
             .finally(() => {
                 searchBtn.disabled = false;
                 loading.style.display = 'none';
+                // Layout is already visible, no need to show it again
             });
         }
 
-        function displaySearchResults(data) {
-            const researchContent = document.getElementById('researchContent');
-            const sourcesContent = document.getElementById('sourcesContent');
-            const mainContent = document.getElementById('mainContent');
+        function generateSummary() {
+            if (!currentSearchResult || !currentSearchResult.chunks || currentSearchResult.chunks.length === 0) {
+                alert('Please perform a search first');
+                return;
+            }
 
+            const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+            const researchContent = document.getElementById('researchContent');
+
+            // Show loading state
+            generateSummaryBtn.disabled = true;
+            researchContent.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px;">
+                    <div class="spinner"></div>
+                    <span style="margin-left: 10px;">Generating AI summary...</span>
+                </div>
+            `;
+
+            // Prepare request data
+            const requestData = {
+                query: currentSearchResult.query || document.getElementById('queryInput').value.trim(),
+                chunks: currentSearchResult.chunks,
+                query_analysis: currentSearchResult.query_analysis || {},
+                reasoning_transparency: currentSearchResult.reasoning_transparency || null  // Preserve original search strategy
+            };
+
+            // Make streaming API request to generate summary
+            requestData.stream = true; // Enable streaming
+            
+            // Set up display area for streaming content
+            let reasoningHtml = '';
+            if (currentSearchResult.reasoning_transparency) {
+                reasoningHtml = `
+                    <div class="reasoning-section">
+                        <div class="reasoning-title">Search Strategy</div>
+                        <div class="reasoning-text">${currentSearchResult.reasoning_transparency}</div>
+                    </div>
+                `;
+            }
+            
+            researchContent.innerHTML = reasoningHtml + `
+                <div class="summary" id="streamingSummary"></div>
+            `;
+            
+            const summaryElement = document.getElementById('streamingSummary');
+            let accumulatedSummary = '';
+            
+            // Use EventSource for Server-Sent Events
+            fetch('/api/generate-summary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                
+                function processStream() {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            // Stream ended - check if we have any remaining buffer
+                            if (buffer.trim()) {
+                                const lines = buffer.split('\n');
+                                for (const line of lines) {
+                                    if (line.startsWith('data: ')) {
+                                        try {
+                                            const data = JSON.parse(line.slice(6));
+                                            if (data.type === 'complete') {
+                                                // Handle completion
+                                                currentSearchResult.summary = data.summary;
+                                                currentSearchResult.sources_used = data.sources_used;
+                                                currentSearchResult.reasoning_transparency = data.reasoning_transparency;
+                                                displaySummary(data);
+                                                generateSummaryBtn.disabled = false;
+                                            }
+                                        } catch (e) {
+                                            console.error('Error parsing final data:', e);
+                                        }
+                                    }
+                                }
+                            }
+                            return;
+                        }
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(line.slice(6));
+                                    
+                                    if (data.type === 'start') {
+                                        // Stream started
+                                        accumulatedSummary = '';
+                                        summaryElement.innerHTML = '';
+                                    } else if (data.type === 'chunk') {
+                                        // Append chunk to summary
+                                        accumulatedSummary += data.content;
+                                        // Parse markdown and update display
+                                        const parsedMarkdown = parseMarkdown(accumulatedSummary);
+                                        summaryElement.innerHTML = parsedMarkdown;
+                                        // Auto-scroll to bottom
+                                        summaryElement.scrollTop = summaryElement.scrollHeight;
+                                    } else if (data.type === 'complete') {
+                                        // Stream complete, finalize
+                                        currentSearchResult.summary = data.summary;
+                                        currentSearchResult.sources_used = data.sources_used;
+                                        currentSearchResult.reasoning_transparency = data.reasoning_transparency;
+                                        
+                                        // Update saved search history entry if it exists
+                                        if (currentSearchId) {
+                                            const savedEntryIndex = searchHistory.findIndex(entry => entry.id === currentSearchId);
+                                            if (savedEntryIndex !== -1) {
+                                                searchHistory[savedEntryIndex].summary = data.summary;
+                                                searchHistory[savedEntryIndex].reasoning = data.reasoning_transparency;
+                                                searchHistory[savedEntryIndex].sources = data.sources_used;
+                                                if (currentSearchResult.query_analysis) {
+                                                    searchHistory[savedEntryIndex].query_analysis = currentSearchResult.query_analysis;
+                                                }
+                                                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                                                autoBackupSearchHistory();
+                                            }
+                                        }
+                                        
+                                        // Final display with all data
+                                        displaySummary(data);
+                                        generateSummaryBtn.disabled = false;
+                                        return;
+                                    } else if (data.type === 'error') {
+                                        throw new Error(data.message || 'Unknown error');
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing stream data:', e);
+                                }
+                            }
+                        }
+                        
+                        return processStream();
+                    });
+                }
+                
+                return processStream();
+            })
+            .catch(error => {
+                console.error('Summary generation error:', error);
+                researchContent.innerHTML = `
+                    <div class="error">Error generating summary: ${error.message}</div>
+                    <div style="margin-top: 12px; text-align: center;">
+                        <button class="search-btn" id="generateSummaryBtn" onclick="generateSummary()" style="padding: 12px 24px; font-size: 14px;">Try Again</button>
+                    </div>
+                `;
+                generateSummaryBtn.disabled = false;
+            });
+        }
+
+        function displaySummary(data) {
+            const researchContent = document.getElementById('researchContent');
+            
             // Display reasoning section
             let reasoningHtml = '';
             if (data.reasoning_transparency) {
@@ -2507,22 +3088,53 @@
                 `;
             }
 
-            // Parse markdown and add clickable citations
+            // Parse markdown (citations are already handled in parseMarkdown)
             const parsedMarkdown = parseMarkdown(data.summary);
-            const summaryWithCitations = addCitationClickHandlers(parsedMarkdown);
             researchContent.innerHTML = reasoningHtml + `
-                <div class="summary">${summaryWithCitations}</div>
+                <div class="summary">${parsedMarkdown}</div>
             `;
+        }
+
+        function displaySearchResults(data) {
+            const sourcesContent = document.getElementById('sourcesContent');
+            const researchContent = document.getElementById('researchContent');
 
             // Store sources for citation handling
             currentSources = data.sources_used || [];
 
-            // Display sources
+            // Display search strategy immediately (even if no summary yet)
+            let reasoningHtml = '';
+            if (data.reasoning_transparency) {
+                reasoningHtml = `
+                    <div class="reasoning-section">
+                        <div class="reasoning-title">Search Strategy</div>
+                        <div class="reasoning-text">${data.reasoning_transparency}</div>
+                    </div>
+                `;
+            }
+
+            // If there's a summary, display it; otherwise show the button
+            if (data.summary) {
+                // Parse markdown (citations are already handled in parseMarkdown)
+                const parsedMarkdown = parseMarkdown(data.summary);
+                researchContent.innerHTML = reasoningHtml + `
+                    <div class="summary">${parsedMarkdown}</div>
+                `;
+            } else {
+                // Show search strategy and button
+                researchContent.innerHTML = reasoningHtml + `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px; margin-top: 20px;">
+                        <button class="search-btn" id="generateSummaryBtn" onclick="generateSummary()" style="padding: 12px 24px; font-size: 14px;">Get AI Summary</button>
+                    </div>
+                `;
+            }
+
+            // Display sources (search-only results don't have summary yet)
             let sourcesHtml = '';
             if (currentSources.length > 0) {
                 sourcesHtml = currentSources.map((source, index) => {
-                    const sourceNumber = index + 1;
-                    const chunkText = findSourceText(sourceNumber, data.chunks);
+                    const sourceNumber = source.number || (index + 1);
+                    const chunkText = source.text || findSourceText(sourceNumber, data.chunks);
                     
                     // Build metadata tooltip
                     const metadata = source.metadata || {};
@@ -2564,7 +3176,7 @@
                             </div>
                             <div class="source-meta">
                                 ${source.author ? `Author: ${source.author}` : ''}
-                                ${source.location && source.location !== 'Unknown' ? ` • Location: ${source.location}` : ''}
+                                ${source.location && source.location !== 'Unknown' ? ` • Location: ${source.location.replace(/^\[\[/, '').replace(/\]\]$/, '')}` : ''}
                             </div>
                             <div class="source-text">${chunkText}</div>
                             ${source.relevance_explanation ? `
@@ -2584,7 +3196,6 @@
             // Show research layout
             document.getElementById('layoutContainer').style.display = 'flex';
             document.getElementById('researchLayout').style.display = 'grid';
-            document.getElementById('draftLayout').style.display = 'none';
             
             // Ensure normal grid layout when displaying results
             const researchLayout = document.getElementById('researchLayout');

@@ -59,3 +59,14 @@ config.json
 
 # Archive directory (optional - uncomment if you don't want to track archived files)
 # archive/
+
+# Backup files
+backups/
+*.backup
+
+# Database files
+chroma_db/
+
+# Log files
+*.log
+app.log

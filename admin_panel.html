@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Pipeline Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .sources-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .sources-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sources-table thead {
+            background: #f8f9fa;
+        }
+
+        .sources-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .sources-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .sources-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .sources-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.chunks {
+            background: #e7f3ff;
+            color: #004085;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .viewer-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .viewer-header h2 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .viewer-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chunk-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .chunk-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+
+        .chunk-item.selected {
+            background: #e7f3ff;
+            border-color: #667eea;
+        }
+
+        .chunk-item.editing {
+            background: white;
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .chunk-checkbox {
+            margin-right: 0.75rem;
+            cursor: pointer;
+        }
+
+        .chunk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .chunk-id {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.9rem;
+        }
+
+        .chunk-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chunk-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .chunk-text textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+
+        .chunk-meta {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .metadata-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .metadata-section h4 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #333;
+        }
+
+        .metadata-field {
+            margin-bottom: 1rem;
+        }
+
+        .metadata-field label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .metadata-field input,
+        .metadata-field textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .metadata-field textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: #e7f3ff;
+            color: #004085;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .tag-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag-input input {
+            flex: 1;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #888;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            opacity: 0.5;
+        }
+
+        .bulk-actions {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .bulk-actions-info {
+            flex: 1;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .bulk-actions-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .structure-path-input {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .structure-path-input input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Pipeline Admin Panel</h1>
+        <p>Manage and review sources at different stages of the processing pipeline</p>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">Overview</button>
+            <button class="tab" onclick="switchTab('stage2')">Stage 2: Chunks</button>
+            <button class="tab" onclick="switchTab('stage3')">Stage 3: Metadata</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <h2 style="margin-bottom: 1.5rem;">Pipeline Overview</h2>
+            <div id="overview-content" class="loading">Loading sources...</div>
+        </div>
+
+        <!-- Stage 2 Tab -->
+        <div id="stage2" class="tab-content">
+            <h2 style="margin-bottom: 1.5rem;">Stage 2: Chunked Files</h2>
+            <div id="stage2-content" class="loading">Loading sources...</div>
+            <div id="stage2-viewer" class="viewer-panel" style="display: none;">
+                <div class="viewer-header">
+                    <h2 id="stage2-viewer-title">Chunk Viewer</h2>
+                    <div class="viewer-actions">
+                        <button class="btn btn-secondary" onclick="closeViewer('stage2')">Close</button>
+                        <button class="btn btn-primary" onclick="saveChunks('stage2')">Save Changes</button>
+                        <button id="stage2-approve-btn" class="btn btn-success" onclick="approveFile('stage2')">Approve</button>
+                        <button id="stage2-unapprove-btn" class="btn btn-danger" onclick="unapproveFile('stage2')" style="display: none;">Unapprove</button>
+                    </div>
+                </div>
+                <div id="stage2-message"></div>
+                <div id="stage2-bulk-actions" class="bulk-actions" style="display: none;">
+                    <div class="bulk-actions-info">
+                        <span id="stage2-selected-count">0</span> chunk(s) selected
+                    </div>
+                    <div class="bulk-actions-controls">
+                        <div class="structure-path-input">
+                            <label>Structure Path:</label>
+                            <input type="text" id="stage2-structure-path-input" placeholder="e.g., Book 1, Chapter 2 (comma-separated)">
+                            <button class="btn btn-primary" onclick="bulkUpdateStructurePath(2)">Update Selected</button>
+                        </div>
+                        <button class="btn btn-danger" onclick="bulkDeleteChunks(2)">Delete Selected</button>
+                        <button class="btn btn-secondary" onclick="clearSelection(2)">Clear Selection</button>
+                    </div>
+                </div>
+                <div id="stage2-chunks" class="chunk-list"></div>
+            </div>
+        </div>
+
+        <!-- Stage 3 Tab -->
+        <div id="stage3" class="tab-content">
+            <h2 style="margin-bottom: 1.5rem;">Stage 3: Annotated Files</h2>
+            <div id="stage3-content" class="loading">Loading sources...</div>
+            <div id="stage3-viewer" class="viewer-panel" style="display: none;">
+                <div class="viewer-header">
+                    <h2 id="stage3-viewer-title">Metadata Viewer</h2>
+                    <div class="viewer-actions">
+                        <button class="btn btn-secondary" onclick="closeViewer('stage3')">Close</button>
+                        <button class="btn btn-primary" onclick="saveChunks('stage3')">Save Changes</button>
+                        <button id="stage3-approve-btn" class="btn btn-success" onclick="approveFile('stage3')">Approve</button>
+                        <button id="stage3-unapprove-btn" class="btn btn-danger" onclick="unapproveFile('stage3')" style="display: none;">Unapprove</button>
+                    </div>
+                </div>
+                <div id="stage3-message"></div>
+                <div id="stage3-bulk-actions" class="bulk-actions" style="display: none;">
+                    <div class="bulk-actions-info">
+                        <span id="stage3-selected-count">0</span> chunk(s) selected
+                    </div>
+                    <div class="bulk-actions-controls">
+                        <div class="structure-path-input">
+                            <label>Structure Path:</label>
+                            <input type="text" id="stage3-structure-path-input" placeholder="e.g., Book 1, Chapter 2 (comma-separated)">
+                            <button class="btn btn-primary" onclick="bulkUpdateStructurePath(3)">Update Selected</button>
+                        </div>
+                        <button class="btn btn-danger" onclick="bulkDeleteChunks(3)">Delete Selected</button>
+                        <button class="btn btn-secondary" onclick="clearSelection(3)">Clear Selection</button>
+                    </div>
+                </div>
+                <div id="stage3-chunks" class="chunk-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentViewer = {
+            stage: null,
+            filename: null,
+            chunks: null,
+            approved: false
+        };
+
+        let selectedChunks = {
+            2: new Set(),
+            3: new Set()
+        };
+
+        // Load sources on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSources();
+        });
+
+        function switchTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            
+            // Load content if needed
+            if (tabName === 'overview') {
+                loadSources();
+            } else if (tabName === 'stage2') {
+                loadStageSources(2);
+            } else if (tabName === 'stage3') {
+                loadStageSources(3);
+            }
+        }
+
+        async function loadSources() {
+            try {
+                const response = await fetch('/api/admin/sources');
+                const data = await response.json();
+                
+                const overviewContent = document.getElementById('overview-content');
+                overviewContent.innerHTML = `
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Stage 2: Chunked (${data.stage_2.length} files)</h3>
+                        ${createSourcesTable(data.stage_2, 2)}
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Stage 3: Annotated (${data.stage_3.length} files)</h3>
+                        ${createSourcesTable(data.stage_3, 3)}
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Stage 4: Complete (${data.stage_4.length} files)</h3>
+                        ${createSourcesTable(data.stage_4, 4)}
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 1rem;">Stage 5: Deployed (${data.stage_5.length} files)</h3>
+                        ${createSourcesTable(data.stage_5, 5)}
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('overview-content').innerHTML = 
+                    `<div class="error">Error loading sources: ${error.message}</div>`;
+            }
+        }
+
+        async function loadStageSources(stage) {
+            try {
+                const response = await fetch('/api/admin/sources');
+                const data = await response.json();
+                
+                const stageKey = `stage_${stage}`;
+                const sources = data[stageKey] || [];
+                
+                const contentId = `stage${stage}-content`;
+                const contentEl = document.getElementById(contentId);
+                
+                if (sources.length === 0) {
+                    contentEl.innerHTML = '<div class="empty-state">No files at this stage</div>';
+                    return;
+                }
+                
+                contentEl.innerHTML = createSourcesTable(sources, stage);
+            } catch (error) {
+                document.getElementById(`stage${stage}-content`).innerHTML = 
+                    `<div class="error">Error loading sources: ${error.message}</div>`;
+            }
+        }
+
+        function createSourcesTable(sources, stage) {
+            if (sources.length === 0) {
+                return '<div class="empty-state">No files at this stage</div>';
+            }
+            
+            const viewButton = (stage === 2 || stage === 3) ? 'Action' : '';
+            
+            const rows = sources.map(source => {
+                const approvedBadge = source.approved 
+                    ? '<span class="badge approved">✓ Approved</span>'
+                    : '<span class="badge pending">Pending</span>';
+                
+                const viewBtn = (stage === 2 || stage === 3)
+                    ? `<button class="btn btn-primary" onclick="viewFile(${stage}, '${escapeForAttr(source.filename)}')">View & Edit</button>`
+                    : '';
+                
+                return `
+                    <tr>
+                        <td>${escapeHtml(source.filename)}</td>
+                        <td>${approvedBadge}</td>
+                        <td><span class="badge chunks">${source.chunk_count} chunks</span></td>
+                        ${viewButton ? `<td>${viewBtn}</td>` : ''}
+                    </tr>
+                `;
+            }).join('');
+            
+            return `
+                <div class="sources-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Status</th>
+                                <th>Chunks</th>
+                                ${viewButton ? `<th>${viewButton}</th>` : ''}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function escapeForAttr(text) {
+            return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        async function viewFile(stage, filename) {
+            try {
+                currentViewer.stage = stage;
+                currentViewer.filename = filename;
+                
+                const response = await fetch(`/api/admin/chunks/${stage}?filename=${encodeURIComponent(filename)}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showMessage(`stage${stage}`, `Error: ${data.error}`, 'error');
+                    return;
+                }
+                
+                currentViewer.chunks = data.chunks;
+                currentViewer.approved = data.approved;
+                
+                // Show viewer
+                const viewer = document.getElementById(`stage${stage}-viewer`);
+                viewer.style.display = 'block';
+                
+                // Update title
+                document.getElementById(`stage${stage}-viewer-title`).textContent = filename;
+                
+                // Update approve button state
+                const approveBtn = document.getElementById(`stage${stage}-approve-btn`);
+                const unapproveBtn = document.getElementById(`stage${stage}-unapprove-btn`);
+                
+                if (data.approved) {
+                    approveBtn.style.display = 'none';
+                    unapproveBtn.style.display = 'inline-block';
+                } else {
+                    approveBtn.style.display = 'inline-block';
+                    unapproveBtn.style.display = 'none';
+                }
+                
+                // Clear selections when loading new file
+                selectedChunks[stage] = new Set();
+                updateBulkActionsUI(stage);
+                
+                // Render chunks
+                renderChunks(stage, data.chunks);
+                
+                // Scroll to viewer
+                viewer.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                showMessage(`stage${stage}`, `Error loading file: ${error.message}`, 'error');
+            }
+        }
+
+        function renderChunks(stage, chunks) {
+            const chunksEl = document.getElementById(`stage${stage}-chunks`);
+            
+            if (chunks.length === 0) {
+                chunksEl.innerHTML = '<div class="empty-state">No chunks found</div>';
+                return;
+            }
+            
+            chunksEl.innerHTML = chunks.map((chunk, index) => {
+                if (stage === 2) {
+                    return renderChunkItem(chunk, index, stage);
+                } else {
+                    return renderAnnotatedChunk(chunk, index, stage);
+                }
+            }).join('');
+        }
+
+        function renderChunkItem(chunk, index, stage) {
+            const structurePath = Array.isArray(chunk.structure_path) 
+                ? chunk.structure_path.join(' > ')
+                : (chunk.structure_path || 'N/A');
+            
+            const isSelected = selectedChunks[stage]?.has(index);
+            const selectedClass = isSelected ? 'selected' : '';
+            
+            return `
+                <div class="chunk-item ${selectedClass}" id="chunk-${stage}-${index}">
+                    <div class="chunk-header">
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox" class="chunk-checkbox" 
+                                   onchange="toggleChunkSelection(${stage}, ${index})" 
+                                   ${isSelected ? 'checked' : ''}>
+                            <span class="chunk-id">${chunk.id || `Chunk ${index}`}</span>
+                        </div>
+                        <div class="chunk-actions">
+                            <button class="btn btn-primary" onclick="editChunk(${stage}, ${index})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteChunk(${stage}, ${index})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="chunk-text" id="chunk-text-${stage}-${index}">${escapeHtml(chunk.text || '')}</div>
+                    <div class="chunk-meta">
+                        <strong>Source:</strong> ${chunk.source || 'N/A'} | 
+                        <strong>Author:</strong> ${chunk.author || 'N/A'} | 
+                        <strong>Path:</strong> ${structurePath}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAnnotatedChunk(chunk, index, stage) {
+            const structurePath = Array.isArray(chunk.structure_path) 
+                ? chunk.structure_path.join(' > ')
+                : (chunk.metadata?.structure_path || chunk.structure_path || 'N/A');
+            
+            const metadata = chunk.metadata || {};
+            const isSelected = selectedChunks[stage]?.has(index);
+            const selectedClass = isSelected ? 'selected' : '';
+            
+            return `
+                <div class="chunk-item ${selectedClass}" id="chunk-${stage}-${index}">
+                    <div class="chunk-header">
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox" class="chunk-checkbox" 
+                                   onchange="toggleChunkSelection(${stage}, ${index})" 
+                                   ${isSelected ? 'checked' : ''}>
+                            <span class="chunk-id">${chunk.id || `Chunk ${index}`}</span>
+                        </div>
+                        <div class="chunk-actions">
+                            <button class="btn btn-primary" onclick="editChunk(${stage}, ${index})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteChunk(${stage}, ${index})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="chunk-text" id="chunk-text-${stage}-${index}">${escapeHtml(chunk.text || '')}</div>
+                    <div class="chunk-meta">
+                        <strong>Source:</strong> ${chunk.source || 'N/A'} | 
+                        <strong>Author:</strong> ${chunk.author || 'N/A'} | 
+                        <strong>Path:</strong> ${structurePath}
+                    </div>
+                    <div class="metadata-section">
+                        <h4>Metadata</h4>
+                        <div class="metadata-field" id="metadata-concepts-${stage}-${index}">
+                            <label>Concepts</label>
+                            <div class="tag-list" id="concepts-tags-${stage}-${index}">
+                                ${(metadata.concepts || []).map(c => `<span class="tag">${escapeHtml(c)} <button onclick="removeMetadataTag(${stage}, ${index}, 'concepts', ${JSON.stringify(c)})" style="background: none; border: none; color: #dc3545; cursor: pointer; margin-left: 0.25rem;">×</button></span>`).join('')}
+                            </div>
+                            <div class="tag-input">
+                                <input type="text" id="concepts-input-${stage}-${index}" placeholder="Add concept (comma-separated)">
+                                <button class="btn btn-primary" onclick="addMetadataTag(${stage}, ${index}, 'concepts')">Add</button>
+                            </div>
+                        </div>
+                        <div class="metadata-field" id="metadata-topics-${stage}-${index}">
+                            <label>Topics</label>
+                            <div class="tag-list" id="topics-tags-${stage}-${index}">
+                                ${(metadata.topics || []).map(t => `<span class="tag">${escapeHtml(t)} <button onclick="removeMetadataTag(${stage}, ${index}, 'topics', ${JSON.stringify(t)})" style="background: none; border: none; color: #dc3545; cursor: pointer; margin-left: 0.25rem;">×</button></span>`).join('')}
+                            </div>
+                            <div class="tag-input">
+                                <input type="text" id="topics-input-${stage}-${index}" placeholder="Add topic (comma-separated)">
+                                <button class="btn btn-primary" onclick="addMetadataTag(${stage}, ${index}, 'topics')">Add</button>
+                            </div>
+                        </div>
+                        <div class="metadata-field" id="metadata-terms-${stage}-${index}">
+                            <label>Terms</label>
+                            <div class="tag-list" id="terms-tags-${stage}-${index}">
+                                ${(metadata.terms || []).map(t => `<span class="tag">${escapeHtml(t)} <button onclick="removeMetadataTag(${stage}, ${index}, 'terms', ${JSON.stringify(t)})" style="background: none; border: none; color: #dc3545; cursor: pointer; margin-left: 0.25rem;">×</button></span>`).join('')}
+                            </div>
+                            <div class="tag-input">
+                                <input type="text" id="terms-input-${stage}-${index}" placeholder="Add term (comma-separated)">
+                                <button class="btn btn-primary" onclick="addMetadataTag(${stage}, ${index}, 'terms')">Add</button>
+                            </div>
+                        </div>
+                        <div class="metadata-field" id="metadata-discourse-tags-${stage}-${index}">
+                            <label>Discourse Tags</label>
+                            <div class="tag-list" id="discourse-tags-tags-${stage}-${index}">
+                                ${(metadata.discourse_tags || []).map(t => `<span class="tag">${escapeHtml(t)} <button onclick="removeMetadataTag(${stage}, ${index}, 'discourse_tags', ${JSON.stringify(t)})" style="background: none; border: none; color: #dc3545; cursor: pointer; margin-left: 0.25rem;">×</button></span>`).join('')}
+                            </div>
+                            <div class="tag-input">
+                                <input type="text" id="discourse-tags-input-${stage}-${index}" placeholder="Add discourse tag (comma-separated)">
+                                <button class="btn btn-primary" onclick="addMetadataTag(${stage}, ${index}, 'discourse_tags')">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function editChunk(stage, index) {
+            const chunk = currentViewer.chunks[index];
+            const textEl = document.getElementById(`chunk-text-${stage}-${index}`);
+            const chunkItem = document.getElementById(`chunk-${stage}-${index}`);
+            
+            if (chunkItem.classList.contains('editing')) {
+                // Save edit
+                const textarea = textEl.querySelector('textarea');
+                if (textarea) {
+                    chunk.text = textarea.value;
+                    textEl.innerHTML = escapeHtml(chunk.text);
+                }
+                chunkItem.classList.remove('editing');
+            } else {
+                // Start editing
+                const currentText = chunk.text || '';
+                textEl.innerHTML = `<textarea>${escapeHtml(currentText)}</textarea>`;
+                chunkItem.classList.add('editing');
+            }
+        }
+
+        function saveCurrentEdits(stage) {
+            // Save any chunks currently in edit mode
+            const chunks = currentViewer.chunks || [];
+            chunks.forEach((chunk, index) => {
+                const chunkItem = document.getElementById(`chunk-${stage}-${index}`);
+                if (chunkItem && chunkItem.classList.contains('editing')) {
+                    const textEl = document.getElementById(`chunk-text-${stage}-${index}`);
+                    const textarea = textEl?.querySelector('textarea');
+                    if (textarea) {
+                        chunk.text = textarea.value;
+                        textEl.innerHTML = escapeHtml(chunk.text);
+                        chunkItem.classList.remove('editing');
+                    }
+                }
+            });
+        }
+
+        function addMetadataTag(stage, index, field) {
+            const input = document.getElementById(`${field}-input-${stage}-${index}`);
+            const value = input.value.trim();
+            
+            if (!value) return;
+            
+            const tags = value.split(',').map(t => t.trim()).filter(t => t);
+            const chunk = currentViewer.chunks[index];
+            
+            if (!chunk.metadata) {
+                chunk.metadata = {};
+            }
+            if (!chunk.metadata[field]) {
+                chunk.metadata[field] = [];
+            }
+            
+            tags.forEach(tag => {
+                if (!chunk.metadata[field].includes(tag)) {
+                    chunk.metadata[field].push(tag);
+                }
+            });
+            
+            input.value = '';
+            renderChunks(stage, currentViewer.chunks);
+        }
+
+        function removeMetadataTag(stage, index, field, tag) {
+            const chunk = currentViewer.chunks[index];
+            if (chunk.metadata && chunk.metadata[field]) {
+                chunk.metadata[field] = chunk.metadata[field].filter(t => t !== tag);
+                renderChunks(stage, currentViewer.chunks);
+            }
+        }
+
+        async function saveChunks(stage) {
+            // Extract numeric stage from 'stage2' or 'stage3'
+            const stageNum = stage.replace('stage', '');
+            
+            if (!currentViewer.filename || !currentViewer.chunks) {
+                showMessage(stage, 'No file loaded', 'error');
+                return;
+            }
+            
+            // Save any current edits before saving
+            saveCurrentEdits(stageNum);
+            
+            try {
+                const response = await fetch(`/api/admin/chunks/${stageNum}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: currentViewer.filename,
+                        chunks: currentViewer.chunks
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showMessage(stage, `Error: ${data.error}`, 'error');
+                } else {
+                    showMessage(stage, `Success: ${data.message}${data.backup ? ` (Backup: ${data.backup})` : ''}`, 'success');
+                    // Re-render to ensure consistency
+                    renderChunks(stageNum, currentViewer.chunks);
+                }
+            } catch (error) {
+                showMessage(stage, `Error saving: ${error.message}`, 'error');
+                console.error('Save error:', error);
+            }
+        }
+
+        async function approveFile(stage) {
+            // Extract numeric stage from 'stage2' or 'stage3'
+            const stageNum = stage.replace('stage', '');
+            
+            if (!currentViewer.filename) {
+                showMessage(stage, 'No file loaded', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/admin/chunks/${stageNum}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: currentViewer.filename
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showMessage(stage, `Error: ${data.error}`, 'error');
+                } else {
+                    showMessage(stage, `Success: ${data.message}`, 'success');
+                    currentViewer.approved = true;
+                    
+                    // Update button state
+                    const approveBtn = document.getElementById(`${stage}-approve-btn`);
+                    const unapproveBtn = document.getElementById(`${stage}-unapprove-btn`);
+                    approveBtn.style.display = 'none';
+                    unapproveBtn.style.display = 'inline-block';
+                }
+            } catch (error) {
+                showMessage(stage, `Error approving: ${error.message}`, 'error');
+                console.error('Approve error:', error);
+            }
+        }
+
+        async function unapproveFile(stage) {
+            // Extract numeric stage from 'stage2' or 'stage3'
+            const stageNum = stage.replace('stage', '');
+            
+            if (!currentViewer.filename) {
+                showMessage(stage, 'No file loaded', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/admin/chunks/${stageNum}/unapprove`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: currentViewer.filename
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showMessage(stage, `Error: ${data.error}`, 'error');
+                } else {
+                    showMessage(stage, `Success: ${data.message}`, 'success');
+                    currentViewer.approved = false;
+                    
+                    // Update button state
+                    const approveBtn = document.getElementById(`${stage}-approve-btn`);
+                    const unapproveBtn = document.getElementById(`${stage}-unapprove-btn`);
+                    approveBtn.style.display = 'inline-block';
+                    unapproveBtn.style.display = 'none';
+                }
+            } catch (error) {
+                showMessage(stage, `Error unapproving: ${error.message}`, 'error');
+                console.error('Unapprove error:', error);
+            }
+        }
+
+        function closeViewer(stage) {
+            document.getElementById(`${stage}-viewer`).style.display = 'none';
+            currentViewer = {
+                stage: null,
+                filename: null,
+                chunks: null,
+                approved: false
+            };
+            // Clear selections when closing viewer
+            selectedChunks[stage] = new Set();
+            updateBulkActionsUI(stage);
+        }
+
+        function toggleChunkSelection(stage, index) {
+            if (!selectedChunks[stage]) {
+                selectedChunks[stage] = new Set();
+            }
+            
+            if (selectedChunks[stage].has(index)) {
+                selectedChunks[stage].delete(index);
+            } else {
+                selectedChunks[stage].add(index);
+            }
+            
+            updateBulkActionsUI(stage);
+            // Re-render to update visual state
+            const chunkItem = document.getElementById(`chunk-${stage}-${index}`);
+            if (chunkItem) {
+                if (selectedChunks[stage].has(index)) {
+                    chunkItem.classList.add('selected');
+                } else {
+                    chunkItem.classList.remove('selected');
+                }
+            }
+        }
+
+        function updateBulkActionsUI(stage) {
+            const count = selectedChunks[stage]?.size || 0;
+            const bulkActions = document.getElementById(`stage${stage}-bulk-actions`);
+            const countEl = document.getElementById(`stage${stage}-selected-count`);
+            
+            if (countEl) {
+                countEl.textContent = count;
+            }
+            
+            if (bulkActions) {
+                if (count > 0) {
+                    bulkActions.style.display = 'flex';
+                } else {
+                    bulkActions.style.display = 'none';
+                }
+            }
+        }
+
+        function bulkUpdateStructurePath(stage) {
+            const selected = selectedChunks[stage];
+            if (!selected || selected.size === 0) {
+                showMessage(`stage${stage}`, 'No chunks selected', 'error');
+                return;
+            }
+            
+            const input = document.getElementById(`stage${stage}-structure-path-input`);
+            const pathValue = input?.value.trim();
+            
+            if (!pathValue) {
+                showMessage(`stage${stage}`, 'Please enter a structure path', 'error');
+                return;
+            }
+            
+            // Parse structure path (comma-separated)
+            const pathArray = pathValue.split(',').map(p => p.trim()).filter(p => p);
+            
+            if (!currentViewer.chunks || currentViewer.stage !== stage) {
+                showMessage(`stage${stage}`, 'No file loaded', 'error');
+                return;
+            }
+            
+            // Update structure path for selected chunks
+            let updatedCount = 0;
+            selected.forEach(index => {
+                if (index < currentViewer.chunks.length) {
+                    const chunk = currentViewer.chunks[index];
+                    chunk.structure_path = pathArray;
+                    // For stage 3, also update metadata.structure_path if it exists
+                    if (stage === 3 && chunk.metadata) {
+                        chunk.metadata.structure_path = pathArray;
+                    }
+                    updatedCount++;
+                }
+            });
+            
+            // Re-render chunks to show updated paths
+            renderChunks(stage, currentViewer.chunks);
+            
+            // Clear selection and input
+            selectedChunks[stage] = new Set();
+            updateBulkActionsUI(stage);
+            if (input) {
+                input.value = '';
+            }
+            
+            showMessage(`stage${stage}`, `Updated structure path for ${updatedCount} chunk(s)`, 'success');
+        }
+
+        function deleteChunk(stage, index) {
+            if (!currentViewer.chunks || index >= currentViewer.chunks.length) {
+                showMessage(`stage${stage}`, 'Invalid chunk index', 'error');
+                return;
+            }
+            
+            const chunk = currentViewer.chunks[index];
+            const chunkId = chunk.id || `Chunk ${index}`;
+            
+            if (!confirm(`Are you sure you want to delete ${chunkId}? This action cannot be undone.`)) {
+                return;
+            }
+            
+            // Remove the chunk from the array
+            currentViewer.chunks.splice(index, 1);
+            
+            // Remove from selection if it was selected
+            if (selectedChunks[stage]) {
+                selectedChunks[stage].delete(index);
+                // Adjust selection indices for chunks after the deleted one
+                const newSelection = new Set();
+                selectedChunks[stage].forEach(selectedIndex => {
+                    if (selectedIndex < index) {
+                        newSelection.add(selectedIndex);
+                    } else if (selectedIndex > index) {
+                        newSelection.add(selectedIndex - 1);
+                    }
+                });
+                selectedChunks[stage] = newSelection;
+            }
+            
+            updateBulkActionsUI(stage);
+            renderChunks(stage, currentViewer.chunks);
+            showMessage(`stage${stage}`, `Deleted ${chunkId}`, 'success');
+        }
+
+        function bulkDeleteChunks(stage) {
+            const selected = selectedChunks[stage];
+            if (!selected || selected.size === 0) {
+                showMessage(`stage${stage}`, 'No chunks selected', 'error');
+                return;
+            }
+            
+            const count = selected.size;
+            if (!confirm(`Are you sure you want to delete ${count} selected chunk(s)? This action cannot be undone.`)) {
+                return;
+            }
+            
+            if (!currentViewer.chunks || currentViewer.stage !== stage) {
+                showMessage(`stage${stage}`, 'No file loaded', 'error');
+                return;
+            }
+            
+            // Sort indices in descending order to delete from back to front
+            const sortedIndices = Array.from(selected).sort((a, b) => b - a);
+            
+            // Delete chunks from back to front to maintain correct indices
+            sortedIndices.forEach(index => {
+                if (index < currentViewer.chunks.length) {
+                    currentViewer.chunks.splice(index, 1);
+                }
+            });
+            
+            // Clear selection
+            selectedChunks[stage] = new Set();
+            updateBulkActionsUI(stage);
+            
+            // Re-render chunks
+            renderChunks(stage, currentViewer.chunks);
+            
+            showMessage(`stage${stage}`, `Deleted ${count} chunk(s)`, 'success');
+        }
+
+        function clearSelection(stage) {
+            selectedChunks[stage] = new Set();
+            updateBulkActionsUI(stage);
+            // Re-render to remove selected class
+            if (currentViewer.chunks && currentViewer.stage === stage) {
+                renderChunks(stage, currentViewer.chunks);
+            }
+        }
+
+        function showMessage(stage, message, type) {
+            const messageEl = document.getElementById(`${stage}-message`);
+            messageEl.innerHTML = `<div class="${type}">${escapeHtml(message)}</div>`;
+            setTimeout(() => {
+                messageEl.innerHTML = '';
+            }, 5000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
+
