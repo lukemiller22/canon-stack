@@ -466,6 +466,9 @@
             font-size: 12px;
             cursor: pointer;
             border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .autocomplete-item:hover {
@@ -481,6 +484,20 @@
         .autocomplete-item.concept-related {
             padding-left: 24px;
             color: #666;
+        }
+
+        .autocomplete-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            background: #4a90e2;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+            min-width: 20px;
+            justify-content: center;
         }
 
         .selected-filters {
@@ -2222,14 +2239,26 @@
             // Build dropdown HTML
             let html = '';
             let lastConcept = null;
+            const counts = filterOptions.counts || {};
             for (const match of matches.slice(0, 20)) { // Limit to 20 results
                 // Clean display text - remove [[ and ]]
                 const displayText = match.display.replace(/^\[\[/, '').replace(/\]\]$/, '');
                 const conceptDisplay = match.concept ? match.concept.replace(/^\[\[/, '').replace(/\]\]$/, '') : '';
                 
+                // Get count for this item
+                let count = 0;
+                if (match.type === 'concept') {
+                    count = counts.concepts?.[match.value] || 0;
+                } else if (match.type === 'topic') {
+                    count = counts.topics?.[match.value] || 0;
+                } else if (match.type === 'term') {
+                    count = counts.terms?.[match.value] || 0;
+                }
+                const badgeHtml = count > 0 ? `<span class="autocomplete-badge">${count}</span>` : '';
+                
                 if (match.type === 'concept') {
                     if (lastConcept !== null) html += '</div>';
-                    html += `<div class="autocomplete-item concept-header" data-value="${match.value.replace(/"/g, '&quot;')}" data-type="concept">${displayText}</div>`;
+                    html += `<div class="autocomplete-item concept-header" data-value="${match.value.replace(/"/g, '&quot;')}" data-type="concept">${displayText}${badgeHtml}</div>`;
                     lastConcept = match.value;
                 } else {
                     if (lastConcept !== match.concept) {
@@ -2237,7 +2266,7 @@
                         html += `<div class="autocomplete-item concept-header">${conceptDisplay}</div>`;
                         lastConcept = match.concept;
                     }
-                    html += `<div class="autocomplete-item concept-related" data-value="${match.value.replace(/"/g, '&quot;')}" data-type="${match.type}">${displayText}</div>`;
+                    html += `<div class="autocomplete-item concept-related" data-value="${match.value.replace(/"/g, '&quot;')}" data-type="${match.type}">${displayText}${badgeHtml}</div>`;
                 }
             }
             if (lastConcept !== null) html += '</div>';
@@ -2316,14 +2345,24 @@
 
             let html = '';
             let lastNamespace = null;
+            const counts = filterOptions.counts || {};
             for (const match of matches.slice(0, 20)) {
                 // Tags are already clean (no brackets), just use them as-is
                 const displayText = match.display;
                 const namespaceDisplay = match.namespace || '';
                 
+                // Get count for this item
+                let count = 0;
+                if (match.type === 'namespace') {
+                    count = counts.discourse_namespaces?.[match.value] || 0;
+                } else {
+                    count = counts.discourse?.[match.value] || 0;
+                }
+                const badgeHtml = count > 0 ? `<span class="autocomplete-badge">${count}</span>` : '';
+                
                 if (match.type === 'namespace') {
                     if (lastNamespace !== null) html += '</div>';
-                    html += `<div class="autocomplete-item concept-header" data-value="${match.value.replace(/"/g, '&quot;')}" data-filter-type="discourse">${displayText}</div>`;
+                    html += `<div class="autocomplete-item concept-header" data-value="${match.value.replace(/"/g, '&quot;')}" data-filter-type="discourse">${displayText}${badgeHtml}</div>`;
                     lastNamespace = match.value;
                 } else {
                     if (lastNamespace !== match.namespace) {
@@ -2331,7 +2370,7 @@
                         html += `<div class="autocomplete-item concept-header">${namespaceDisplay}</div>`;
                         lastNamespace = match.namespace;
                     }
-                    html += `<div class="autocomplete-item concept-related" data-value="${match.value.replace(/"/g, '&quot;')}" data-filter-type="discourse">${displayText}</div>`;
+                    html += `<div class="autocomplete-item concept-related" data-value="${match.value.replace(/"/g, '&quot;')}" data-filter-type="discourse">${displayText}${badgeHtml}</div>`;
                 }
             }
             if (lastNamespace !== null) html += '</div>';
@@ -2374,9 +2413,12 @@
                 .filter(ref => ref.toLowerCase().includes(input))
                 .slice(0, 20);
 
+            const counts = filterOptions.counts || {};
             dropdown.innerHTML = matches.map(ref => {
                 const displayText = ref.replace(/^\[\[/, '').replace(/\]\]$/, '');
-                return `<div class="autocomplete-item" data-value="${ref.replace(/"/g, '&quot;')}" data-filter-type="scripture">${displayText}</div>`;
+                const count = counts.scripture?.[ref] || 0;
+                const badgeHtml = count > 0 ? `<span class="autocomplete-badge">${count}</span>` : '';
+                return `<div class="autocomplete-item" data-value="${ref.replace(/"/g, '&quot;')}" data-filter-type="scripture">${displayText}${badgeHtml}</div>`;
             }).join('');
             
             // Position dropdown below input field
@@ -2411,9 +2453,12 @@
                 .filter(entity => entity.toLowerCase().includes(input))
                 .slice(0, 20);
 
+            const counts = filterOptions.counts || {};
             dropdown.innerHTML = matches.map(entity => {
                 const displayText = entity.replace(/^\[\[/, '').replace(/\]\]$/, '');
-                return `<div class="autocomplete-item" data-value="${entity.replace(/"/g, '&quot;')}" data-filter-type="entity">${displayText}</div>`;
+                const count = counts.entities?.[entity] || 0;
+                const badgeHtml = count > 0 ? `<span class="autocomplete-badge">${count}</span>` : '';
+                return `<div class="autocomplete-item" data-value="${entity.replace(/"/g, '&quot;')}" data-filter-type="entity">${displayText}${badgeHtml}</div>`;
             }).join('');
             
             // Position dropdown below input field

@@ -839,7 +839,7 @@ def get_sources():
 
 @app.route('/api/filter-options')
 def get_filter_options():
-    """Get all available filter options from the dataset"""
+    """Get all available filter options from the dataset with chunk counts"""
     try:
         sources = set()
         authors = set()
@@ -850,6 +850,15 @@ def get_filter_options():
         discourse_namespaces = set()
         scripture_references = set()
         named_entities = set()
+        
+        # Count dictionaries for each filter type
+        concept_counts = {}
+        topic_counts = {}
+        term_counts = {}
+        discourse_counts = {}
+        discourse_namespace_counts = {}
+        scripture_counts = {}
+        entity_counts = {}
         
         for chunk in dataset:
             # Sources and authors
@@ -871,22 +880,27 @@ def get_filter_options():
             # Concepts, topics, terms
             for concept in metadata.get('concepts', []):
                 concepts.add(concept)
+                concept_counts[concept] = concept_counts.get(concept, 0) + 1
             
             for topic in metadata.get('topics', []):
                 topics.add(topic)
+                topic_counts[topic] = topic_counts.get(topic, 0) + 1
                 # Extract concept namespace - strip brackets first
                 topic_clean = topic.replace('[[', '').replace(']]', '')
                 if '/' in topic_clean:
                     concept_ns = topic_clean.split('/', 1)[0]
                     concepts.add(concept_ns)
+                    concept_counts[concept_ns] = concept_counts.get(concept_ns, 0) + 1
             
             for term in metadata.get('terms', []):
                 terms.add(term)
+                term_counts[term] = term_counts.get(term, 0) + 1
                 # Extract concept namespace - strip brackets first
                 term_clean = term.replace('[[', '').replace(']]', '')
                 if '/' in term_clean:
                     concept_ns = term_clean.split('/', 1)[0]
                     concepts.add(concept_ns)
+                    concept_counts[concept_ns] = concept_counts.get(concept_ns, 0) + 1
             
             # Discourse tags (extracted tags) - prefer this field if available
             discourse_tags = metadata.get('discourse_tags', [])
@@ -900,23 +914,28 @@ def get_filter_options():
             # Add all discourse tags and extract namespaces
             for tag in discourse_tags:
                 discourse_elements.add(tag)  # Store tags (not full strings) for filtering
+                discourse_counts[tag] = discourse_counts.get(tag, 0) + 1
                 # Extract namespace (e.g., "Logical" from "Logical/Claim")
                 if '/' in tag:
                     namespace = tag.split('/', 1)[0]
                     discourse_namespaces.add(namespace)
+                    discourse_namespace_counts[namespace] = discourse_namespace_counts.get(namespace, 0) + 1
                 else:
                     # Standalone namespace
                     discourse_namespaces.add(tag)
+                    discourse_namespace_counts[tag] = discourse_namespace_counts.get(tag, 0) + 1
             
             # Scripture references
             for ref in metadata.get('scripture_references', []):
                 scripture_references.add(ref)
+                scripture_counts[ref] = scripture_counts.get(ref, 0) + 1
             
             # Named entities
             for ne in metadata.get('named_entities', []):
                 named_entities.add(ne)
+                entity_counts[ne] = entity_counts.get(ne, 0) + 1
         
-        # Build concept/topic/term suggestions (namespaced)
+        # Build concept/topic/term suggestions (namespaced) with counts
         concept_suggestions = {}
         for topic in topics:
             # Strip brackets before extracting concept namespace
@@ -971,7 +990,16 @@ def get_filter_options():
             'concept_suggestions': {k: v for k, v in sorted(concept_suggestions.items())},
             'discourse_suggestions': {k: sorted(v) for k, v in sorted(discourse_suggestions.items())},
             'scripture_references': sorted(list(scripture_references)),
-            'named_entities': sorted(list(named_entities))
+            'named_entities': sorted(list(named_entities)),
+            'counts': {
+                'concepts': concept_counts,
+                'topics': topic_counts,
+                'terms': term_counts,
+                'discourse': discourse_counts,
+                'discourse_namespaces': discourse_namespace_counts,
+                'scripture': scripture_counts,
+                'entities': entity_counts
+            }
         })
     except Exception as e:
         print(f"Error getting filter options: {e}")

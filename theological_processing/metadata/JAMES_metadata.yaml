@@ -1,0 +1,52 @@
+identification:
+  source_id: JAMES
+  title: James
+  subtitle: ''
+  original_title: ''
+  author_primary: James
+  author_additional: []
+  translator: ''
+  editor: ''
+publication:
+  original_publication_year: null
+  original_publisher: ''
+  original_place: ''
+  edition_notes: English Standard Version (ESV)
+  source_format: manual_jsonl
+  source_url: ''
+  public_domain_status: true
+  copyright_notes: ''
+theological_classification:
+  primary_genre: Biblical Epistle
+  secondary_genre: ''
+  theological_tradition: ''
+  denominational_affiliation: ''
+  historical_period: New Testament
+  century: 1st
+  theological_movement: ''
+content:
+  language: English
+  original_language: Greek
+  length_words: null
+  length_pages: null
+  structure_type: epistle
+  chapter_count: 5
+  has_preface: false
+  has_introduction: false
+  has_appendices: false
+  has_bibliography: false
+  has_index: false
+theological_scope:
+  primary_concepts: []
+  theological_topics: []
+  target_audience: ''
+  reading_level: ''
+processing:
+  processor_version: '1.0'
+  processing_date: '2025-11-15T00:00:00.000000'
+  chunk_count: null
+  structure_confidence: 0.0
+  quality_score: 0.0
+  manual_review_required: false
+  processing_notes: Manual chunking from ESV text
+
