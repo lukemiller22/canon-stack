@@ -946,7 +946,7 @@
                 <textarea 
                     class="search-input" 
                     id="queryInput" 
-                    placeholder="Enter your theological question or research topic... (You can paste paragraphs from sermons, longer queries, etc.)"
+                    placeholder="Enter your theological question or research paragraph..."
                     rows="3"
                 ></textarea>
             </div>
@@ -2131,7 +2131,17 @@
 
         async function loadFilterOptions() {
             try {
-                const response = await fetch('/api/filter-options');
+                // Build query parameters from current filters
+                const params = new URLSearchParams();
+                if (selectedFilters.sources && selectedFilters.sources.length > 0) {
+                    params.append('sources', selectedFilters.sources.join(','));
+                }
+                if (selectedFilters.authors && selectedFilters.authors.length > 0) {
+                    params.append('authors', selectedFilters.authors.join(','));
+                }
+                
+                const url = '/api/filter-options' + (params.toString() ? '?' + params.toString() : '');
+                const response = await fetch(url);
                 if (response.ok) {
                     filterOptions = await response.json();
                     populateFilters();
@@ -2148,21 +2158,27 @@
 
             // Populate source checkboxes
             const sourceContainer = document.getElementById('sourceFilters');
-            sourceContainer.innerHTML = filterOptions.sources.map(source => `
+            sourceContainer.innerHTML = filterOptions.sources.map(source => {
+                const isChecked = selectedFilters.sources.includes(source);
+                return `
                 <div class="checkbox-item">
-                    <input type="checkbox" id="source-${source.replace(/[^a-zA-Z0-9]/g, '_')}" value="${source}" onchange="updateSourceFilter('${source}', this.checked)">
+                    <input type="checkbox" id="source-${source.replace(/[^a-zA-Z0-9]/g, '_')}" value="${source}" ${isChecked ? 'checked' : ''} onchange="updateSourceFilter('${source}', this.checked)">
                     <label for="source-${source.replace(/[^a-zA-Z0-9]/g, '_')}">${source}</label>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             // Populate author checkboxes
             const authorContainer = document.getElementById('authorFilters');
-            authorContainer.innerHTML = filterOptions.authors.map(author => `
+            authorContainer.innerHTML = filterOptions.authors.map(author => {
+                const isChecked = selectedFilters.authors.includes(author);
+                return `
                 <div class="checkbox-item">
-                    <input type="checkbox" id="author-${author.replace(/[^a-zA-Z0-9]/g, '_')}" value="${author}" onchange="updateAuthorFilter('${author}', this.checked)">
+                    <input type="checkbox" id="author-${author.replace(/[^a-zA-Z0-9]/g, '_')}" value="${author}" ${isChecked ? 'checked' : ''} onchange="updateAuthorFilter('${author}', this.checked)">
                     <label for="author-${author.replace(/[^a-zA-Z0-9]/g, '_')}">${author}</label>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         function updateSourceFilter(source, checked) {
@@ -2173,6 +2189,8 @@
             } else {
                 selectedFilters.sources = selectedFilters.sources.filter(s => s !== source);
             }
+            // Reload filter options to update counts
+            loadFilterOptions();
         }
 
         function updateAuthorFilter(author, checked) {
@@ -2183,6 +2201,8 @@
             } else {
                 selectedFilters.authors = selectedFilters.authors.filter(a => a !== author);
             }
+            // Reload filter options to update counts
+            loadFilterOptions();
         }
 
         function toggleFilterTray() {
@@ -2804,6 +2824,9 @@
             // Clear UI
             updateSelectedFilters();
             
+            // Reload filter options to update counts (show all sources)
+            loadFilterOptions();
+            
             // If we have current search results, restore them without filters
             if (currentSearchResult && currentSearchResult.chunks) {
                 displaySearchResults(currentSearchResult);
@@ -3093,10 +3116,15 @@
                                         generateSummaryBtn.disabled = false;
                                         return;
                                     } else if (data.type === 'error') {
+                                        console.error('Stream error:', data.message);
                                         throw new Error(data.message || 'Unknown error');
                                     }
                                 } catch (e) {
                                     console.error('Error parsing stream data:', e);
+                                    // If it's an error message, propagate it
+                                    if (e.message && e.message !== 'Unknown error') {
+                                        throw e;
+                                    }
                                 }
                             }
                         }

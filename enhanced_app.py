@@ -23,9 +23,12 @@ app = Flask(__name__)
 
 # Initialize OpenAI client
 api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OPENAI_API_KEY not found. Please set it in your .env file.")
-client = OpenAI(api_key=api_key)
+if not api_key or api_key == "your_api_key_here":
+    raise ValueError("OPENAI_API_KEY not found or not set. Please set a valid API key in your .env file. Get your key from: https://platform.openai.com/api-keys")
+# Set timeout to 120 seconds for API calls (longer for streaming)
+# Use a tuple (connect_timeout, read_timeout) for better control
+client = OpenAI(api_key=api_key, timeout=(10.0, 120.0))
+print(f"[DEBUG] OpenAI client initialized with API key: {api_key[:10]}...")
 
 # Global variables
 dataset = []
@@ -190,6 +193,7 @@ def get_embedding(text):
 async def get_embedding_async(text):
     """Async version of get_embedding"""
     start_time = time.time()
+    error_details = None
     try:
         # OpenAI client doesn't have native async, but we can run in executor
         loop = asyncio.get_event_loop()
@@ -204,10 +208,30 @@ async def get_embedding_async(text):
         print(f"[TIMING] get_embedding_async: {elapsed:.2f}s")
         return response.data[0].embedding
     except Exception as e:
-        print(f"Error getting embedding (async): {e}")
+        error_msg = str(e)
+        error_details = error_msg
+        
+        # Try to extract more details from the error
+        if hasattr(e, 'response') and hasattr(e.response, 'json'):
+            try:
+                error_data = e.response.json()
+                if 'error' in error_data:
+                    error_details = error_data['error'].get('message', error_msg)
+            except:
+                pass
+        
+        print(f"Error getting embedding (async): {error_details}")
+        if "api key" in error_msg.lower() or "authentication" in error_msg.lower() or "invalid_api_key" in error_msg.lower():
+            print("  → Check your OPENAI_API_KEY in .env file")
+        elif "rate limit" in error_msg.lower():
+            print("  → OpenAI API rate limit exceeded. Please wait and try again.")
+        elif "insufficient_quota" in error_msg.lower() or "quota" in error_msg.lower():
+            print("  → OpenAI API quota exceeded. Check your account billing.")
         elapsed = time.time() - start_time
         print(f"[TIMING] get_embedding_async (error): {elapsed:.2f}s")
-        return None
+        # Store error details in a global or raise it so caller can access it
+        # For now, we'll raise it with the details so the caller can catch it
+        raise Exception(f"Embedding generation failed: {error_details}")
 
 async def analyze_query_async(query):
     """Async version of analyze_query"""
@@ -662,26 +686,42 @@ def generate_research_summary(query, analysis, chunks, existing_reasoning=None):
             model="gpt-4o-mini",
             messages=[{
                 "role": "system",
-                "content": """You are an expert theological research assistant. Create a comprehensive research summary that:
+                "content": """You are an expert theological research assistant crafting research summaries for pastors and scholars who need to quickly grasp the landscape of theological thought on a topic.
 
-1. Synthesizes information from multiple sources
-2. Uses numbered citations [1], [2], etc. that correspond to the source numbers provided
-3. Maintains theological accuracy and nuance
-4. Organizes information logically
-5. Highlights key points and different perspectives when present
+Your goal is to produce summaries that are:
+- **Intellectually engaging**: Draw out the theological tensions, debates, and nuances rather than just listing facts
+- **Analytically sharp**: Identify patterns, connections, and distinctions across sources
+- **Clearly structured**: Organize around key questions, themes, or theological tensions rather than just summarizing source-by-source
+- **Precisely cited**: Support every substantive claim with numbered citations [1], [2], etc.
 
-CRITICAL REQUIREMENTS:
-- Use citations frequently to support statements throughout the summary
-- ALWAYS end the summary with a "Citations" section that lists ALL cited sources
-- The Citations section MUST be formatted as a numbered list (e.g., "[1] Source Name by Author - Location")
-- Include every source that was cited with [1], [2], etc. in the summary text
-- The Citations list should appear at the very end, after all summary content
+WRITING APPROACH:
+- Begin with a compelling framing that captures the central theological question or tension
+- Develop ideas through comparison and contrast between sources
+- Use active voice and vivid theological language (avoid generic phrases like "this perspective affirms" or "it is important to note")
+- Show how different theological traditions address the same question differently
+- Identify underlying assumptions and implications rather than just stating positions
+- End sections with synthesis: what's at stake in these different views?
 
-Guidelines:
-- Maintain respectful tone for all theological traditions
-- Be comprehensive but concise
-- Include multiple perspectives when sources differ
-- Make clear distinctions between biblical text, historical positions, and theological interpretations"""
+STRUCTURE:
+- Lead with the most significant or debated aspect of the topic
+- Group related claims thematically, not by source
+- Use descriptive subheadings that capture theological substance (not generic labels like "Historical Context")
+- Build toward complexity: start with foundational agreements, then explore contested areas
+
+CITATION REQUIREMENTS:
+- Cite liberally throughout to support specific claims [1], [2], etc.
+- End with a "Citations" section formatted as:
+  [1] Source Title by Author - Specific Location
+  [2] Source Title by Author - Specific Location
+- Every citation number in the text must appear in the Citations list
+
+VOICE:
+- Write as a theological peer, not a textbook
+- Be definitive where sources agree, nuanced where they differ
+- Avoid hedging language unless genuine theological ambiguity exists
+- Let the theological substance drive the prose, not formatting conventions
+
+Remember: Your reader is theologically literate and time-constrained. They need insight and synthesis, not just information retrieval."""
             }, {
                 "role": "user",
                 "content": f"""Research question: {query}
@@ -839,8 +879,32 @@ def get_sources():
 
 @app.route('/api/filter-options')
 def get_filter_options():
-    """Get all available filter options from the dataset with chunk counts"""
+    """Get all available filter options from the dataset with chunk counts
+    
+    Query parameters:
+    - sources: comma-separated list of source names to filter by
+    - authors: comma-separated list of author names to filter by
+    """
     try:
+        # Get filter parameters from query string
+        sources_filter = request.args.get('sources', '')
+        authors_filter = request.args.get('authors', '')
+        
+        # Parse filters
+        selected_sources = set()
+        if sources_filter:
+            selected_sources = set(s.strip() for s in sources_filter.split(',') if s.strip())
+        
+        selected_authors = set()
+        if authors_filter:
+            # Normalize author names same way as in filter-chunks
+            for auth in authors_filter.split(','):
+                norm_auth = auth.strip()
+                norm_auth = re.sub(r'([A-Z])\.\s+([A-Z])\.', r'\1.\2.', norm_auth)
+                norm_auth = ' '.join(norm_auth.split())
+                if norm_auth:
+                    selected_authors.add(norm_auth)
+        
         sources = set()
         authors = set()
         concepts = set()
@@ -861,6 +925,17 @@ def get_filter_options():
         entity_counts = {}
         
         for chunk in dataset:
+            # Apply source filter
+            if selected_sources and chunk.get('source') not in selected_sources:
+                continue
+            
+            # Apply author filter (with normalization)
+            if selected_authors:
+                chunk_author = chunk.get('author', '').strip()
+                chunk_author = re.sub(r'([A-Z])\.\s+([A-Z])\.', r'\1.\2.', chunk_author)
+                chunk_author = ' '.join(chunk_author.split())
+                if chunk_author not in selected_authors:
+                    continue
             # Sources and authors
             if chunk.get('source'):
                 sources.add(chunk.get('source'))
@@ -1187,20 +1262,47 @@ def search_only():
         parallel_start = time.time()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
+        embedding_error = None
         try:
             analysis, query_embedding = loop.run_until_complete(
                 asyncio.gather(
                     analyze_query_async(query),
-                    get_embedding_async(query)
+                    get_embedding_async(query),
+                    return_exceptions=True  # Don't fail fast, collect all exceptions
                 )
             )
+            # Check if we got exceptions
+            if isinstance(query_embedding, Exception):
+                embedding_error = str(query_embedding)
+                query_embedding = None
+            if isinstance(analysis, Exception):
+                print(f"Error in query analysis: {analysis}")
+                # Analysis error is less critical, continue with empty analysis
+                analysis = {}
+        except Exception as e:
+            embedding_error = str(e)
+            print(f"Error in parallel processing: {e}")
+            query_embedding = None
         finally:
             loop.close()
         parallel_time = time.time() - parallel_start
         print(f"[TIMING] Parallel (analysis + embedding): {parallel_time:.2f}s")
         
         if not query_embedding:
-            return jsonify({"error": "Failed to generate query embedding"}), 500
+            error_msg = "Failed to generate query embedding"
+            if embedding_error:
+                # Extract the actual error message if it's wrapped
+                if "Embedding generation failed:" in embedding_error:
+                    actual_error = embedding_error.split("Embedding generation failed: ", 1)[1]
+                    error_msg = f"Failed to generate query embedding: {actual_error}"
+                else:
+                    error_msg += f": {embedding_error}"
+            elif not api_key or api_key == "your_api_key_here":
+                error_msg += ". Please set a valid OPENAI_API_KEY in your .env file."
+            else:
+                error_msg += ". Check your OpenAI API key and account status."
+            print(f"ERROR: {error_msg}")
+            return jsonify({"error": error_msg}), 500
         
         # Step 2: Search with filters and source selection (two-stage retrieval)
         start_time = time.time()
@@ -1389,11 +1491,18 @@ def generate_research_summary_stream(query, analysis, chunks, existing_reasoning
         summary_start = time.time()
         full_summary = ""
         
-        stream = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{
-                "role": "system",
-                "content": """You are an expert theological research assistant. Create a comprehensive research summary that:
+        try:
+            print(f"[DEBUG] Starting OpenAI streaming call for summary generation...")
+            print(f"[DEBUG] Query length: {len(query)}, Context length: {len(context_text)}")
+            print(f"[DEBUG] API Key present: {bool(api_key)}")
+            
+            # Create the stream with explicit timeout
+            stream_start_time = time.time()
+            stream = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{
+                    "role": "system",
+                    "content": """You are an expert theological research assistant. Create a comprehensive research summary that:
 
 1. Synthesizes information from multiple sources
 2. Uses numbered citations [1], [2], etc. that correspond to the source numbers provided
@@ -1413,27 +1522,85 @@ Guidelines:
 - Be comprehensive but concise
 - Include multiple perspectives when sources differ
 - Make clear distinctions between biblical text, historical positions, and theological interpretations"""
-            }, {
-                "role": "user",
-                "content": f"""Research question: {query}
+                }, {
+                    "role": "user",
+                    "content": f"""Research question: {query}
 
 Available sources:
 {context_text}
 
 Create a comprehensive research summary with proper numbered citations. IMPORTANT: You MUST end the summary with a "Citations" section listing all cited sources as a numbered list."""
-            }],
-            temperature=0.5,
-            max_tokens=1500,
-            stream=True
-        )
-        
-        # Stream chunks as they arrive
-        for chunk in stream:
-            if chunk.choices[0].delta.content:
-                content = chunk.choices[0].delta.content
-                full_summary += content
-                # Send each chunk to client
-                yield f"data: {json.dumps({'type': 'chunk', 'content': content})}\n\n"
+                }],
+                temperature=0.5,
+                max_tokens=1500,
+                stream=True
+            )
+            
+            stream_created_time = time.time() - stream_start_time
+            print(f"[DEBUG] OpenAI stream created in {stream_created_time:.2f}s, starting to read chunks...")
+            
+            # Stream chunks as they arrive
+            chunk_count = 0
+            last_chunk_time = time.time()
+            first_chunk_received = False
+            
+            for chunk in stream:
+                current_time = time.time()
+                
+                # Check for timeout (if no chunk received in 60 seconds, assume timeout)
+                if first_chunk_received and current_time - last_chunk_time > 60:
+                    error_msg = "Stream timeout: No data received for 60 seconds"
+                    print(f"ERROR: {error_msg}")
+                    yield f"data: {json.dumps({'type': 'error', 'message': error_msg})}\n\n"
+                    return
+                
+                if chunk.choices and len(chunk.choices) > 0:
+                    delta = chunk.choices[0].delta
+                    if hasattr(delta, 'content') and delta.content:
+                        content = delta.content
+                        full_summary += content
+                        chunk_count += 1
+                        last_chunk_time = current_time
+                        first_chunk_received = True
+                        
+                        # Send each chunk to client immediately
+                        yield f"data: {json.dumps({'type': 'chunk', 'content': content})}\n\n"
+            
+            print(f"[DEBUG] Stream completed. Received {chunk_count} chunks, total length: {len(full_summary)}")
+            
+            if not full_summary.strip():
+                error_msg = "Summary generation returned empty content. This may indicate an API issue."
+                print(f"WARNING: {error_msg}")
+                yield f"data: {json.dumps({'type': 'error', 'message': error_msg})}\n\n"
+                return
+            
+            print(f"[DEBUG] Received {chunk_count} chunks from OpenAI stream, total length: {len(full_summary)}")
+        except Exception as e:
+            error_msg = str(e)
+            error_type = type(e).__name__
+            print(f"Error in OpenAI streaming call ({error_type}): {error_msg}")
+            
+            # Check for specific error types
+            if "timeout" in error_msg.lower() or "timed out" in error_msg.lower():
+                error_msg = "Request timed out. The OpenAI API took too long to respond. This may be due to network issues or high API load. Please try again."
+            elif "rate limit" in error_msg.lower():
+                error_msg = "Rate limit exceeded. Please wait a moment and try again."
+            elif "quota" in error_msg.lower() or "insufficient" in error_msg.lower():
+                error_msg = "API quota exceeded. Please check your OpenAI account billing."
+            elif "api key" in error_msg.lower() or "authentication" in error_msg.lower():
+                error_msg = "Authentication failed. Please check your OpenAI API key."
+            else:
+                # Try to extract more details from the error
+                if hasattr(e, 'response') and hasattr(e.response, 'json'):
+                    try:
+                        error_data = e.response.json()
+                        if 'error' in error_data:
+                            error_msg = error_data['error'].get('message', error_msg)
+                    except:
+                        pass
+            
+            yield f"data: {json.dumps({'type': 'error', 'message': f'Failed to generate summary: {error_msg}'})}\n\n"
+            return
         
         summary_time = time.time() - summary_start
         print(f"[TIMING] Summary generation (streaming): {summary_time:.2f}s")
@@ -1529,7 +1696,7 @@ Create a comprehensive research summary with proper numbered citations. IMPORTAN
                 fixed_summary = fixed_summary[:start_pos] + new_citation + fixed_summary[end_pos:]
         
         # Send final data
-        yield f"data: {json.dumps({
+        final_data = {
             'type': 'complete',
             'summary': fixed_summary,
             'sources_used': renumbered_sources,
@@ -1537,7 +1704,8 @@ Create a comprehensive research summary with proper numbered citations. IMPORTAN
             'query_analysis': analysis,
             'chunks': chunks,
             'query': query
-        })}\n\n"
+        }
+        yield f"data: {json.dumps(final_data)}\n\n"
         
     except Exception as e:
         print(f"Error generating streaming summary: {e}")

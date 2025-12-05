@@ -1,0 +1,156 @@
+{
+  "chunks": [
+    {
+      "id": "lewis_mc_lord_liar_lunatic",
+      "text": "I am trying here to prevent anyone saying the really foolish thing that people often say about Him: \"I'm ready to accept Jesus as a great moral teacher, but I don't accept His claim to be God.\" That is the one thing we must not say. A man who was merely a man and said the sort of things Jesus said would not be a great moral teacher. He would either be a lunatic—on a level with the man who says he is a poached egg—or else he would be the Devil of Hell. You must make your choice. Either this man was, and is, the Son of God: or else a madman or something worse.",
+      "source": "Mere Christianity",
+      "author": "C.S. Lewis",
+      "metadata": {
+        "concepts": ["Jesus Christ", "Authority", "Truth", "Logic"],
+        "topics": [
+          "Jesus Christ/Divinity and Deity",
+          "Logic/Trilemma Arguments",
+          "Apologetics/Defense of Orthodoxy"
+        ],
+        "terms": ["Lord, Liar, or Lunatic", "trilemma", "deity of Christ", "moral teacher"],
+        "discourse_elements": [
+          "Semantic/Concept",
+          "Logical/Claim",
+          "Logical/Warrant",
+          "Logical/Conditional"
+        ],
+        "computational_elements": [
+          "Computational/Classification",
+          "Computational/Validation",
+          "Computational/Inference"
+        ],
+        "rhetorical_elements": [
+          "Rhetorical/Thesis",
+          "Rhetorical/Refutation",
+          "Rhetorical/Appeal-Logos"
+        ],
+        "query_intents": ["Evaluative", "Comparative", "Diagnostic"]
+      },
+      "relationships": [
+        {"type": "refutes", "target": "modernist_jesus_as_teacher", "weight": 0.85}
+      ]
+    },
+    {
+      "id": "lewis_mc_faith_definition",
+      "text": "Faith is the art of holding on to things your reason has once accepted, in spite of your changing moods. For moods will change, whatever view your reason takes. I know that by experience. Now that I am a Christian I do have moods in which the whole thing looks very improbable: but when I was an atheist I had moods in which Christianity looked terribly probable. Faith is not about accepting something without evidence; it is about continuing to hold to what your reason tells you is true, even when your emotions and circumstances make it difficult.",
+      "source": "Mere Christianity",
+      "author": "C.S. Lewis",
+      "metadata": {
+        "concepts": ["Faith", "Reason", "Belief", "Emotion"],
+        "topics": [
+          "Faith/Nature and Definition",
+          "Faith/Relationship to Reason",
+          "Emotion/Role in Belief"
+        ],
+        "terms": ["faith", "reason", "moods", "evidence", "emotional certainty"],
+        "discourse_elements": [
+          "Semantic/Definition",
+          "Semantic/Description",
+          "Personal/Experience"
+        ],
+        "computational_elements": [
+          "Computational/Validation",
+          "Computational/Comparison"
+        ],
+        "rhetorical_elements": [
+          "Rhetorical/Thesis",
+          "Rhetorical/Qualification"
+        ],
+        "query_intents": ["Definitional", "Interpretive"]
+      },
+      "relationships": [
+        {"type": "defines", "target": "concept_faith", "weight": 1.0}
+      ]
+    },
+    {
+      "id": "augustine_confessions_time",
+      "text": "What, then, is time? If no one asks me, I know what it is. If I wish to explain it to him who asks, I do not know. Yet I say with confidence that I know that if nothing passed away, there would be no past time; and if nothing were still coming, there would be no future time; and if there were nothing at all, there would be no present time.",
+      "source": "Confessions",
+      "author": "Augustine",
+      "metadata": {
+        "concepts": ["Time", "Knowledge", "Mystery"],
+        "topics": [
+          "Time/Nature and Definition",
+          "Knowledge/Paradox of Understanding"
+        ],
+        "terms": ["time", "paradox", "past", "present", "future"],
+        "discourse_elements": [
+          "Semantic/Question",
+          "Logical/Paradox",
+          "Personal/Knowledge"
+        ],
+        "computational_elements": [
+          "Computational/Decomposition"
+        ],
+        "rhetorical_elements": [
+          "Rhetorical/Thesis"
+        ],
+        "query_intents": ["Definitional", "Interpretive"]
+      },
+      "relationships": []
+    },
+    {
+      "id": "chesterton_orthodoxy_humility",
+      "text": "What we suffer from today is humility in the wrong place. Modesty has moved from the organ of ambition. Modesty has settled upon the organ of conviction; where it was never meant to be. A man was meant to be doubtful about himself, but undoubting about the truth; this has been exactly reversed. Nowadays the part of a man that a man does assert is exactly the part he ought not to assert—himself. The part he doubts is exactly the part he ought not to doubt—the Divine Reason.",
+      "source": "Orthodoxy",
+      "author": "G.K. Chesterton",
+      "metadata": {
+        "concepts": ["Humility", "Truth", "Modernity", "Pride"],
+        "topics": [
+          "Humility/False vs True Humility",
+          "Modernity/Intellectual Pride",
+          "Truth/Objective vs Subjective"
+        ],
+        "terms": ["humility", "modesty", "conviction", "doubt", "divine reason"],
+        "discourse_elements": [
+          "Logical/Claim",
+          "Practical/Problem"
+        ],
+        "computational_elements": [
+          "Computational/Comparison",
+          "Computational/Diagnosis"
+        ],
+        "rhetorical_elements": [
+          "Rhetorical/Thesis",
+          "Rhetorical/Antithesis"
+        ],
+        "query_intents": ["Diagnostic", "Evaluative"]
+      },
+      "relationships": []
+    },
+    {
+      "id": "carson_christ_culture_transformation",
+      "text": "The transformation model insists that culture itself must be transformed by the gospel. This is not a matter of Christians simply withdrawing from culture, nor of uncritically embracing it, but of engaging with it redemptively. We recognize that culture is fallen but redeemable, corrupt but not utterly depraved. The gospel speaks to all of life, and therefore Christians must work to bring every sphere under the lordship of Christ.",
+      "source": "Christ and Culture Revisited",
+      "author": "D.A. Carson",
+      "metadata": {
+        "concepts": ["Culture", "Gospel", "Transformation", "Christ"],
+        "topics": [
+          "Culture/Transformation Model",
+          "Gospel/Application to Culture",
+          "Christ/Lordship over Culture"
+        ],
+        "terms": ["transformation", "redemptive engagement", "cultural mandate", "lordship"],
+        "discourse_elements": [
+          "Semantic/Description",
+          "Logical/Claim",
+          "Practical/Strategy"
+        ],
+        "computational_elements": [
+          "Computational/Classification"
+        ],
+        "rhetorical_elements": [
+          "Rhetorical/Thesis",
+          "Rhetorical/Qualification"
+        ],
+        "query_intents": ["Prescriptive", "Comparative"]
+      },
+      "relationships": []
+    }
+  ]
+}

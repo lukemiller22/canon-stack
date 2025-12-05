@@ -6,7 +6,7 @@ requests>=2.28.0
 python-dotenv>=1.0.0
 
 # Optional dependencies for future features
-pymupdf4llm>=0.1.0        # For PDF processing (preferred - handles multi-column layouts)
+pymupdf4llm>=0.0.1        # For PDF processing (preferred - handles multi-column layouts)
 pdfplumber>=0.10.0        # For PDF processing (fallback)
 PyPDF2>=3.0.0             # For PDF processing (fallback)
 # python-docx>=0.8.11     # For DOCX processing
